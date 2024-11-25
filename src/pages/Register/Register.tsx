@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import * as S from './Register.styles';
 
 export function Register() {
+const RegisterPage = styled.div.attrs({ className: 'page-content' })``;
+
 	const { registerWithUserId } = useFirestoreUserRegistration();
 	const [userId, setUserId] = useState('');
 	const [password, setPassword] = useState('');
@@ -11,12 +13,18 @@ export function Register() {
 	const navigate = useNavigate();
 
 	const handleRegister = async () => {
-		const isRegistered = await registerWithUserId(userId, password);
-		if (isRegistered) {
+		if (!userId || !password) {
+			setError('Please fill in all fields');
+			return;
+		}
+
+		const result = await registerWithUserId(userId, password);
+
+		if (result.success) {
 			console.log('Registration successful!');
 			navigate('/login');
 		} else {
-			setError('User ID already exists. Please choose another one.');
+			setError(result.error || 'Registration failed');
 		}
 	};
 
