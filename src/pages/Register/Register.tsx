@@ -11,12 +11,18 @@ export function Register() {
 	const navigate = useNavigate();
 
 	const handleRegister = async () => {
-		const isRegistered = await registerWithUserId(userId, password);
-		if (isRegistered) {
+		if (!userId || !password) {
+			setError('Please fill in all fields');
+			return;
+		}
+
+		const result = await registerWithUserId(userId, password);
+
+		if (result.success) {
 			console.log('Registration successful!');
 			navigate('/login');
 		} else {
-			setError('User ID already exists. Please choose another one.');
+			setError(result.error || 'Registration failed');
 		}
 	};
 

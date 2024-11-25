@@ -1,38 +1,55 @@
-import { useState } from 'react';
 import { db } from '@/firebaseConfig';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
-export function useFirestoreUserRegistration() {
-	const [error, setError] = useState<string | null>(null);
+// 사용자 등록 데이터 인터페이스
+interface UserRegistrationData {
+	userId: string;
+	password: string;
+	createdAt: Date;
+}
 
-	const registerWithUserId = async (userId: string, password: string) => {
+// 등록 결과 인터페이스
+interface RegistrationResult {
+	success: boolean;
+	error?: string;
+}
+
+export function useFirestoreUserRegistration() {
+	const registerWithUserId = async (
+		userId: string,
+		password: string,
+	): Promise<RegistrationResult> => {
 		try {
 			// 중복 체크
 			const userDocRef = doc(db, 'users', userId);
 			const userDoc = await getDoc(userDocRef);
 
 			if (userDoc.exists()) {
-				console.error('User ID already exists');
-				setError('User ID already exists');
-				return false;
+				return {
+					success: false,
+					error: 'User ID already exists',
+				};
 			}
 
-			// 새 사용자 등록
-			await setDoc(userDocRef, {
+			// 새 사용자 데이터 생성
+			const userData: UserRegistrationData = {
 				userId,
 				password,
 				createdAt: new Date(),
-			});
+			};
 
-			console.log('Registration successful!');
-			setError(null);
-			return true;
+			// Firestore에 저장
+			await setDoc(userDocRef, userData);
+
+			return { success: true };
 		} catch (error) {
-			setError('Registration failed');
-			console.error(error);
-			return false;
+			const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+			return {
+				success: false,
+				error: errorMessage,
+			};
 		}
 	};
 
-	return { error, registerWithUserId };
+	return { registerWithUserId };
 }
