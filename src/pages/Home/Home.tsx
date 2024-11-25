@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { db } from '@/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import * as S from './Home.styles';
-import { Button } from '../../components';
+import { Button } from '@/components';
 
 export function Home() {
 	useEffect(() => {
