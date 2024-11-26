@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
 import { db } from '@/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
-import styled from 'styled-components';
+import * as S from './Home.styles';
+import { Button } from '@/components';
 
-const HomePage = styled.div.attrs({ className: 'page-content' })``;
-
-function Home() {
+export function Home() {
 	useEffect(() => {
 		const testFirebaseConnection = async () => {
 			try {
@@ -22,11 +21,12 @@ function Home() {
 	}, []);
 
 	return (
-		<HomePage>
+		<S.HomeContainer>
 			<h2>Home Page</h2>
+			<Button color="regular-gray" shape="line" onClick={() => alert('버튼 클릭됨')}>
+				테스트 버튼
+			</Button>
 			{/* 홈 페이지 내용 */}
-		</HomePage>
+		</S.HomeContainer>
 	);
 }
-
-export default Home;
