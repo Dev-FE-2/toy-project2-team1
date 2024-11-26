@@ -8,6 +8,7 @@ export const NotFound = () => {
 	const handleToHome = () => {
 		navigate('/', { replace: true }); // 홈으로 이동하면서 히스토리 스택을 덮어씀
 	};
+
 	return (
 		<S.NotFoundContainer>
 			<S.Inner>
