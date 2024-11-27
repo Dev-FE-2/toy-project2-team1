@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const StyledInput = styled.input<{ $isError?: boolean; $isSuccess?: boolean }>`
+export const StyledInput = styled.input`
 	padding: 1rem 2rem;
 	border: 1px solid #dfe4ea;
 	border-radius: 6px;
