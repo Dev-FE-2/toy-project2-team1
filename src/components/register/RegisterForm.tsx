@@ -8,7 +8,7 @@ import {
 	ROLE_OPTIONS,
 	POSITION_OPTIONS,
 	GENDER_OPTIONS,
-} from './formValidation';
+} from './FormValidation';
 
 interface RegisterFormProps {
 	onSubmit: (data: RegisterData) => Promise<void>;

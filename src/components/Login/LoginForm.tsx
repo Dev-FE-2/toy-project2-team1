@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { getAuth, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
 import * as S from '@/pages/Login/Login.styles';
 import { LoginFormData, LoginFormErrors } from '@/types/login';
-import { validateLoginForm, getAuthErrorMessage } from './loginValidation';
+import { validateLoginForm, getAuthErrorMessage } from './LoginValidation';
 
 const auth = getAuth();
 
