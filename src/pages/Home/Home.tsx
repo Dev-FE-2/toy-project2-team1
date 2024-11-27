@@ -3,6 +3,7 @@ import { db } from '@/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import * as S from './Home.styles';
 import { Button } from '@/components';
+import CheckboxGroup from '@/components/checkbox/CheckboxGroup';
 
 export function Home() {
 	useEffect(() => {
@@ -26,6 +27,7 @@ export function Home() {
 			<Button color="regular-gray" shape="line" onClick={() => alert('버튼 클릭됨')}>
 				테스트 버튼
 			</Button>
+			<CheckboxGroup />
 			{/* 홈 페이지 내용 */}
 		</S.HomeContainer>
 	);
