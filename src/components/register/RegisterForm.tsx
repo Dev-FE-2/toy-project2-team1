@@ -2,13 +2,13 @@ import { useState } from 'react';
 import * as S from '@/pages/Register/Register.styles';
 import {
 	FormData,
-	FormErrors,
+	RegisterFormErrors,
 	RegisterFormProps,
 	ROLE_OPTIONS,
 	POSITION_OPTIONS,
 	GENDER_OPTIONS,
-	validateForm,
-} from '@/pages';
+} from '@/types/register';
+import { validateForm } from './FormValidation';
 
 export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFormProps) {
 	const [formData, setFormData] = useState<FormData>({
@@ -21,7 +21,7 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 		position: '',
 		workingHours: '',
 	});
-	const [errors, setErrors] = useState<FormErrors>({});
+	const [errors, setErrors] = useState<RegisterFormErrors>({});
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
 		const { name, value } = e.target;
@@ -51,7 +51,7 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 				</S.Logo>
 				<S.WelcomeText>
 					<h1>환영합니다!</h1>
-					<p>회원가입을 통해 다양한 서비스를 이용해보세요.</p>
+					<p>Showtime 급여 및 일정 관리 사이트입니다.</p>
 				</S.WelcomeText>
 			</S.LeftSection>
 			<S.RightSection>

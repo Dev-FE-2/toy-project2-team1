@@ -16,8 +16,4 @@ export { Navbar } from '@/components/nav/Navbar';
 export { Button } from '@/components/button/Button';
 export { Error } from '@/components/error/Error';
 export { Loading } from '@/components/loading/Loading';
-//export { PrivateRoute } from '@/components/PrivateRoute';
-export { useRegister } from '@/hooks/useRegister';
-
-// register 관련 모든 것들을 재익스포트
-export * from '@/types/register';
+export { MainLayout } from '@/components/home/MainLayout';
