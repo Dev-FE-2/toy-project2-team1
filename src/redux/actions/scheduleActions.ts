@@ -1,95 +1,208 @@
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
-import { Dispatch } from 'redux';
-import { Schedule } from '@/types/schedule';
+import {
+	doc,
+	setDoc,
+	collection,
+	getDocs,
+	updateDoc,
+	deleteDoc,
+	getDoc,
+	Timestamp,
+} from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+import { ThunkAction } from 'redux-thunk';
+import { TSchedule, TScheduleState } from '@/types/schedule';
+import {
+	GET_SCHEDULES,
+	ADD_SCHEDULES,
+	EDIT_SCHEDULES,
+	REMOVE_SCHEDULES,
+	SELECT_DATE,
+	FILTERED_SCHEDULES,
+} from '../actionTypes';
 
-const db = getFirestore();
-
-const getSchedules = (schedules: Schedule[]) => ({
-	type: 'GET_SCHEDULES',
+const getSchedules = (schedules: TSchedule[]) => ({
+	type: GET_SCHEDULES,
 	payload: schedules,
 });
 
-const addSchedule = (schedule: Schedule) => ({
-	type: 'ADD_SCHEDULE',
-	payload: schedule,
+const addSchedules = (schedules: TSchedule[]) => ({
+	type: ADD_SCHEDULES,
+	payload: schedules,
 });
 
-const editSchedule = (schedule: Schedule) => ({
-	type: 'EDIT_SCHEDULE',
-	payload: schedule,
+const editSchedules = (schedules: TSchedule[]) => ({
+	type: EDIT_SCHEDULES,
+	payload: schedules,
 });
 
-const removeSchedule = (schedule_id: string) => ({
-	type: 'REMOVE_SCHEDULE',
-	payload: schedule_id,
+const removeSchedules = (scheduleIds: string[]) => ({
+	type: REMOVE_SCHEDULES,
+	payload: scheduleIds,
 });
+
+export const selectDate = (date: Date | null) => ({
+	type: SELECT_DATE,
+	payload: date,
+});
+
+export const filteredSchedules = (schedules: TSchedule[]) => ({
+	type: FILTERED_SCHEDULES,
+	payload: schedules,
+});
+
+/**
+ * schedules (컬렉션)
+ * └─ userId (문서)
+ *      └─ userSchedules (하위 컬렉션)
+ *          ├─ schedule_id_1 (문서)
+ *          ├─ schedule_id_2 (문서)
+ */
+
+// 응답 타입 정의
+export interface FirestoreResponse<T = void> {
+	success?: boolean;
+	message?: string;
+	data?: T;
+}
+
+type ScheduleActionTypes =
+	| ReturnType<typeof getSchedules>
+	| ReturnType<typeof addSchedules>
+	| ReturnType<typeof editSchedules>
+	| ReturnType<typeof removeSchedules>;
+
+type ThunkResult<R> = ThunkAction<
+	Promise<R>,
+	{ schedule: TScheduleState },
+	undefined,
+	ScheduleActionTypes
+>;
 
 // firestore에서 스케줄 가져오기
-export const fetchSchedules = (userId: string) => {
-	return async (dispatch: Dispatch) => {
-		const scheduleDocRef = doc(db, 'schedule', userId);
-		const scheduleDoc = await getDoc(scheduleDocRef);
+export const fetchSchedulesFromFirestore = (
+	userId: string,
+): ThunkResult<FirestoreResponse<TSchedule[]>> => {
+	return async (dispatch) => {
+		try {
+			const schedulesCollectionRef = collection(db, 'schedules', userId, 'userSchedules');
+			const querySnapshot = await getDocs(schedulesCollectionRef);
 
-		if (scheduleDoc.exists()) {
-			const data = scheduleDoc.data();
-			dispatch(getSchedules(data.schedules || []));
-		} else {
-			dispatch(getSchedules([]));
+			const schedules: TSchedule[] = [];
+			querySnapshot.forEach((doc) => {
+				schedules.push(doc.data() as TSchedule);
+			});
+
+			dispatch(getSchedules(schedules));
+
+			return {
+				success: true,
+				message: '일정을 성공적으로 조회했습니다.',
+				data: schedules,
+			};
+		} catch (error) {
+			console.error('Firestore 일정 조회 실패', error);
+			return {
+				success: false,
+				message: '일정 조회 중 오류가 발생했습니다.',
+			};
 		}
 	};
 };
 
 // firestore에 스케줄 추가
-export const addScheduleToFirestore = (schedule: Schedule) => {
-	return async (dispatch: Dispatch) => {
-		const scheduleDocRef = doc(db, 'schedule', schedule.user_id);
-		const scheduleDoc = await getDoc(scheduleDocRef);
+export const addScheduleToFirestore = (
+	userId: string,
+	schedules: TSchedule[],
+): ThunkResult<FirestoreResponse<void>> => {
+	return async (dispatch) => {
+		try {
+			const schedulesCollectionRef = collection(db, 'schedules', userId, 'userSchedules');
+			for (const schedule of schedules) {
+				const scheduleDocRef = doc(schedulesCollectionRef, schedule.schedule_id); // schedule_id로 문서 생성
+				// Firestore에서 schedule_id 확인
+				const scheduleSnapshot = await getDoc(scheduleDocRef);
+				if (!scheduleSnapshot.exists()) {
+					const newSchedule = {
+						...schedule,
+						created_at: Timestamp.now(), // 현재 시간을 Firestore Timestamp로 저장
+					};
 
-		if (scheduleDoc.exists()) {
-			const data = scheduleDoc.data();
-			const schedules = data.schedules || [];
-
-			schedules.push(schedule);
-			await setDoc(scheduleDocRef, { schedules });
-		} else {
-			await setDoc(scheduleDocRef, { schedules: [schedule] }); // 새 데이터 작성
+					await setDoc(scheduleDocRef, newSchedule);
+					dispatch(addSchedules([newSchedule]));
+				} else {
+					console.log(`${schedule.schedule_id} 가 이미 존재함`);
+				}
+			}
+			return {
+				success: true,
+				message: '일정을 성공적으로 추가했습니다.',
+			};
+		} catch (error) {
+			console.error('firestore에 스케줄 추가 실패', error);
+			return {
+				success: false,
+				message: '일정 추가 중 오류가 발생했습니다.',
+			};
 		}
-		dispatch(addSchedule(schedule));
 	};
 };
 
 // firestore에 스케줄 수정
-export const editScheduleToFirestore = (schedule: Schedule) => {
-	return async (dispatch: Dispatch) => {
-		const scheduleDocRef = doc(db, 'schedule', schedule.user_id);
-		const scheduleDoc = await getDoc(scheduleDocRef);
+export const editScheduleToFirestore = (
+	userId: string,
+	schedules: TSchedule[],
+): ThunkResult<FirestoreResponse<void>> => {
+	return async (dispatch) => {
+		try {
+			for (const schedule of schedules) {
+				// userSchedules 컬렉션의 문서 참조
+				const scheduleDocRef = doc(db, 'schedules', userId, 'userSchedules', schedule.schedule_id);
+				await updateDoc(scheduleDocRef, { ...schedule });
+			}
 
-		if (scheduleDoc.exists()) {
-			const data = scheduleDoc.data();
-			const schedules = data.schedules || [];
+			// Redux 상태 업데이트
+			dispatch(editSchedules(schedules));
 
-			const updatedSchedules = schedules.map((s: Schedule) =>
-				s.schedule_id === schedule.schedule_id ? schedule : s,
-			);
-			await setDoc(scheduleDocRef, { schedules: updatedSchedules });
-			dispatch(editSchedule(schedule));
+			return {
+				success: true,
+				message: '일정을 성공적으로 수정했습니다.',
+			};
+		} catch (error) {
+			console.error('firestore에 스케줄 수정 실패', error);
+			return {
+				success: false,
+				message: '일정 수정 중 오류가 발생했습니다.',
+			};
 		}
 	};
 };
 
 // firestore에 스케줄 삭제
-export const removeScheduleToFirestore = (userId: string, schedule_id: string) => {
-	return async (dispatch: Dispatch) => {
-		const scheduleDocRef = doc(db, 'schedule', userId);
-		const scheduleDoc = await getDoc(scheduleDocRef);
+export const removeScheduleToFirestore = (
+	userId: string,
+	scheduleIds: string[],
+): ThunkResult<FirestoreResponse<void>> => {
+	return async (dispatch) => {
+		try {
+			for (const scheduleId of scheduleIds) {
+				// userSchedules 컬렉션의 문서 참조
+				const scheduleDocRef = doc(db, 'schedules', userId, 'userSchedules', scheduleId);
+				await deleteDoc(scheduleDocRef);
+			}
 
-		if (scheduleDoc.exists()) {
-			const data = scheduleDoc.data();
-			const schedules = data.schedules || [];
+			// Redux 상태 업데이트
+			dispatch(removeSchedules(scheduleIds));
 
-			const updatedSchedules = schedules.filter((s: Schedule) => s.schedule_id !== schedule_id);
-			await setDoc(scheduleDocRef, { schedules: updatedSchedules });
-			dispatch(removeSchedule(schedule_id));
+			return {
+				success: true,
+				message: '일정을 성공적으로 삭제했습니다.',
+			};
+		} catch (error) {
+			console.error('firestore에 스케줄 삭제 실패', error);
+			return {
+				success: false,
+				message: '일정 삭제 중 오류가 발생했습니다.',
+			};
 		}
 	};
 };
