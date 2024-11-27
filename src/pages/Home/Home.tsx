@@ -33,6 +33,9 @@ export function Home() {
 			</Button>
 			{status.isError && <Error>오류 발생</Error>}
 			{status.isLoading && <Loading size={40} />}
+			{/* <ModalPortal>
+				<ScheduleModal />
+			</ModalPortal> */}
 			{/* 홈 페이지 내용 */}
 		</S.HomeContainer>
 	);
