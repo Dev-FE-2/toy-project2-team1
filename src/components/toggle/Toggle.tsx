@@ -34,17 +34,17 @@ const ToggleContainer = styled.div`
 `;
 
 export const Toggle = () => {
-	const [isOn, setisOn] = useState(false);
+	const [isActive, setIsActive] = useState(false);
 
 	const toggleHandler = () => {
-		setisOn(!isOn);
+		setIsActive(!isActive);
 	};
 
 	return (
 		<>
 			<ToggleContainer onClick={toggleHandler}>
-				<div className={`toggle-container ${isOn ? 'toggle--checked' : null}`} />
-				<div className={`toggle-circle ${isOn ? 'toggle--checked' : null}`} />
+				<div className={`toggle-container ${isActive ? 'toggle--checked' : null}`} />
+				<div className={`toggle-circle ${isActive ? 'toggle--checked' : null}`} />
 			</ToggleContainer>
 		</>
 	);

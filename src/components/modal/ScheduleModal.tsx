@@ -2,7 +2,13 @@ import { formatToKoreanTime } from '@/utils/dateFormatter';
 import styled from 'styled-components';
 import { Toggle } from '../toggle/Toggle';
 
-const ScheduleModal = () => {
+//admin의 경우 회원가입 시 관리자인지 구분하여 저장하는 데이터베이스 데이터가 있기때문에 그걸 토대로
+//각 사용자에 맞는 UI를 보여주면 될것으로 보임.
+
+interface ScheduleModalProps {
+	state?: string;
+}
+const ScheduleModal = ({ state = 'admin' }: ScheduleModalProps) => {
 	const dateAt = formatToKoreanTime(new Date());
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -11,11 +17,21 @@ const ScheduleModal = () => {
 	return (
 		<ModalOverlay>
 			<ModalContent onSubmit={handleSubmit}>
-				<h1>일정 추가</h1>
+				<ModalContentTop>
+					<h1>일정 추가</h1>
+					<InputWrapper>
+						<Icon onClick={() => console.log('검색')}>🔍</Icon>
+						{state === 'admin' && (
+							<ModalSearchInput type="text" placeholder="이름을 검색하여 주세요." />
+						)}
+					</InputWrapper>
+				</ModalContentTop>
 				<ModalWrapperTopSubTitle>기간</ModalWrapperTopSubTitle>
-				<DateTimeInput type="datetime-local" defaultValue={dateAt} id="startAt" />
-				<span> - </span>
-				<DateTimeInput type="datetime-local" defaultValue={dateAt} id="endAt" />
+				<ModalWrapperContainerTop>
+					<DateTimeInput type="datetime-local" defaultValue={dateAt} id="startAt" />
+					<CloseTime type="text" defaultValue={'5'} />
+					<span>시간</span>
+				</ModalWrapperContainerTop>
 				<ModalToggleContainer>
 					<Toggle />
 					<span>반복 설정</span>
@@ -29,21 +45,6 @@ const ScheduleModal = () => {
 				</ModalToggleContainer>
 				<WorkWrapper>
 					<WorkTitle>업무</WorkTitle>
-					<WorkUl>
-						<WorkLITitle>시간</WorkLITitle>
-						<li>
-							<input type="checkbox" value={'오픈'} id="open" />
-							<label htmlFor="open">오픈</label>
-						</li>
-						<li>
-							<input type="checkbox" value={'미들'} id="middle" />
-							<label htmlFor="middle">미들</label>
-						</li>
-						<li>
-							<input type="checkbox" value={'마감'} id="close" />
-							<label htmlFor="close">마감</label>
-						</li>
-					</WorkUl>
 					<WorkUl>
 						<WorkTitle>종류</WorkTitle>
 						<li>
@@ -59,27 +60,7 @@ const ScheduleModal = () => {
 							<label htmlFor="close">플로어</label>
 						</li>
 					</WorkUl>
-					<TodoInput type="text" />
-					<StatusContainer>
-						<StatusWarpperTop>
-							<span>상태</span>
-							<select>
-								<option>시작전</option>
-								<option>진행중</option>
-								<option>완료</option>
-							</select>
-						</StatusWarpperTop>
-						<StatusWrapper>
-							<span>컬러</span>
-							<RoundList>
-								<RoundListItem />
-								<RoundListItem />
-								<RoundListItem />
-								<RoundListItem />
-								<RoundListItem />
-							</RoundList>
-						</StatusWrapper>
-					</StatusContainer>
+					<TodoInput type="text" placeholder={'업무에 대한 설명을 작성해주세요.'} />
 				</WorkWrapper>
 				<ButtonContainer>
 					<CreateButton type="submit">추가하기</CreateButton>
@@ -111,6 +92,32 @@ const ModalContent = styled.form`
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 `;
 
+const ModalContentTop = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+`;
+
+const ModalSearchInput = styled.input`
+	width: 327px;
+	height: 32px;
+	border-radius: 10px;
+
+	border-radius: 5px;
+	outline: none;
+	font-size: 14px;
+
+	&:focus {
+		border-color: #007bff;
+	}
+`;
+
+const ModalWrapperContainerTop = styled.div`
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+`;
+
 const ModalWrapperTopSubTitle = styled.h2`
 	margin-top: 1rem;
 	margin-bottom: 1rem;
@@ -132,7 +139,7 @@ const DateTimeInput = styled.input`
 	}
 	&::-webkit-calendar-picker-indicator {
 		//아이콘 custom
-		/* background-image: url('your-icon-url.png'); */
+		background-image: none;
 		background-size: contain;
 		background-repeat: no-repeat;
 		width: 20px;
@@ -178,16 +185,10 @@ const WorkUl = styled.ul`
 	gap: 1rem;
 `;
 
-const WorkLITitle = styled.li`
-	font-weight: bold;
-	color: #000;
-`;
-
-const StatusWarpperTop = styled.div`
-	display: flex;
-	gap: 1rem;
-	margin-top: 0.2rem;
-	align-items: center;
+const CloseTime = styled.input`
+	width: 24px;
+	text-align: center;
+	/* margin-top: 1rem; */
 `;
 
 const TodoInput = styled.input`
@@ -196,22 +197,6 @@ const TodoInput = styled.input`
 	border: 1px solid black;
 	height: 30px;
 	padding-left: 10px;
-`;
-
-const StatusContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 1rem;
-`;
-const StatusWrapper = styled.div`
-	display: flex;
-	gap: 0.2rem;
-`;
-
-const RoundList = styled.ul`
-	display: flex;
-	gap: 1rem;
-	margin-left: 0.8rem;
 `;
 
 const ButtonContainer = styled.div`
@@ -224,11 +209,18 @@ const CreateButton = styled.button`
 	background-color: transparent;
 	color: var(--color-skyblue-light-dark);
 	cursor: pointer;
+	margin-top: 20px;
 `;
 
-const RoundListItem = styled.li`
-	width: 15px; // 원의 가로 크기
-	height: 15px; // 원의 세로 크기
-	background-color: #3498db; // 배경 색
-	border-radius: 50%;
+const Icon = styled.span`
+	position: absolute;
+	top: 50%;
+	right: 25%;
+	transform: translateY(-50%);
+	font-size: 16px;
+`;
+
+const InputWrapper = styled.div`
+	position: relative;
+	display: inline-block;
 `;

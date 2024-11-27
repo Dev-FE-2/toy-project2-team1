@@ -3,8 +3,11 @@ import { db } from '@/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
 import * as S from './Home.styles';
 import { Button, Error, Loading } from '@/components';
+import ModalPortal from '@/components/modal/ModalPortal';
+import ScheduleModal from '@/components/modal/ScheduleModal';
 
 export function Home() {
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 	useEffect(() => {
 		const testFirebaseConnection = async () => {
 			try {
@@ -33,9 +36,13 @@ export function Home() {
 			</Button>
 			{status.isError && <Error>오류 발생</Error>}
 			{status.isLoading && <Loading size={40} />}
-			{/* <ModalPortal>
-				<ScheduleModal />
-			</ModalPortal> */}
+			<button onClick={() => setIsOpen(!isOpen)}>open</button>
+			{isOpen && (
+				<ModalPortal>
+					<ScheduleModal />
+				</ModalPortal>
+			)}
+
 			{/* 홈 페이지 내용 */}
 		</S.HomeContainer>
 	);
