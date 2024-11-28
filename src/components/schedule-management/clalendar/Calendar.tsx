@@ -1,14 +1,7 @@
 import * as S from './Calendar.styles';
 import { useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
-import {
-	getSchedules,
-	addScheduleToFirestore,
-	selectDate,
-	filteredSchedules,
-} from '@/redux/actions/scheduleActions';
-import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
+import { getSchedules, selectDate, filteredSchedules } from '@/redux/actions/scheduleActions';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
 import { TSchedule } from '@/types/schedule';
@@ -43,7 +36,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	// 오늘 날짜(초기) 필터링
 	useEffect(() => {
 		if (schedules.length > 0 && selectedDate) {
-			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate);
+			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate as Date);
 			dispatch(filteredSchedules(todaySchedules));
 		}
 	}, [dispatch, selectedDate, schedules]);
@@ -57,26 +50,6 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 		console.log('filteredS:', filteredS); // 디버깅용
 
 		dispatch(filteredSchedules(filteredS));
-	};
-
-	// 임시 데이터
-	const schedule: TSchedule = {
-		schedule_id: uuidv4(), // 초기 스케줄 ID
-		category: '매점',
-		start_date_time: new Date('2024-11-22T22:00:00.000Z'),
-		time: '5',
-		repeat: '매일',
-		repeat_end_date: new Date('2024-11-27T00:00:00.000Z'),
-		description: '대청소!!',
-		created_at: new Date(),
-	};
-	const handleAddSchedule = async () => {
-		const newSchedules = generateRepeatingSchedules(schedule);
-		console.log('newSchedules:', newSchedules);
-		const addResult = await dispatch(addScheduleToFirestore('user1', newSchedules));
-		if (!addResult.success) {
-			console.error('firestore에 스케줄 추가 실패:', addResult.message);
-		}
 	};
 
 	// 일정 있는 날짜에 바 표시
@@ -106,7 +79,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 			<S.StyledCalendar
 				locale="ko-KR"
 				onClickDay={handleDateClick}
-				value={selectedDate}
+				value={selectedDate as Date}
 				view="month"
 				formatDay={formatCalendarDay}
 				calendarType="gregory" /* 일요일부터 시작 */
@@ -114,7 +87,6 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 				next2Label={null} /* 년 단위 이동 없앰 */
 				tileContent={tileContent}
 			/>
-			<button onClick={handleAddSchedule}>일정 추가</button>
 		</S.CalenderContainer>
 	);
 };

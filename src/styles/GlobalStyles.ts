@@ -24,21 +24,6 @@ const GlobalStyles = createGlobalStyle`
     text-decoration: none;
     color: var(--color-dark-gray);
   }
-
-  /* 스크롤바 전체 */
-	body::-webkit-scrollbar {
-		width: 10px;  /* 세로축 스크롤바 폭 너비 */
-    height: 10px;  /* 가로축 스크롤바 폭 너비 */
-	}
-	/* 스크롤바 막대 */
-	body::-webkit-scrollbar-thumb {
-		background: var(--color-skyblue); 
-    border-radius: var(--small-border-radius);
-	}
-	/* 스크롤바 트랙 */
-	body::-webkit-scrollbar-track {
-		background: var(--color-pale-gray);
-	}
 `;
 
 export default GlobalStyles;

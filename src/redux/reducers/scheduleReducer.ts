@@ -37,7 +37,7 @@ function scheduleReducer(state: TScheduleState = initialState, action: any): TSc
 				...state,
 				schedules: updatedSchedules,
 				filteredSchedules: state.selectedDate
-					? filterSchedulesByDate(updatedSchedules, state.selectedDate)
+					? filterSchedulesByDate(updatedSchedules, state.selectedDate as Date)
 					: updatedSchedules,
 				isLoading: false,
 			};

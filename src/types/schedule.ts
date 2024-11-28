@@ -7,13 +7,13 @@ export type TScheduleRepeatCycle = '매일' | '매주' | '매월';
 export interface TSchedule {
 	schedule_id: string;
 	category: TScheduleCategory;
-	start_date_time: Timestamp | Date; // firestore에서는 Timestamp로 저장됨
+	start_date_time: Date | Timestamp; // firestore에서는 Timestamp로 저장됨
 	time: string;
-	end_date_time?: Timestamp | Date; // 계산된 종료 시간
+	end_date_time?: Date | Timestamp; // 계산된 종료 시간
 	scheduleTimeCategory?: TScheduleTimeCategory; // 계산된 오픈, 미들, 마감
 	repeat?: TScheduleRepeatCycle;
-	repeat_end_date?: Timestamp | Date;
-	created_at: Timestamp | Date;
+	repeat_end_date?: Date | Timestamp;
+	created_at: Date | Timestamp;
 	description?: string;
 }
 
@@ -22,7 +22,7 @@ export interface TSchedules {
 }
 
 export interface TCalendarState {
-	selectedDate: Date;
+	selectedDate: Date | Timestamp;
 	filteredSchedules: TSchedule[];
 	isLoading: boolean;
 }
