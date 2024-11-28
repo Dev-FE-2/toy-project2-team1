@@ -3,6 +3,16 @@ import { FaRegQuestionCircle } from 'react-icons/fa';
 import { IoCloseOutline } from 'react-icons/io5';
 import { Button } from '../button/Button';
 
+// 색상 데이터 상수
+const COLORS: Record<string, { dark: string; normal: string }> = {
+	red: { dark: 'coral-dark', normal: 'coral' },
+	blue: { dark: 'blue', normal: 'skyblue' },
+	green: { dark: 'green-dark', normal: 'green' },
+};
+
+// 유니언 타입으로 컬러 키를 정의
+type ColorType = keyof typeof COLORS;
+
 type Message = {
 	confirm: string;
 	leftBtn: string;
@@ -17,7 +27,7 @@ interface ModalProps {
 interface ConfirmModalProps {
 	onClose: () => void;
 	message: Message;
-	color?: string;
+	color?: ColorType;
 	onClickLeftBtn: () => void;
 	onClickRightBtn: () => void;
 }
@@ -91,16 +101,20 @@ export function ConfirmModal({
 				<button className="closeBtn" onClick={onClose}>
 					<IoCloseOutline />
 				</button>
-				{/* <QuestionIcon fill={`var(--color-${color}-dark)`} /> */}
 				<FaRegQuestionCircle
-					style={{ color: `var(--color-${color}-dark)` }}
+					style={{ color: `var(--color-${COLORS[color].dark})` }}
 					className="queistionIcon"
 				/>
 				<p>{message.confirm}</p>
-				<Button className="firstBtn" color={`${color}-dark`} shape="line" onClick={onClickLeftBtn}>
+				<Button
+					className="firstBtn"
+					color={COLORS[color].dark}
+					shape="line"
+					onClick={onClickLeftBtn}
+				>
 					{message.leftBtn}
 				</Button>
-				<Button color={`${color}`} shape="line" onClick={onClickRightBtn}>
+				<Button color={COLORS[color].normal} shape="line" onClick={onClickRightBtn}>
 					{message.rightBtn}
 				</Button>
 			</S.ConfirmModalContent>
