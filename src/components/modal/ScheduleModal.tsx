@@ -22,14 +22,19 @@ const ScheduleModal = ({ state = 'admin' }: ScheduleModalProps) => {
 					<InputWrapper>
 						<Icon onClick={() => console.log('검색')}>🔍</Icon>
 						{state === 'admin' && (
-							<ModalSearchInput type="text" placeholder="이름을 검색하여 주세요." />
+							<ModalSearchInput
+								type="text"
+								placeholder="이름을 검색하여 주세요."
+								required={true}
+								maxLength={5}
+							/>
 						)}
 					</InputWrapper>
 				</ModalContentTop>
 				<ModalWrapperTopSubTitle>기간</ModalWrapperTopSubTitle>
 				<ModalWrapperContainerTop>
 					<DateTimeInput type="datetime-local" defaultValue={dateAt} id="startAt" />
-					<CloseTime type="text" defaultValue={'5'} />
+					<CloseTime type="text" defaultValue={'5'} required={true} maxLength={2} />
 					<span>시간</span>
 				</ModalWrapperContainerTop>
 				<ModalToggleContainer>
@@ -60,7 +65,7 @@ const ScheduleModal = ({ state = 'admin' }: ScheduleModalProps) => {
 							<label htmlFor="close">플로어</label>
 						</li>
 					</WorkUl>
-					<TodoInput type="text" placeholder={'업무에 대한 설명을 작성해주세요.'} />
+					<TodoInput type="text" placeholder={'업무에 대한 설명을 작성해주세요.'} maxLength={30} />
 				</WorkWrapper>
 				<ButtonContainer>
 					<CreateButton type="submit">추가하기</CreateButton>
