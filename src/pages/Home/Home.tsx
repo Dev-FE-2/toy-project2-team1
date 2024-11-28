@@ -1,11 +1,14 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { db } from '@/firebaseConfig';
 import { doc, setDoc } from 'firebase/firestore';
-import styled from 'styled-components';
+import * as S from './Home.styles';
+// import CheckboxGroup from '@/components/checkbox/CheckboxGroup';
+import { Button, Error, Loading } from '@/components';
+import ModalPortal from '@/components/modal/ModalPortal';
+import ScheduleModal from '@/components/modal/ScheduleModal';
 
-const HomePage = styled.div.attrs({ className: 'page-content' })``;
-
-function Home() {
+export function Home() {
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 	useEffect(() => {
 		const testFirebaseConnection = async () => {
 			try {
@@ -21,12 +24,28 @@ function Home() {
 		testFirebaseConnection();
 	}, []);
 
+	const [status] = useState({
+		isError: false,
+		isLoading: true,
+	});
+
 	return (
-		<HomePage>
+		<S.HomeContainer>
 			<h2>Home Page</h2>
+			<Button color="regular-gray" shape="line" onClick={() => alert('버튼 클릭됨')}>
+				테스트 버튼
+			</Button>
+
+			{status.isError && <Error>오류 발생</Error>}
+			{status.isLoading && <Loading size={40} />}
+			<button onClick={() => setIsOpen(!isOpen)}>open</button>
+			{isOpen && (
+				<ModalPortal>
+					<ScheduleModal />
+				</ModalPortal>
+			)}
+
 			{/* 홈 페이지 내용 */}
-		</HomePage>
+		</S.HomeContainer>
 	);
 }
-
-export default Home;
