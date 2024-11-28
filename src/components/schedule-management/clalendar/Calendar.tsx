@@ -1,5 +1,5 @@
 import * as S from './Calendar.styles';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import {
@@ -65,31 +65,22 @@ export const CalendarComponent = ({ isManagementPage, state }: CalendarComponent
 		dispatch(filteredSchedules(filteredS));
 	};
 
-	// 임시 데이터
-	const schedule: TSchedule = useMemo(
-		() => ({
-			schedule_id: uuidv4(), // 초기 스케줄 ID
-			user_id: 'user1',
-			category: '플로어',
-			start_time: new Date('2024-11-27T22:00:00.000Z'),
-			time: '5',
-			repeat: '매일',
-			repeat_end_date: new Date('2024-11-30T00:00:00.000Z'),
-			description: '매점 운영',
-			created_at: new Date(),
-		}),
-		[],
-	);
+	const schedule: TSchedule = {
+		schedule_id: uuidv4(), // 초기 스케줄 ID
+		user_id: 'user1',
+		category: '플로어',
+		start_time: new Date('2024-11-27T22:00:00.000Z'),
+		time: '5',
+		repeat: '매일',
+		repeat_end_date: new Date('2024-11-30T00:00:00.000Z'),
+		description: '매점 운영',
+		created_at: new Date(),
+	};
 
-	useEffect(() => {
-		if (!hasFetched.current && schedules.length === 0) {
-			const newSchedules = generateRepeatingSchedules(schedule);
-			dispatch(addScheduleToFirestore('user1', newSchedules));
-			hasFetched.current = true; // 플래그 설정
-		} else {
-			console.log('스케줄 이미 존재하거나 추가 완료됨');
-		}
-	}, [dispatch, schedule]);
+	const handleAddSchedule = () => {
+		const newSchedules = generateRepeatingSchedules(schedule);
+		dispatch(addScheduleToFirestore('user1', newSchedules));
+	};
 
 	// 날짜 포맷 (숫자만)
 	const formatCalendarDay = (locale: string | undefined, date: Date): string => {
@@ -132,6 +123,7 @@ export const CalendarComponent = ({ isManagementPage, state }: CalendarComponent
 				next2Label={null} /* 년 단위 이동 없앰 */
 				tileContent={tileContent}
 			/>
+			<button onClick={handleAddSchedule}>일정 추가</button>
 		</S.CalenderContainer>
 	);
 };
