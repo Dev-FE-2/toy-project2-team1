@@ -12,13 +12,20 @@ import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { TSchedule } from '@/types/schedule';
 import { toDate } from '@/utils/generateRepeatingSchedules';
 
-export const CalendarComponent = ({ isManagementPage }: { isManagementPage?: boolean }) => {
+interface CalendarComponentProps {
+	isManagementPage?: boolean;
+	state?: 'admin' | 'user';
+}
+export const CalendarComponent = ({ isManagementPage, state }: CalendarComponentProps) => {
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
 
 	console.log('Schedules:', schedules); // 디버깅용
-	if (isManagementPage) console.log('isManagementPage:', isManagementPage);
+	useEffect(() => {
+		console.log('isManagementPage:', isManagementPage);
+		console.log('state:', state);
+	}, [isManagementPage, state]);
 
 	const hasFetched = useRef(false); // strictmode 대비해 한번만 실행되도록 하는 플래그
 
@@ -30,7 +37,11 @@ export const CalendarComponent = ({ isManagementPage }: { isManagementPage?: boo
 		dispatch(selectDate(today));
 
 		const todaySchedules = schedules.filter(
-			(schedule) => toDate(schedule.start_time).toDateString() === today.toDateString(),
+			(schedule) =>
+				toDate(schedule.start_time).toDateString() === today.toDateString() ||
+				(schedule.end_time
+					? toDate(schedule.end_time).toDateString() === today.toDateString()
+					: true),
 		);
 
 		dispatch(filteredSchedules(todaySchedules));
@@ -41,9 +52,15 @@ export const CalendarComponent = ({ isManagementPage }: { isManagementPage?: boo
 	const handleDateClick = (date: Date) => {
 		dispatch(selectDate(date));
 
-		const filteredS = schedules.filter((schedule) => {
-			return toDate(schedule.start_time).toDateString() === date.toDateString();
-		});
+		const filteredS = schedules.filter(
+			(schedule) =>
+				toDate(schedule.start_time).toDateString() === date.toDateString() ||
+				(schedule.end_time
+					? toDate(schedule.end_time).toDateString() === date.toDateString()
+					: true),
+		);
+
+		console.log('filteredS:', filteredS);
 
 		dispatch(filteredSchedules(filteredS));
 	};

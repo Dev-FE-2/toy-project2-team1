@@ -4,8 +4,8 @@ import { CalendarComponent, ScheduleList } from '@/components';
 export function ScheduleManagement() {
 	return (
 		<S.ScheduleManagementContainer>
-			<CalendarComponent isManagementPage={true} />
-			<ScheduleList />
+			<CalendarComponent isManagementPage={true} state="user" />
+			<ScheduleList state="user" />
 		</S.ScheduleManagementContainer>
 	);
 }
