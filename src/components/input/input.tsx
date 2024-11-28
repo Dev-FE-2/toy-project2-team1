@@ -9,6 +9,8 @@ type InputProps = {
 	onClick?: () => void;
 	helperText?: string;
 	className?: string;
+	borderColor?: string;
+	focusColor?: string;
 };
 
 const Input = ({
@@ -20,6 +22,8 @@ const Input = ({
 	onClick,
 	helperText = '',
 	className = '',
+	borderColor,
+	focusColor,
 }: InputProps) => {
 	return (
 		<div className={className}>
@@ -30,6 +34,8 @@ const Input = ({
 				value={value}
 				onChange={onChange}
 				onClick={onClick}
+				borderColor={borderColor}
+				focusColor={focusColor}
 			/>
 			{helperText && <StyledHelperText>{helperText}</StyledHelperText>}
 		</div>
