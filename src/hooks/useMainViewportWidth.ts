@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-export function useMainLayoutResize() {
+export function useMainViewportWidth() {
 	const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
 	useEffect(() => {
@@ -9,7 +9,6 @@ export function useMainLayoutResize() {
 		};
 
 		window.addEventListener('resize', handleResize);
-
 		return () => window.removeEventListener('resize', handleResize);
 	}, []);
 

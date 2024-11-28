@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { ToggleButtonProps, LeftSectionProps, RightSectionProps } from './MainLayout.types';
+import { ToggleButtonState, LeftSectionState, RightSectionState } from '@/pages';
 
 export const MainContainer = styled.main`
 	min-height: 100vh;
@@ -13,7 +13,7 @@ export const FlexContainer = styled.div`
 	position: relative;
 `;
 
-export const ToggleButton = styled.button<ToggleButtonProps>`
+export const ToggleButton = styled.button<ToggleButtonState>`
 	display: none;
 	position: absolute;
 	left: 8px;
@@ -30,7 +30,7 @@ export const ToggleButton = styled.button<ToggleButtonProps>`
 	}
 `;
 
-export const LeftSection = styled.div<LeftSectionProps>`
+export const LeftSection = styled.div<LeftSectionState>`
 	width: 256px;
 	height: 810px;
 	background-color: white;
@@ -43,8 +43,8 @@ export const LeftSection = styled.div<LeftSectionProps>`
 		position: absolute;
 		left: 0;
 		z-index: 5;
-		transform: translateX(${(props) => (props.$isOpen ? '0' : '-100%')});
-		display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+		transform: translateX(${(props) => (props.$isExpanded ? '0' : '-100%')});
+		display: ${(props) => (props.$isExpanded ? 'block' : 'none')};
 	}
 `;
 
@@ -76,7 +76,7 @@ export const MiddleSection = styled.div`
 	padding: 24px;
 `;
 
-export const RightSection = styled.div<RightSectionProps>`
+export const RightSection = styled.div<RightSectionState>`
 	width: 320px;
 	height: 810px;
 	display: flex;
@@ -84,7 +84,7 @@ export const RightSection = styled.div<RightSectionProps>`
 	gap: 24px;
 
 	@media (max-width: 1165px) {
-		display: ${(props) => (props.$isLeftOpen ? 'none' : 'flex')};
+		display: ${(props) => (props.$isCollapsed ? 'none' : 'flex')};
 	}
 `;
 

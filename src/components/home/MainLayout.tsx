@@ -1,32 +1,32 @@
 import { useState, useEffect } from 'react';
 import * as S from './MainLayout.styles';
-import { TOGGLE_BUTTON_TEXT } from './MainLayout.types';
-import { useMainLayoutResize } from '@/hooks/useMainLayoutResize';
+import { TOGGLE_BUTTON_TEXT } from '@/pages';
+import { useMainViewportWidth } from '@/hooks/useMainViewportWidth';
 
 export function MainLayout() {
-	const [isLeftSectionOpen, setIsLeftSectionOpen] = useState(true);
-	const windowWidth = useMainLayoutResize();
+	const [isLeftSectionExpanded, setIsLeftSectionExpanded] = useState(true);
+	const viewportWidth = useMainViewportWidth();
 	const workPercentage = 75;
 
 	useEffect(() => {
-		if (windowWidth <= 1165) {
-			setIsLeftSectionOpen(false);
+		if (viewportWidth <= 1165) {
+			setIsLeftSectionExpanded(false);
 		} else {
-			setIsLeftSectionOpen(true);
+			setIsLeftSectionExpanded(true);
 		}
-	}, [windowWidth]);
+	}, [viewportWidth]);
 
 	return (
 		<S.MainContainer>
 			<S.FlexContainer>
 				<S.ToggleButton
-					onClick={() => setIsLeftSectionOpen(!isLeftSectionOpen)}
-					$isOpen={isLeftSectionOpen}
+					onClick={() => setIsLeftSectionExpanded(!isLeftSectionExpanded)}
+					$isVisible={!isLeftSectionExpanded}
 				>
-					{isLeftSectionOpen ? TOGGLE_BUTTON_TEXT.CLOSE : TOGGLE_BUTTON_TEXT.OPEN}
+					{isLeftSectionExpanded ? TOGGLE_BUTTON_TEXT.COLLAPSE : TOGGLE_BUTTON_TEXT.EXPAND}
 				</S.ToggleButton>
 
-				<S.LeftSection $isOpen={isLeftSectionOpen}>
+				<S.LeftSection $isExpanded={isLeftSectionExpanded}>
 					<S.CategoryTitle>카테고리</S.CategoryTitle>
 					<S.CategoryList>
 						<S.CategoryItem>
@@ -54,7 +54,7 @@ export function MainLayout() {
 					<div>Calendar Placeholder</div>
 				</S.MiddleSection>
 
-				<S.RightSection $isLeftOpen={isLeftSectionOpen}>
+				<S.RightSection $isCollapsed={isLeftSectionExpanded}>
 					<S.WorkingHoursContainer>
 						<S.WorkingHoursWrapper>
 							<S.WorkingHoursInfo>
