@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 
 export const StyledInput = styled.input`
-	padding: 1rem 2rem;
+	padding: 10px 20px;
 	border: 1px solid #dfe4ea;
 	border-radius: 6px;
-	font-size: 1.4rem;
+	font-size: 14rem;
 	box-sizing: border-box;
 
 	&:focus {
@@ -13,7 +13,7 @@ export const StyledInput = styled.input`
 `;
 
 export const StyledHelperText = styled.div`
-	padding: 0.8rem 0.4rem 0;
+	padding: 8px 4px 0;
 	text-align: left;
-	font-size: 1.2rem;
+	font-size: 12px;
 `;
