@@ -1,14 +1,19 @@
 import styled from 'styled-components';
 
-export const StyledInput = styled.input`
+interface StyledInputProps {
+	borderColor?: string;
+	focusColor?: string;
+}
+
+export const StyledInput = styled.input<StyledInputProps>`
 	padding: 10px 20px;
-	border: 1px solid #dfe4ea;
+	border: 1px solid ${({ borderColor }) => borderColor || '#dfe4ea'};
 	border-radius: 6px;
 	font-size: 14rem;
 	box-sizing: border-box;
 
 	&:focus {
-		outline: 1px solid #cde1f8;
+		outline: 1px solid ${({ focusColor }) => focusColor || '#cde1f8'};
 	}
 `;
 
