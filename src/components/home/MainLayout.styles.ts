@@ -4,25 +4,25 @@ import { ToggleButtonState, LeftSectionState, RightSectionState } from '@/pages'
 export const MainContainer = styled.main`
 	min-height: 100vh;
 	background-color: var(--color-pale-gray-light);
-	padding: 24px;
+	padding: var(--space-medium);
 `;
 
 export const FlexContainer = styled.div`
 	display: flex;
-	gap: 24px;
+	gap: var(--space-medium);
 	position: relative;
 `;
 
 export const ToggleButton = styled.button<ToggleButtonState>`
 	display: none;
 	position: absolute;
-	left: 8px;
-	top: 8px;
+	left: var(--space-small);
+	top: var(--space-small);
 	z-index: 10;
-	padding: 8px;
-	background: white;
+	padding: var(--space-small);
+	background: var(--color-white);
 	border: none;
-	border-radius: 4px;
+	border-radius: var(--small-border-radius);
 	cursor: pointer;
 
 	@media (max-width: 1165px) {
@@ -33,10 +33,10 @@ export const ToggleButton = styled.button<ToggleButtonState>`
 export const LeftSection = styled.div<LeftSectionState>`
 	width: 256px;
 	height: 810px;
-	background-color: white;
-	border-radius: 8px;
+	background-color: var(--color-white);
+	border-radius: var(--small-border-radius);
 	box-shadow: var(--box-shadow-large);
-	padding: 24px;
+	padding: var(--space-medium);
 	transition: transform 0.3s ease;
 
 	@media (max-width: 1165px) {
@@ -49,31 +49,31 @@ export const LeftSection = styled.div<LeftSectionState>`
 `;
 
 export const CategoryTitle = styled.h2`
-	font-size: 18px;
+	font-size: var(--font-medium);
 	font-weight: bold;
-	margin-bottom: 16px;
+	margin-bottom: var(--space-medium);
 `;
 
 export const CategoryList = styled.ul`
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: var(--space-small);
 `;
 
 export const CategoryItem = styled.li`
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: var(--space-small);
 `;
 
 export const MiddleSection = styled.div`
 	flex: 1;
 	min-width: 500px;
 	height: 810px;
-	background-color: white;
-	border-radius: 8px;
+	background-color: var(--color-white);
+	border-radius: var(--small-border-radius);
 	box-shadow: var(--box-shadow-large);
-	padding: 24px;
+	padding: var(--space-medium);
 `;
 
 export const RightSection = styled.div<RightSectionState>`
@@ -81,7 +81,7 @@ export const RightSection = styled.div<RightSectionState>`
 	height: 810px;
 	display: flex;
 	flex-direction: column;
-	gap: 24px;
+	gap: var(--space-medium);
 
 	@media (max-width: 1165px) {
 		display: ${(props) => (props.$isCollapsed ? 'none' : 'flex')};
@@ -89,10 +89,10 @@ export const RightSection = styled.div<RightSectionState>`
 `;
 
 export const WorkingHoursContainer = styled.div`
-	background-color: white;
-	border-radius: 8px;
+	background-color: var(--color-white);
+	border-radius: var(--small-border-radius);
 	box-shadow: var(--box-shadow-large);
-	padding: 10px 24px;
+	padding: var(--space-xsmall) var(--space-medium);
 	height: 190px;
 	display: flex;
 	justify-content: space-between;
@@ -102,14 +102,14 @@ export const WorkingHoursContainer = styled.div`
 export const WorkingHoursWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: var(--space-small);
 	justify-content: center;
 `;
 
 export const WorkingHoursInfo = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	gap: var(--space-small);
 `;
 
 export const ChartContainer = styled.div`
@@ -151,24 +151,24 @@ export const ChartCenter = styled.div`
 `;
 
 export const InfoLabel = styled.p`
-	font-size: 14px;
+	font-size: var(--font-small);
 	color: var(--color-regular-gray);
 `;
 
 export const InfoValue = styled.p`
-	font-size: 18px;
+	font-size: var(--font-medium);
 	font-weight: bold;
 `;
 
 export const PayrollContainer = styled.div`
-	background-color: white;
-	border-radius: 8px;
+	background-color: var(--color-white);
+	border-radius: var(--small-border-radius);
 	box-shadow: var(--box-shadow-large);
-	padding: 24px;
+	padding: var(--space-medium);
 	flex: 1;
 `;
 
 export const PayrollTitle = styled.h3`
-	font-size: 18px;
+	font-size: var(--font-medium);
 	font-weight: bold;
 `;
