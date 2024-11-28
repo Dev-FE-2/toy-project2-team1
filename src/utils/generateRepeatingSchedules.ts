@@ -1,7 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import { TSchedule } from '@/types/schedule';
 import calculateEndDateTime from './calculateEndDateTime';
 import { convertUTCToKST, toDate } from './dateFormatter';
+import { v4 as uuidv4 } from 'uuid';
+import calculateScheduleTimeCategory from './calculateScheduleTimeCategory';
 
 // 반복 주기에 따라 스케줄을 생성하는 함수
 function generateRepeatingSchedules(schedule: TSchedule): TSchedule[] {
@@ -10,11 +11,13 @@ function generateRepeatingSchedules(schedule: TSchedule): TSchedule[] {
 
 	let currDate = convertUTCToKST(toDate(start_date_time)); // 시작 날짜 및 시간
 
+	// 반복 설정이 없으면 해당 스케줄만 반환
 	if (!repeat || !repeat_end_date) {
 		return [
 			{
 				...schedule,
 				end_date_time: calculateEndDateTime(new Date(currDate), time),
+				scheduleTimeCategory: calculateScheduleTimeCategory(new Date(currDate)),
 			},
 		];
 	}
@@ -24,9 +27,9 @@ function generateRepeatingSchedules(schedule: TSchedule): TSchedule[] {
 	while (currDate <= endDate) {
 		schedules.push({
 			...schedule,
-			schedule_id: uuidv4(), // 각 스케줄마다 고유 ID 생성
+			schedule_id: uuidv4(),
 			start_date_time: new Date(currDate),
-			end_date_time: calculateEndDateTime(new Date(currDate), time),
+			end_date_time: calculateEndDateTime(new Date(currDate), schedule.time), // 종료 시간 계산
 		});
 
 		switch (repeat) {
@@ -39,6 +42,8 @@ function generateRepeatingSchedules(schedule: TSchedule): TSchedule[] {
 			case '매월':
 				currDate = new Date(currDate.setMonth(currDate.getMonth() + 1));
 				break;
+			default:
+				throw new Error('반복 주기 설정이 잘못되었습니다.');
 		}
 	}
 

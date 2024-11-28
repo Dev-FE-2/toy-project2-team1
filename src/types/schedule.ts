@@ -1,8 +1,8 @@
 import { Timestamp } from 'firebase/firestore';
 
 export type TScheduleCategory = '매표' | '매점' | '플로어';
-export type TScheduleTimeCategory = '오픈' | '미들' | '마감' | null;
-export type TScheduleRepeatCycle = '매일' | '매주' | '매월' | null;
+export type TScheduleTimeCategory = '오픈' | '미들' | '마감';
+export type TScheduleRepeatCycle = '매일' | '매주' | '매월';
 
 export interface TSchedule {
 	schedule_id: string;
@@ -10,11 +10,11 @@ export interface TSchedule {
 	start_date_time: Timestamp | Date; // firestore에서는 Timestamp로 저장됨
 	time: string;
 	end_date_time?: Timestamp | Date; // 계산된 종료 시간
-	ScheduleTimeCategory?: TScheduleTimeCategory; // 계산된 오픈, 미들, 마감
-	repeat: TScheduleRepeatCycle;
-	repeat_end_date: Timestamp | Date | null;
+	scheduleTimeCategory?: TScheduleTimeCategory; // 계산된 오픈, 미들, 마감
+	repeat?: TScheduleRepeatCycle;
+	repeat_end_date?: Timestamp | Date;
 	created_at: Timestamp | Date;
-	description: string | null;
+	description?: string;
 }
 
 export interface TSchedules {
@@ -83,3 +83,9 @@ export type ScheduleActionTypes =
 	| SelectDateAction
 	| FilteredSchedulesAction
 	| SetLoadingAction;
+
+export interface scheduleApiResponse<T> {
+	success: boolean;
+	message: string;
+	data?: T;
+}

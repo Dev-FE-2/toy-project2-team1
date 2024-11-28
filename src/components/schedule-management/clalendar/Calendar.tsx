@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import {
-	fetchSchedulesFromFirestore,
+	getSchedules,
 	addScheduleToFirestore,
 	selectDate,
 	filteredSchedules,
@@ -13,6 +13,8 @@ import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
 import { TSchedule } from '@/types/schedule';
 import { toDate } from '@/utils/dateFormatter';
+import { db } from '@/firebaseConfig';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 interface CalendarComponentProps {
 	isManagementPage?: boolean;
@@ -22,14 +24,20 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
 
-	console.log('Schedules:', schedules); // 디버깅용
 	useEffect(() => {
 		console.log('isManagementPage:', isManagementPage);
 	}, [isManagementPage]);
 
-	// Firestore에서 스케줄 가져오기
+	// Firestore에서 스케줄 가져오기 - 무한 렌더링 막기 위해 Firestore의 실시간 리스너 사용
 	useEffect(() => {
-		dispatch(fetchSchedulesFromFirestore('user1'));
+		const schedulesRef = collection(db, 'schedules', 'user1', 'userSchedules');
+
+		const unsubscribe = onSnapshot(schedulesRef, (snapshot) => {
+			const schedules = snapshot.docs.map((doc) => doc.data() as TSchedule);
+			dispatch(getSchedules(schedules));
+		});
+
+		return () => unsubscribe();
 	}, [dispatch]);
 
 	// 오늘 날짜(초기) 필터링
@@ -54,17 +62,21 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	// 임시 데이터
 	const schedule: TSchedule = {
 		schedule_id: uuidv4(), // 초기 스케줄 ID
-		category: '매표',
-		start_date_time: new Date('2024-11-27T22:00:00.000Z'),
-		time: '3',
+		category: '매점',
+		start_date_time: new Date('2024-11-22T22:00:00.000Z'),
+		time: '5',
 		repeat: '매일',
-		repeat_end_date: new Date('2024-11-29T22:00:00.000Z'),
-		description: '새벽 근무...',
+		repeat_end_date: new Date('2024-11-27T00:00:00.000Z'),
+		description: '대청소!!',
 		created_at: new Date(),
 	};
-	const handleAddSchedule = () => {
+	const handleAddSchedule = async () => {
 		const newSchedules = generateRepeatingSchedules(schedule);
-		dispatch(addScheduleToFirestore('user1', newSchedules));
+		console.log('newSchedules:', newSchedules);
+		const addResult = await dispatch(addScheduleToFirestore('user1', newSchedules));
+		if (!addResult.success) {
+			console.error('firestore에 스케줄 추가 실패:', addResult.message);
+		}
 	};
 
 	// 일정 있는 날짜에 바 표시
@@ -90,7 +102,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 
 	return (
 		<S.CalenderContainer>
-			<div className="calener-category">카테고리 체크</div>
+			{/* <div className="calener-category">카테고리 체크</div> */}
 			<S.StyledCalendar
 				locale="ko-KR"
 				onClickDay={handleDateClick}

@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { MdDelete, MdEdit } from 'react-icons/md';
 
 export const ScheduleListContainer = styled.div`
 	padding: var(--space-medium);
@@ -26,4 +27,12 @@ export const ScheduleListContainer = styled.div`
 
 export const DateText = styled.span`
 	font-weight: 700;
+`;
+
+export const EditIcon = styled(MdEdit)`
+	cursor: pointer;
+`;
+
+export const DeleteIcon = styled(MdDelete)`
+	cursor: pointer;
 `;
