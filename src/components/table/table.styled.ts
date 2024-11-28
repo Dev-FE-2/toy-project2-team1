@@ -4,7 +4,7 @@ import styled from 'styled-components';
 export const TableContainer = styled.div`
 	width: 80%;
 	margin: 0 auto;
-	border-radius: 10px 10px 0 0;
+	border-radius: var(--small-border-radius) var(--small-border-radius) 0 0;
 	overflow: hidden;
 	box-shadow: 1px 1px 5px 1px #eee;
 `;

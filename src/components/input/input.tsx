@@ -14,7 +14,6 @@ type InputProps = {
 };
 
 const Input = ({
-	id,
 	type = 'text',
 	placeholder = '',
 	value = '',
@@ -28,7 +27,7 @@ const Input = ({
 	return (
 		<div className={className}>
 			<StyledInput
-				id={id}
+				className={className}
 				type={type}
 				placeholder={placeholder}
 				value={value}
