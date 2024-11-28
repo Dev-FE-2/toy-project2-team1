@@ -7,13 +7,13 @@ interface StyledInputProps {
 
 export const StyledInput = styled.input<StyledInputProps>`
 	padding: 10px 20px;
-	border: 1px solid ${({ borderColor }) => borderColor || 'var(--color-light-gray)'};
+	border: 1px solid ${({ borderColor }) => borderColor || 'var( --color-dark-gray)'};
 	border-radius: 6px;
-	font-size: 14rem;
+	font-size: 1rem;
 	box-sizing: border-box;
 
 	&:focus {
-		outline: 1px solid ${({ focusColor }) => focusColor || 'var(--color-skyblue)'};
+		outline: 1px solid ${({ focusColor }) => focusColor || 'var(--color-blue)'};
 	}
 `;
 

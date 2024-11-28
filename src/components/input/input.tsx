@@ -1,7 +1,6 @@
 import { StyledInput, StyledHelperText } from './Input.style';
 
 type InputProps = {
-	id: string;
 	type?: string;
 	placeholder?: string;
 	value?: string;
