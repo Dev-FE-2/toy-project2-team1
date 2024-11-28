@@ -1,48 +1,20 @@
-import { useState } from 'react';
-import { useFirestoreUserRegistration } from '@/hooks/useFirestoreUserRegistration';
 import { useNavigate } from 'react-router-dom';
-import * as S from './Register.styles';
+import { RegisterForm } from '@/components/Register/RegisterForm';
+import { useRegister, RegisterData } from '@/hooks/useRegister';
 
 export function Register() {
-	const { registerWithUserId } = useFirestoreUserRegistration();
-	const [userId, setUserId] = useState('');
-	const [password, setPassword] = useState('');
-	const [error, setError] = useState<string | null>(null);
 	const navigate = useNavigate();
+	const { register, isLoading, error } = useRegister();
 
-	const handleRegister = async () => {
-		if (!userId || !password) {
-			setError('Please fill in all fields');
-			return;
-		}
-
-		const result = await registerWithUserId(userId, password);
-
-		if (result.success) {
-			console.log('Registration successful!');
+	const handleRegister = async (formData: RegisterData) => {
+		try {
+			await register(formData);
+			alert('회원가입이 완료되었습니다.');
 			navigate('/login');
-		} else {
-			setError(result.error || 'Registration failed');
+		} catch (err) {
+			console.error('Registration error:', err);
 		}
 	};
 
-	return (
-		<S.RegisterContainer>
-			<h2>Register</h2>
-			{error && <p style={{ color: 'red' }}>{error}</p>}
-			<input
-				type="text"
-				placeholder="Enter User ID"
-				value={userId}
-				onChange={(e) => setUserId(e.target.value)}
-			/>
-			<input
-				type="password"
-				placeholder="Enter Password"
-				value={password}
-				onChange={(e) => setPassword(e.target.value)}
-			/>
-			<button onClick={handleRegister}>Register</button>
-		</S.RegisterContainer>
-	);
+	return <RegisterForm onSubmit={handleRegister} isSubmitting={isLoading} submitError={error} />;
 }
