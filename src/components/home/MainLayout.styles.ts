@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { ToggleButtonProps, LeftSectionProps, RightSectionProps } from './MainLayout.types';
 
 export const MainContainer = styled.main`
 	min-height: 100vh;
@@ -9,15 +10,42 @@ export const MainContainer = styled.main`
 export const FlexContainer = styled.div`
 	display: flex;
 	gap: 24px;
+	position: relative;
 `;
 
-export const LeftSection = styled.div`
-	width: 200px;
+export const ToggleButton = styled.button<ToggleButtonProps>`
+	display: none;
+	position: absolute;
+	left: 8px;
+	top: 8px;
+	z-index: 10;
+	padding: 8px;
+	background: white;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+
+	@media (max-width: 1165px) {
+		display: block;
+	}
+`;
+
+export const LeftSection = styled.div<LeftSectionProps>`
+	width: 256px;
 	height: 810px;
 	background-color: white;
 	border-radius: 8px;
 	box-shadow: var(--box-shadow-large);
 	padding: 24px;
+	transition: transform 0.3s ease;
+
+	@media (max-width: 1165px) {
+		position: absolute;
+		left: 0;
+		z-index: 5;
+		transform: translateX(${(props) => (props.$isOpen ? '0' : '-100%')});
+		display: ${(props) => (props.$isOpen ? 'block' : 'none')};
+	}
 `;
 
 export const CategoryTitle = styled.h2`
@@ -48,12 +76,16 @@ export const MiddleSection = styled.div`
 	padding: 24px;
 `;
 
-export const RightSection = styled.div`
-	min-width: 320px;
+export const RightSection = styled.div<RightSectionProps>`
+	width: 320px;
 	height: 810px;
 	display: flex;
 	flex-direction: column;
 	gap: 24px;
+
+	@media (max-width: 1165px) {
+		display: ${(props) => (props.$isLeftOpen ? 'none' : 'flex')};
+	}
 `;
 
 export const WorkingHoursContainer = styled.div`

@@ -1,12 +1,32 @@
+import { useState, useEffect } from 'react';
 import * as S from './MainLayout.styles';
+import { TOGGLE_BUTTON_TEXT } from './MainLayout.types';
+import { useMainLayoutResize } from '@/hooks/useMainLayoutResize';
 
 export function MainLayout() {
+	const [isLeftSectionOpen, setIsLeftSectionOpen] = useState(true);
+	const windowWidth = useMainLayoutResize();
 	const workPercentage = 75;
+
+	useEffect(() => {
+		if (windowWidth <= 1165) {
+			setIsLeftSectionOpen(false);
+		} else {
+			setIsLeftSectionOpen(true);
+		}
+	}, [windowWidth]);
 
 	return (
 		<S.MainContainer>
 			<S.FlexContainer>
-				<S.LeftSection>
+				<S.ToggleButton
+					onClick={() => setIsLeftSectionOpen(!isLeftSectionOpen)}
+					$isOpen={isLeftSectionOpen}
+				>
+					{isLeftSectionOpen ? TOGGLE_BUTTON_TEXT.CLOSE : TOGGLE_BUTTON_TEXT.OPEN}
+				</S.ToggleButton>
+
+				<S.LeftSection $isOpen={isLeftSectionOpen}>
 					<S.CategoryTitle>카테고리</S.CategoryTitle>
 					<S.CategoryList>
 						<S.CategoryItem>
@@ -34,7 +54,7 @@ export function MainLayout() {
 					<div>Calendar Placeholder</div>
 				</S.MiddleSection>
 
-				<S.RightSection>
+				<S.RightSection $isLeftOpen={isLeftSectionOpen}>
 					<S.WorkingHoursContainer>
 						<S.WorkingHoursWrapper>
 							<S.WorkingHoursInfo>
