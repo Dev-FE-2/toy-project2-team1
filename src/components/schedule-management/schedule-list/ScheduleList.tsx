@@ -20,7 +20,15 @@ export const ScheduleList = ({ state }: ScheduleListProps) => {
 
 	return (
 		<S.ScheduleListContainer>
-			<h3>{selectedDate ? `${formatToKoreanDate(selectedDate)} 의 업무` : 'Loading...'}</h3>
+			<h3>
+				{selectedDate ? (
+					<>
+						<S.DateText>{formatToKoreanDate(selectedDate)}</S.DateText> 의 업무
+					</>
+				) : (
+					'Loading...'
+				)}
+			</h3>
 			{filteredSchedules.length > 0 ? (
 				<ul>
 					{filteredSchedules.map((schedule) => (

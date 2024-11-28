@@ -5,19 +5,23 @@ import { TScheduleCategory } from '@/types/schedule';
 
 export const CalenderContainer = styled.div`
 	padding: var(--space-medium);
+	height: 550px;
 	border-radius: var(--medium-border-radius);
 	box-shadow: var(--box-shadow-large);
+	display: flex;
+	justify-content: space-between;
 `;
 
 export const StyledCalendar = styled(Calendar)`
 	font-family: 'Pretendard', sans-serif;
 	width: 600px;
+	height: 520px;
 	border-radius: var(--medium-border-radius);
 	border: 1px solid var(--color-pale-gray);
 	/* 네비게이션 */
 	.react-calendar__navigation {
 		border-bottom: 1.5px solid var(--color-pale-gray);
-		height: 70px;
+		height: 60px;
 
 		span {
 			font-size: var(--font-large);
@@ -43,7 +47,7 @@ export const StyledCalendar = styled(Calendar)`
 
 	/* 월 뷰 */
 	.react-calendar__month-view {
-		padding: 0 var(--space-medium) var(--space-small);
+		padding: 0 var(--space-small) var(--space-xsmall);
 		abbr {
 			/* 텍스트 */
 			color: var(--color-regular-gray);
@@ -68,7 +72,7 @@ export const StyledCalendar = styled(Calendar)`
 	/* 일 뷰 */
 	.react-calendar__tile {
 		text-align: center;
-		height: 100px;
+		height: 80px;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
@@ -94,7 +98,7 @@ export const StyledCalendar = styled(Calendar)`
 export const ScheduleBar = styled.div<{ $category: TScheduleCategory }>`
 	width: 100%;
 	padding: 0 var(--space-xsmall);
-	margin: 3px 0;
+	margin: 2px 0 5px;
 	text-align: center;
 	background-color: ${({ $category }) =>
 		$category === '매표'

@@ -57,7 +57,6 @@ export const filteredSchedules = (schedules: TSchedule[]) => ({
  *          ├─ schedule_id_1 (문서)
  *          ├─ schedule_id_2 (문서)
  */
-
 // 응답 타입 정의
 export interface FirestoreResponse<T = void> {
 	success?: boolean;

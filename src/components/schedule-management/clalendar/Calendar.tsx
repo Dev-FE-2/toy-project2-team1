@@ -105,7 +105,8 @@ export const CalendarComponent = ({ isManagementPage, state }: CalendarComponent
 				(a, b) =>
 					toDate(a.start_time).getTime() - toDate(b.start_time).getTime() ||
 					toDate(a.created_at).getTime() - toDate(b.created_at).getTime(),
-			);
+			)
+			.slice(0, 2);
 		return daySchedules.length > 0 ? (
 			<>
 				{daySchedules.map((s: TSchedule) => (
@@ -119,6 +120,7 @@ export const CalendarComponent = ({ isManagementPage, state }: CalendarComponent
 
 	return (
 		<S.CalenderContainer>
+			<div className="calener-category">카테고리 체크</div>
 			<S.StyledCalendar
 				locale="ko-KR"
 				onClickDay={handleDateClick}
