@@ -3,10 +3,5 @@ import Table from '@/components/table/table';
 import Pagination from '@/components/pagination/pagination';
 
 export function SalaryDetails() {
-	return (
-		<S.SalaryDetailsContainer>
-			<Table />
-			<Pagination />
-		</S.SalaryDetailsContainer>
-	);
+	return <S.SalaryDetailsContainer></S.SalaryDetailsContainer>;
 }

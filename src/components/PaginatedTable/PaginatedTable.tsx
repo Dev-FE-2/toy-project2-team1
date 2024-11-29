@@ -2,10 +2,6 @@ import { useState } from 'react';
 import Table from '../table/table';
 import Pagination from '../pagination/pagination';
 
-interface TableUIProps {
-	data: RowItem[];
-}
-
 interface RowItem {
 	급여월: string;
 	급여지급일: string;
