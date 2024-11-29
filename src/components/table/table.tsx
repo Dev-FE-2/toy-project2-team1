@@ -7,9 +7,7 @@ interface RowItem {
 	실지급액: string;
 }
 
-const headerItems: string[] = ['급여월', '급여지급일', '지급총액', '실지급액', '급여명세'];
-
-export default function Table({ data }) {
+export default function Table({ data, headerItems, test }) {
 	return (
 		<TableContainer>
 			<ul>
@@ -21,7 +19,7 @@ export default function Table({ data }) {
 					</InnerUnorderLists>
 				</Lists>
 
-				{data.map((row, idx) => (
+				{test.map((row, idx) => (
 					<Lists key={idx}>
 						<InnerUnorderLists>
 							{headerItems.map((header, idx1) => (

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Table from '../table/table';
 import Pagination from '../pagination/pagination';
 
+//목데이터들
 interface RowItem {
 	급여월: string;
 	급여지급일: string;
@@ -40,6 +41,8 @@ const rowItems: RowItem[] = [
 		실지급액: '250만원',
 	},
 ];
+const headerItems: string[] = ['급여월', '급여지급일', '지급총액', '실지급액', '급여명세'];
+
 const itemsPerPage = 8;
 
 export default function PaginatedTable() {
@@ -57,7 +60,7 @@ export default function PaginatedTable() {
 
 	return (
 		<>
-			<Table data={paginatedData} />
+			<Table data={paginatedData} headerItems={headerItems} test={rowItems} />
 			<Pagination
 				currentPage={currentPage}
 				totalPages={totalPages}

@@ -1,7 +1,10 @@
 import * as S from './SalaryDetails.styles';
-import Table from '@/components/table/table';
-import Pagination from '@/components/pagination/pagination';
+import PaginatedTable from '@/components/PaginatedTable/PaginatedTable';
 
 export function SalaryDetails() {
-	return <S.SalaryDetailsContainer></S.SalaryDetailsContainer>;
+	return (
+		<S.SalaryDetailsContainer>
+			<PaginatedTable />
+		</S.SalaryDetailsContainer>
+	);
 }
