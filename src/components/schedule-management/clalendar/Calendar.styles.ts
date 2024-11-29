@@ -78,6 +78,15 @@ export const StyledCalendar = styled(Calendar)`
 		justify-content: flex-start;
 		align-items: center;
 		overflow: hidden;
+
+		/* 주말 일자 색 변경 */
+		&.react-calendar__month-view__days__day {
+			&.react-calendar__month-view__days__day--weekend {
+				abbr {
+					color: var(--color-coral);
+				}
+			}
+		}
 	}
 	/* hover, focus, 선택됐을 시 */
 	.react-calendar__tile:enabled:hover,
