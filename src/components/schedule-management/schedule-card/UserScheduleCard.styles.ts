@@ -39,9 +39,10 @@ export const TimeDotEmpty = styled(TimeDot)`
 					: 'var(--color-coral)'};
 `;
 
-export const TimeText = styled.span`
+export const TimeText = styled.div`
 	font-size: var(--font-medium);
 	color: var(--color-dark-gray);
+	white-space: nowrap;
 `;
 
 export const ButtonContainer = styled.div`

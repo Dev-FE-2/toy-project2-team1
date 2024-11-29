@@ -13,7 +13,12 @@ import { TSchedule } from '@/types/schedule';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { Timestamp } from 'firebase/firestore';
 
-export const UserScheduleCard = ({ schedule }: { schedule: TSchedule }) => {
+interface UserScheduleCardProps {
+	schedule: TSchedule;
+	shouldShowTime: boolean;
+}
+
+export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardProps) => {
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
@@ -149,6 +154,11 @@ export const UserScheduleCard = ({ schedule }: { schedule: TSchedule }) => {
 		showEndTime = isSameDate(selectedDate, schedule.end_date_time);
 	}
 
+	const startTime = String(toDate(schedule.start_date_time)).slice(16, 21);
+	const endTime = schedule.end_date_time
+		? String(toDate(schedule.end_date_time)).slice(16, 21)
+		: null;
+
 	return (
 		<S.ScheduleCardContainer>
 			<S.TimeContainerUp>
@@ -157,7 +167,10 @@ export const UserScheduleCard = ({ schedule }: { schedule: TSchedule }) => {
 				) : (
 					<S.TimeDotEmpty $category={schedule.category} />
 				)}
-				<S.TimeText>{String(toDate(schedule.start_date_time)).slice(16, 21)}</S.TimeText>
+				<S.TimeText>
+					{startTime}
+					{shouldShowTime ? ` - ${endTime}` : ''}
+				</S.TimeText>
 				<S.ButtonContainer>
 					<S.EditIcon
 						onClick={() => {
@@ -181,9 +194,7 @@ export const UserScheduleCard = ({ schedule }: { schedule: TSchedule }) => {
 				) : (
 					<S.TimeDotEmptyDown $category={schedule.category} />
 				)}
-				<S.TimeTextDown>
-					{schedule.end_date_time ? String(toDate(schedule.end_date_time)).slice(16, 21) : ''}
-				</S.TimeTextDown>
+				<S.TimeTextDown>{endTime}</S.TimeTextDown>
 			</S.TimeContainerDown>
 		</S.ScheduleCardContainer>
 	);

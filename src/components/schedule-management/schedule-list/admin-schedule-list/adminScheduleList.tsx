@@ -11,7 +11,7 @@ export const AdminScheduleList = () => {
 			<h3>
 				{selectedDate ? (
 					<>
-						<S.DateText>{formatToKoreanDate(selectedDate)}</S.DateText> 의 업무
+						<S.DateText>{formatToKoreanDate(selectedDate as Date)}</S.DateText> 의 업무
 					</>
 				) : (
 					'Loading...'

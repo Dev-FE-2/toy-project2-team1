@@ -48,6 +48,11 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 		const filteredS = filterSchedulesByDateAndSort(schedules, date);
 
 		console.log('filteredS:', filteredS); // 디버깅용
+		const dateSchedules = filteredS.map((s) => [
+			String(toDate(s.start_date_time)),
+			s.end_date_time ? String(toDate(s.end_date_time)) : null,
+		]);
+		console.log('dateSchedules:', dateSchedules);
 
 		dispatch(filteredSchedules(filteredS));
 	};
