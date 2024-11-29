@@ -1,19 +1,31 @@
-import { useState } from 'react';
-import { getAuth, signInWithEmailAndPassword, signOut, User } from 'firebase/auth';
+import { useState, useEffect } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import * as S from '@/pages/Login/Login.styles';
+import { auth } from '@/firebaseConfig';
 import { LoginFormData, LoginFormErrors } from '@/types/login';
-import { validateLoginForm, getAuthErrorMessage } from './LoginValidation';
-
-const auth = getAuth();
+import { User } from '@/types/auth';
+import { validateLoginForm, getAuthErrorMessage } from '@/components/Login/LoginValidation';
+import { Loading } from '@/pages';
 
 export function LoginForm() {
-	const [user, setUser] = useState<User | null>(auth.currentUser);
+	const [user, setUser] = useState<User | null>(null);
 	const [formData, setFormData] = useState<LoginFormData>({
 		email: '',
 		password: '',
 	});
 	const [errors, setErrors] = useState<LoginFormErrors>({});
 	const [isLoading, setIsLoading] = useState(false);
+	const [isAuthInitialized, setIsAuthInitialized] = useState(false);
+
+	// 파이어베이스 auth 상태 변경 감지 -> 로그인 상태 확인
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+			setUser(currentUser);
+			setIsAuthInitialized(true);
+		});
+
+		return () => unsubscribe();
+	}, []);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -21,12 +33,21 @@ export function LoginForm() {
 			...prev,
 			[name]: value,
 		}));
-		// 입력 시 해당 필드의 에러 초기화
 		if (errors[name as keyof LoginFormData]) {
 			setErrors((prev) => ({
 				...prev,
 				[name]: undefined,
 			}));
+		}
+	};
+
+	const handleLogout = async () => {
+		try {
+			// 파이어베이스 auth 함수
+			await signOut(auth);
+			setFormData({ email: '', password: '' });
+		} catch (error) {
+			console.error('로그아웃 에러:', error);
 		}
 	};
 
@@ -42,12 +63,7 @@ export function LoginForm() {
 		setIsLoading(true);
 
 		try {
-			const userCredential = await signInWithEmailAndPassword(
-				auth,
-				formData.email,
-				formData.password,
-			);
-			setUser(userCredential.user);
+			await signInWithEmailAndPassword(auth, formData.email, formData.password);
 		} catch (error) {
 			const errorMessage = getAuthErrorMessage(error);
 			setErrors({ password: errorMessage });
@@ -55,6 +71,10 @@ export function LoginForm() {
 			setIsLoading(false);
 		}
 	};
+
+	if (!isAuthInitialized) {
+		return <Loading />;
+	}
 
 	return (
 		<S.LoginContainer>
@@ -67,7 +87,8 @@ export function LoginForm() {
 						<>
 							<S.FormTitle>환영합니다</S.FormTitle>
 							<p>{user.email}</p>
-							<S.SubmitButton onClick={() => signOut(auth)}>로그아웃</S.SubmitButton>
+							<p>uid: {user.uid}</p>
+							<S.SubmitButton onClick={handleLogout}>로그아웃</S.SubmitButton>
 						</>
 					) : (
 						<>
