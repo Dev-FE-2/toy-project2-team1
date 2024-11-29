@@ -5,17 +5,16 @@ import { TScheduleCategory } from '@/types/schedule';
 
 export const CalenderContainer = styled.div`
 	padding: var(--space-medium);
-	height: 550px;
 	border-radius: var(--medium-border-radius);
 	box-shadow: var(--box-shadow-large);
 	display: flex;
 	justify-content: space-between;
+	max-height: 567.2px;
 `;
 
 export const StyledCalendar = styled(Calendar)`
 	font-family: 'Pretendard', sans-serif;
 	width: 600px;
-	height: 520px;
 	border-radius: var(--medium-border-radius);
 	border: 1px solid var(--color-pale-gray);
 	/* 네비게이션 */
