@@ -7,6 +7,7 @@ import { Toggle } from '../toggle/Toggle';
 
 const ScheduleModal = () => {
 	const isAdmin = false; // firebase auth 연결 필요
+
 	const dateAt = formatToKoreanTime(new Date());
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
