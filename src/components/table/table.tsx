@@ -24,7 +24,7 @@ const rowItems: RowItem[] = [
 	},
 ];
 
-export default function Table() {
+export default function Table({ data }) {
 	return (
 		<TableContainer>
 			<TableUI />
