@@ -12,6 +12,7 @@ import {
 import { TSchedule } from '@/types/schedule';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { Timestamp } from 'firebase/firestore';
+import { auth } from '@/firebaseConfig';
 
 interface UserScheduleCardProps {
 	schedule: TSchedule;
@@ -22,6 +23,9 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
+
+	// 유저 id 가져오기
+	const userId = auth.currentUser?.uid;
 
 	// 임시 데이터
 	const updatedFields: Partial<TSchedule> = {
@@ -46,9 +50,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 				const schedulesToDelete = filteredRepeatSchedules(schedule, schedules);
 				const scheduleIdsToDelete = schedulesToDelete.map((s) => s.schedule_id);
 
-				const deleteResult = await dispatch(
-					removeScheduleToFirestore('user1', scheduleIdsToDelete),
-				);
+				const deleteResult = await dispatch(removeScheduleToFirestore(userId, scheduleIdsToDelete));
 				if (!deleteResult.success) {
 					console.error('전체 수정 전 삭제 실패:', deleteResult.message);
 					return;
@@ -59,7 +61,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 					...updatedFields,
 				});
 				// 새 스케줄 배열 Firestore에 추가
-				const addResult = await dispatch(addScheduleToFirestore('user1', updatedSchedules));
+				const addResult = await dispatch(addScheduleToFirestore(userId, updatedSchedules));
 				if (addResult.success) {
 					console.log('전체 스케줄이 성공적으로 수정됨');
 				} else {
@@ -72,7 +74,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 			try {
 				// 기존 스케줄 삭제
 				const deleteResult = await dispatch(
-					removeScheduleToFirestore('user1', [schedule.schedule_id]),
+					removeScheduleToFirestore(userId, [schedule.schedule_id]),
 				);
 				if (!deleteResult.success) {
 					console.error('단일 수정 전 삭제 실패:', deleteResult.message);
@@ -86,7 +88,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 						...schedule,
 						...updatedFields,
 					});
-					const addResult = await dispatch(addScheduleToFirestore('user1', updatedSchedules));
+					const addResult = await dispatch(addScheduleToFirestore(userId, updatedSchedules));
 					if (addResult.success) {
 						console.log('단일 스케줄 수정이 반복 스케줄로 성공적으로 수정됨');
 					} else {
@@ -98,7 +100,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 						...schedule,
 						...updatedFields,
 					};
-					const editResult = await dispatch(editScheduleToFirestore('user1', [updatedSchedule]));
+					const editResult = await dispatch(editScheduleToFirestore(userId, [updatedSchedule]));
 					if (editResult.success) {
 						console.log('단일 스케줄이 단일 스케줄로 성공적으로 수정됨');
 					} else {
@@ -118,9 +120,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 				const filteredS = filteredRepeatSchedules(schedule, schedules);
 				const scheduleIdsToDelete = filteredS.map((s) => s.schedule_id);
 				console.log('scheduleIdsToDelete:', scheduleIdsToDelete);
-				const deleteResult = await dispatch(
-					removeScheduleToFirestore('user1', scheduleIdsToDelete),
-				);
+				const deleteResult = await dispatch(removeScheduleToFirestore(userId, scheduleIdsToDelete));
 				if (!deleteResult.success) {
 					console.error('전체 삭제 실패:', deleteResult.message);
 					return;
@@ -130,7 +130,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 				// 단일 스케줄 삭제
 				console.log('schedule.schedule_id:', [schedule.schedule_id]);
 				const deleteResult = await dispatch(
-					removeScheduleToFirestore('user1', [schedule.schedule_id]),
+					removeScheduleToFirestore(userId, [schedule.schedule_id]),
 				);
 				if (!deleteResult.success) {
 					console.error('단일 삭제 실패:', deleteResult.message);

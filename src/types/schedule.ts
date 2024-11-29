@@ -6,6 +6,7 @@ export type TScheduleRepeatCycle = '매일' | '매주' | '매월';
 
 export interface TSchedule {
 	schedule_id: string;
+	user_id: string | undefined;
 	category: TScheduleCategory;
 	start_date_time: Date | Timestamp; // firestore에서는 Timestamp로 저장됨
 	time: string;
