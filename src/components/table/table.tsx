@@ -1,4 +1,12 @@
 import { TableContainer, Lists, InnerUnorderLists, InnerLists } from './table.styled';
+import { Button } from '@/pages';
+
+type TableProps = {
+	data: RowItem[];
+	headerItems: string[];
+	btnContent?: BtnContent;
+	children?: React.ReactNode;
+};
 
 interface RowItem {
 	급여월: string;
@@ -7,11 +15,22 @@ interface RowItem {
 	실지급액: string;
 }
 
-export default function Table({ data, headerItems, test }) {
+type BtnContent = {
+	btnText: string;
+	btnColor: string;
+	onClickBtn: () => void;
+};
+
+export default function Table({
+	data,
+	headerItems,
+	btnContent = { btnText: '', btnColor: '', onClickBtn: () => {} },
+	children,
+}: TableProps) {
 	return (
 		<TableContainer>
 			<ul>
-				<Lists background="#f1f1f1">
+				<Lists background="var(--color-skyblue)">
 					<InnerUnorderLists>
 						{headerItems.map((cur, idx) => (
 							<InnerLists key={idx}>{cur}</InnerLists>
@@ -19,12 +38,18 @@ export default function Table({ data, headerItems, test }) {
 					</InnerUnorderLists>
 				</Lists>
 
-				{test.map((row, idx) => (
+				{data.map((row, idx) => (
 					<Lists key={idx}>
 						<InnerUnorderLists>
-							{headerItems.map((header, idx1) => (
+							{headerItems.slice(0, 4).map((header, idx1) => (
 								<InnerLists key={idx1}>{row[header as keyof RowItem] ?? ''}</InnerLists>
 							))}
+							<InnerLists>
+								<Button color={btnContent.btnColor} onClick={btnContent.onClickBtn}>
+									{btnContent.btnText}
+								</Button>
+								{children}
+							</InnerLists>
 						</InnerUnorderLists>
 					</Lists>
 				))}
