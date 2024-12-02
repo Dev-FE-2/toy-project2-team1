@@ -48,12 +48,12 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 		mode: 'onChange',
 	});
 
-	// 디버깅용
-	console.log({
-		errors: errors,
-		isSubmitting: isSubmitting,
-		data: watch(),
-	});
+	// // 디버깅용
+	// console.log({
+	// 	errors: errors,
+	// 	isSubmitting: isSubmitting,
+	// 	data: watch(),
+	// });
 
 	const startDateTime = watch('start_date_time'); // 시작 일시 값 감시
 	const repeatEndDate = watch('repeat_end_date'); // 종료일 값 감시
