@@ -25,6 +25,9 @@ export const useRegister = () => {
 				age: Number(data.age),
 				position: data.position,
 				createdAt: new Date().toISOString(),
+				userName: data.userName,
+				userAlias: data.userAlias,
+				shiftType: data.shiftType,
 			};
 
 			try {
