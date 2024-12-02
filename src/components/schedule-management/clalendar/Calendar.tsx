@@ -4,7 +4,7 @@ import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import { getSchedules, selectDate, filteredSchedules } from '@/redux/actions/scheduleActions';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
-import { TSchedule } from '@/types/schedule';
+import { TSchedule, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { toDate } from '@/utils/dateFormatter';
 import { db } from '@/firebaseConfig';
 import { onSnapshot, doc } from 'firebase/firestore';
@@ -18,7 +18,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
 
 	const userId = auth.currentUser?.uid;
-	console.log('userId:', userId);
+	// console.log('userId:', userId);
 
 	useEffect(() => {
 		console.log('isManagementPage:', isManagementPage);
@@ -77,7 +77,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 			<>
 				{daySchedules.map((s: TSchedule) => (
 					<S.ScheduleBar key={s.schedule_id} $category={s.category}>
-						{s.category}
+						{SCHEDULE_CATEGORY_LABELS[s.category]}
 					</S.ScheduleBar>
 				))}
 			</>

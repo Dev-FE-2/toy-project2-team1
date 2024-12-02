@@ -2,14 +2,14 @@ import * as S from './UserScheduleCard.styles';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { toDate } from '@/utils/dateFormatter';
 import filteredRepeatSchedules from '@/utils/filteredRepeatSchedules';
-// import ModalPortal from '../../../modal/ModalPortal';
-// import ScheduleModal from '../../../modal/ScheduleModal';
+// import ScheduleModal from '../schedule-modal/ScheduleModal';
 import {
 	addScheduleToFirestore,
 	editScheduleToFirestore,
 	removeScheduleToFirestore,
+	// setIsScheduleModalOpen,
 } from '@/redux/actions/scheduleActions';
-import { TSchedule } from '@/types/schedule';
+import { SCHEDULE_CATEGORY_LABELS, TSchedule } from '@/types/schedule';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { Timestamp } from 'firebase/firestore';
 import { auth } from '@/firebaseConfig';
@@ -23,20 +23,28 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
+	// const isScheduleModalOpen = useAppSelector((state) => state.schedule.isScheduleModalOpen);
 
-	// 유저 id 가져오기
 	const userId = auth.currentUser?.uid;
-
 	// 임시 데이터
 	const updatedFields: Partial<TSchedule> = {
-		category: '플로어',
+		category: 'floor',
 		start_date_time: new Date('2024-11-27T22:00:00.000Z'),
 		time: '3',
-		repeat: '매일',
+		repeat: 'everyDay',
 		repeat_end_date: new Date('2024-11-29T00:00:00.000Z'),
 		description: '대청소ㅜㅠㅜㅠ',
 		created_at: new Date(),
 	};
+
+	// const handleSubmit = async (schedules: TSchedule[]) => {
+	//   const userId = auth.currentUser?.uid;
+	//   if (!userId) return;
+
+	//   } else {
+	//     console.error('firestore에 스케줄 수정 실패:', addResult.message);
+	//   }
+	// };
 
 	const handleEditScheduleClick = async (
 		schedule: TSchedule,
@@ -160,42 +168,52 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 		: null;
 
 	return (
-		<S.ScheduleCardContainer>
-			<S.TimeContainerUp>
-				{showStartTime ? (
-					<S.TimeDot $category={schedule.category} />
-				) : (
-					<S.TimeDotEmpty $category={schedule.category} />
-				)}
-				<S.TimeText>
-					{startTime}
-					{shouldShowTime ? ` - ${endTime}` : ''}
-				</S.TimeText>
-				<S.ButtonContainer>
-					<S.EditIcon
-						onClick={() => {
-							handleEditScheduleClick(schedule, updatedFields, false);
-						}}
-					/>
-					<S.DeleteIcon
-						onClick={() => {
-							handleDeleteScheduleClick(schedule, true);
-						}}
-					/>
-				</S.ButtonContainer>
-			</S.TimeContainerUp>
-			<S.ContentContainer>
-				<S.CategoryText>{schedule.category}</S.CategoryText>
-				<S.DescriptionText>{schedule.description}</S.DescriptionText>
-			</S.ContentContainer>
-			<S.TimeContainerDown>
-				{showEndTime ? (
-					<S.TimeDotDown $category={schedule.category} />
-				) : (
-					<S.TimeDotEmptyDown $category={schedule.category} />
-				)}
-				<S.TimeTextDown>{endTime}</S.TimeTextDown>
-			</S.TimeContainerDown>
-		</S.ScheduleCardContainer>
+		<>
+			<S.ScheduleCardContainer>
+				<S.TimeContainerUp>
+					{showStartTime ? (
+						<S.TimeDot $category={schedule.category} />
+					) : (
+						<S.TimeDotEmpty $category={schedule.category} />
+					)}
+					<S.TimeText>
+						{startTime}
+						{shouldShowTime ? ` - ${endTime}` : ''}
+					</S.TimeText>
+					<S.ButtonContainer>
+						<S.EditIcon
+							onClick={() => {
+								handleEditScheduleClick(schedule, updatedFields, false);
+							}}
+						/>
+						<S.DeleteIcon
+							onClick={() => {
+								handleDeleteScheduleClick(schedule, true);
+							}}
+						/>
+					</S.ButtonContainer>
+				</S.TimeContainerUp>
+				<S.ContentContainer>
+					<S.CategoryText>{SCHEDULE_CATEGORY_LABELS[schedule.category]}</S.CategoryText>
+					<S.DescriptionText>{schedule.description}</S.DescriptionText>
+				</S.ContentContainer>
+				<S.TimeContainerDown>
+					{showEndTime ? (
+						<S.TimeDotDown $category={schedule.category} />
+					) : (
+						<S.TimeDotEmptyDown $category={schedule.category} />
+					)}
+					<S.TimeTextDown>{endTime}</S.TimeTextDown>
+				</S.TimeContainerDown>
+			</S.ScheduleCardContainer>
+			{/* {isScheduleModalOpen && (
+				<ScheduleModal
+					type="scheduleUser"
+					mode='edit'
+					onSubmit={handleSubmit}
+					onClose={() => dispatch(setIsScheduleModalOpen(false))}
+				/>
+			)} */}
+		</>
 	);
 };

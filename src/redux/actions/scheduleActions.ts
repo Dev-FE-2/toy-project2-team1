@@ -1,20 +1,27 @@
 import { doc, setDoc, getDoc, updateDoc, Timestamp } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { AppThunk } from '@/redux/store';
-import { scheduleApiResponse, TSchedule } from '@/types/schedule';
+import { TScheduleApiResponse, TSchedule } from '@/types/schedule';
 import {
 	GET_SCHEDULES,
 	ADD_SCHEDULES,
 	EDIT_SCHEDULES,
 	REMOVE_SCHEDULES,
-	SET_LOADING,
 	SELECT_DATE,
 	FILTERED_SCHEDULES,
+	SET_LOADING,
+	SET_SCHEDULE_MODAL_OPEN,
 } from '../actionTypes';
 
 const setisLoading = (isLoading: boolean) => ({
 	type: SET_LOADING,
 	payload: isLoading,
+});
+
+//스케줄 추가, 수정 모달 상태
+export const setIsScheduleModalOpen = (isScheduleModalOpen: boolean) => ({
+	type: SET_SCHEDULE_MODAL_OPEN,
+	payload: isScheduleModalOpen,
 });
 
 export const getSchedules = (schedules: TSchedule[]) => ({
@@ -58,7 +65,7 @@ export const filteredSchedules = (schedules: TSchedule[]) => ({
 export const addScheduleToFirestore = (
 	userId: string | undefined,
 	schedules: TSchedule[],
-): AppThunk<Promise<scheduleApiResponse<void>>> => {
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
 	return async (dispatch) => {
 		if (!userId) {
 			return {
@@ -115,7 +122,7 @@ export const addScheduleToFirestore = (
 export const editScheduleToFirestore = (
 	userId: string | undefined,
 	updatedSchedules: TSchedule[],
-): AppThunk<Promise<scheduleApiResponse<void>>> => {
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
 	return async (dispatch) => {
 		if (!userId) {
 			return {
@@ -164,7 +171,7 @@ export const editScheduleToFirestore = (
 export const removeScheduleToFirestore = (
 	userId: string | undefined,
 	scheduleIds: string[],
-): AppThunk<Promise<scheduleApiResponse<void>>> => {
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
 	return async (dispatch) => {
 		if (!userId) {
 			return {
@@ -183,6 +190,7 @@ export const removeScheduleToFirestore = (
 			}
 
 			const existingSchedules: TSchedule[] = userDoc.data().schedules || [];
+
 			const filteredSchedules = existingSchedules.filter(
 				(schedule) => !scheduleIds.includes(schedule.schedule_id),
 			);
