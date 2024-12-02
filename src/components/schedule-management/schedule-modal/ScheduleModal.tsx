@@ -11,7 +11,7 @@ import {
 	SCHEDULE_CATEGORY_OPTIONS,
 	SCHEDULE_REPEAT_CYCLE_OPTIONS,
 } from '@/types/schedule';
-import calculateScheduleTimeCategory from '@/utils/calculateScheduleTimeCategory';
+import calculateScheduleShiftType from '@/utils/calculateScheduleShiftType';
 import calculateEndDateTime from '@/utils/calculateEndDateTime';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -94,7 +94,7 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 				start_date_time: data.start_date_time,
 				time: data.time,
 				end_date_time: calculateEndDateTime(data.start_date_time, data.time),
-				scheduleTimeCategory: calculateScheduleTimeCategory(data.start_date_time),
+				schedule_shift_type: calculateScheduleShiftType(data.start_date_time),
 				repeat: data.repeat as TScheduleRepeatCycle,
 				repeat_end_date: data.repeat_end_date,
 				created_at: new Date(),

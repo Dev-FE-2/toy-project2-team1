@@ -2,7 +2,7 @@ import { Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
 
 export type TScheduleCategory = 'ticket' | 'snack' | 'floor';
-export type TScheduleTimeCategory = 'open' | 'middle' | 'close';
+export type TScheduleShiftType = 'open' | 'middle' | 'close';
 export type TScheduleRepeatCycle = 'everyDay' | 'everyWeek' | 'everyMonth';
 export type TDate = Date | Timestamp; // firestore에서는 Timestamp로 저장됨
 
@@ -15,7 +15,7 @@ export interface TSchedule {
 	start_date_time: TDate;
 	time: string;
 	end_date_time: TDate; // 계산된 종료 시간
-	scheduleTimeCategory: TScheduleTimeCategory; // 계산된 오픈, 미들, 마감
+	schedule_shift_type: TScheduleShiftType; // 계산된 오픈, 미들, 마감
 	repeat?: TScheduleRepeatCycle;
 	repeat_end_date?: TDate;
 	created_at: TDate;
