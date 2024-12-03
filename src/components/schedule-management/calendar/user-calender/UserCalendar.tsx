@@ -1,17 +1,20 @@
-import * as S from './Calendar.styles';
+import * as S from '../Calendar.styles';
 import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
-import { getSchedules, selectDate, filteredSchedules } from '@/redux/actions/scheduleActions';
+import {
+	setisLoading,
+	getSchedules,
+	selectDate,
+	filteredSchedules,
+} from '@/redux/actions/scheduleActions';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
-import { TSchedule, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
+import { TSchedule, CalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { toDate } from '@/utils/dateFormatter';
 import { db } from '@/firebaseConfig';
 import { onSnapshot, doc } from 'firebase/firestore';
-interface CalendarComponentProps {
-	isManagementPage?: boolean;
-}
-export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) => {
+
+export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentProps) => {
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
@@ -26,22 +29,35 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	// Firestore에서 스케줄 가져오기 - 무한 렌더링 막기 위해 Firestore의 실시간 리스너 사용
 	useEffect(() => {
 		if (!userId) {
+			dispatch(setisLoading(false));
 			dispatch(getSchedules([]));
 			return;
 		}
 
+		dispatch(setisLoading(true));
 		const userDocRef = doc(db, 'schedules', userId);
 
 		// 기본 리스너
-		const unsubscribe = onSnapshot(userDocRef, (doc) => {
-			if (doc.exists()) {
-				const schedules = doc.data().schedules || [];
-				dispatch(getSchedules(schedules));
-			}
-		});
+		const unsubscribe = onSnapshot(
+			userDocRef,
+			(doc) => {
+				if (doc.exists()) {
+					const schedules = doc.data().schedules || [];
+					dispatch(getSchedules(schedules));
+				}
+				dispatch(setisLoading(false));
+			},
+			(error) => {
+				console.error('스케줄 가져오는 중 오류 발생:', error);
+				dispatch(setisLoading(false));
+			},
+		);
 
-		return () => unsubscribe();
-	}, [dispatch]);
+		return () => {
+			unsubscribe();
+			dispatch(setisLoading(false));
+		};
+	}, [dispatch, userId]);
 
 	// 오늘 날짜(초기) 필터링
 	useEffect(() => {

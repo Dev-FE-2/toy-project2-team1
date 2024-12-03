@@ -34,6 +34,10 @@ export interface TCalendarState {
 
 export type TScheduleState = TSchedules & TCalendarState;
 
+export interface CalendarComponentProps {
+	isManagementPage?: boolean;
+}
+
 // action types
 import {
 	GET_SCHEDULES,
