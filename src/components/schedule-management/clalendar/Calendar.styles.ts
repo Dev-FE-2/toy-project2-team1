@@ -101,9 +101,9 @@ export const ScheduleBar = styled.div<{ $category: TScheduleCategory }>`
 	margin: 2px 0 5px;
 	text-align: center;
 	background-color: ${({ $category }) =>
-		$category === '매표'
+		$category === 'ticket'
 			? 'var(--color-blue)'
-			: $category === '매점'
+			: $category === 'snack'
 				? 'var(--color-caramel)'
 				: 'var(--color-coral)'};
 	color: var(--color-dark-gray);
