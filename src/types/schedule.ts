@@ -1,6 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
-
 export type TScheduleCategory = 'ticket' | 'snack' | 'floor';
 export type TScheduleShiftType = 'open' | 'middle' | 'close';
 export type TScheduleRepeatCycle = 'everyDay' | 'everyWeek' | 'everyMonth';
@@ -9,8 +8,8 @@ export type TDate = Date | Timestamp; // firestore에서는 Timestamp로 저장�
 export interface TSchedule {
 	schedule_id: string;
 	user_id: string;
-	// user_name: string;
-	// user_alias: string;
+	user_name: string;
+	user_alias: string;
 	category: TScheduleCategory;
 	start_date_time: TDate;
 	time: string;

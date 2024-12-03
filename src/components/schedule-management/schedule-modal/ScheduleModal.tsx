@@ -48,12 +48,13 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 		mode: 'onChange',
 	});
 
-	// // 디버깅용
-	// console.log({
-	// 	errors: errors,
-	// 	isSubmitting: isSubmitting,
-	// 	data: watch(),
-	// });
+	// 디버깅용
+	console.log({
+		errors: errors,
+		isSubmitting: isSubmitting,
+		data: watch(),
+		currentUser: currentUser,
+	});
 
 	const startDateTime = watch('start_date_time'); // 시작 일시 값 감시
 	const repeatEndDate = watch('repeat_end_date'); // 종료일 값 감시
@@ -82,6 +83,8 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 	const onSubmitForm = handleSubmit(async (data) => {
 		console.log('폼 제출 시작', data);
 		const userId = auth.currentUser?.uid;
+		const userName = auth.currentUser;
+		console.log(userName);
 		try {
 			if (!userId) {
 				throw new Error('사용자 인증 필요');
@@ -90,6 +93,8 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 			const scheduleData: TSchedule = {
 				schedule_id: uuidv4(),
 				user_id: userId,
+				user_name: '',
+				user_alias: '',
 				category: data.category,
 				start_date_time: data.start_date_time,
 				time: data.time,

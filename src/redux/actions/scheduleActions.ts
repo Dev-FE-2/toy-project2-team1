@@ -13,7 +13,7 @@ import {
 	SET_SCHEDULE_MODAL_OPEN,
 } from '../actionTypes';
 
-const setisLoading = (isLoading: boolean) => ({
+export const setisLoading = (isLoading: boolean) => ({
 	type: SET_LOADING,
 	payload: isLoading,
 });

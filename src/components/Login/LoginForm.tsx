@@ -102,7 +102,7 @@ export function LoginForm() {
 										type="email"
 										value={formData.email}
 										onChange={handleInputChange}
-										hasError={!!errors.email}
+										$hasError={!!errors.email}
 									/>
 									{errors.email && <S.ErrorMessage>{errors.email}</S.ErrorMessage>}
 								</S.FormField>
@@ -115,7 +115,7 @@ export function LoginForm() {
 										type="password"
 										value={formData.password}
 										onChange={handleInputChange}
-										hasError={!!errors.password}
+										$hasError={!!errors.password}
 									/>
 									{errors.password && <S.ErrorMessage>{errors.password}</S.ErrorMessage>}
 								</S.FormField>
