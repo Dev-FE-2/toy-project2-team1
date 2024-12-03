@@ -12,6 +12,7 @@ import {
 	SET_LOADING,
 	SET_SCHEDULE_MODAL_OPEN,
 } from '../actionTypes';
+import { supabase } from '../../../supabaseConfig';
 
 export const setisLoading = (isLoading: boolean) => ({
 	type: SET_LOADING,
@@ -101,13 +102,45 @@ export const addScheduleToFirestore = (
 				await updateDoc(userDocRef, { schedules: updatedSchedules });
 			}
 
+			// Supabase에 데이터 추가
+			const { error: supabaseError } = await supabase.from('schedules').insert(
+				schedules.map((schedule) => ({
+					user_id: userId,
+					schedule_id: schedule.schedule_id,
+					user_name: schedule.user_name,
+					user_alias: schedule.user_alias,
+					category: schedule.category,
+					start_date_time: (schedule.start_date_time instanceof Timestamp
+						? schedule.start_date_time.toDate()
+						: schedule.start_date_time
+					).toISOString(),
+					time: schedule.time,
+					end_date_time: (schedule.end_date_time instanceof Timestamp
+						? schedule.end_date_time.toDate()
+						: schedule.end_date_time
+					).toISOString(),
+					schedule_shift_type: schedule.schedule_shift_type,
+					repeat: schedule.repeat || null,
+					repeat_end_date: schedule.repeat_end_date
+						? (schedule.repeat_end_date instanceof Timestamp
+								? schedule.repeat_end_date.toDate()
+								: schedule.repeat_end_date
+							).toISOString()
+						: null,
+					description: schedule.description || null,
+					created_at: new Date().toISOString(),
+				})),
+			);
+
+			if (supabaseError) throw supabaseError;
+
 			dispatch(addSchedules(schedules));
 			return {
 				success: true,
 				message: '일정을 성공적으로 추가했습니다.',
 			};
 		} catch (error) {
-			console.error('firestore에 스케줄 추가 실패', error);
+			console.error('스케줄 추가 실패', error);
 			return {
 				success: false,
 				message: '일정 추가 중 오류가 발생했습니다.',
