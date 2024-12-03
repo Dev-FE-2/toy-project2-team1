@@ -57,7 +57,7 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 			unsubscribe();
 			dispatch(setisLoading(false));
 		};
-	}, [dispatch, userId]);
+	}, [userId]);
 
 	// 오늘 날짜(초기) 필터링
 	useEffect(() => {
@@ -65,7 +65,7 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate as Date);
 			dispatch(filteredSchedules(todaySchedules));
 		}
-	}, [dispatch, selectedDate, schedules]);
+	}, [selectedDate, schedules]);
 
 	// 날짜 선택시 그 날짜, 그 날짜의 스케줄 필터링해서 전역 상태에 저장
 	const handleDateClick = (date: Date) => {
