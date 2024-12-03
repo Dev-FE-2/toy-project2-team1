@@ -7,3 +7,5 @@ export const SELECT_DATE = 'SELECT_DATE';
 export const FILTERED_SCHEDULES = 'FILTERED_SCHEDULES';
 export const SET_LOADING = 'SET_LOADING';
 export const SET_SCHEDULE_MODAL_OPEN = 'SET_SCHEDULE_MODAL_OPEN';
+export const SET_USER = 'SET_USER';
+export const CLEAR_USER = 'CLEAR_USER';

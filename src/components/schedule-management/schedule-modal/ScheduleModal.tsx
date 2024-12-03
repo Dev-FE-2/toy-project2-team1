@@ -1,6 +1,6 @@
 import * as S from './ScheduleModal.styles';
 import { useState } from 'react';
-import { useAppDispatch } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setIsScheduleModalOpen } from '@/redux/actions/scheduleActions';
 import {
 	TSchedule,
@@ -16,7 +16,6 @@ import calculateEndDateTime from '@/utils/calculateEndDateTime';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { v4 as uuidv4 } from 'uuid';
-import { auth } from '@/firebaseConfig';
 import { useForm } from 'react-hook-form';
 import { Toggle } from '../../toggle/Toggle';
 import { Button } from '../../button/Button';
@@ -34,6 +33,9 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 	const [isRepeatActive, setIsRepeatActive] = useState<boolean>(false); // 토글 상태
 
 	const dispatch = useAppDispatch();
+	const user = useAppSelector((state) => state.user.user);
+
+	console.log(user);
 
 	const schema = type === 'scheduleAdmin' ? scheduleAdminSchema : scheduleSchema;
 
@@ -53,7 +55,7 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 		errors: errors,
 		isSubmitting: isSubmitting,
 		data: watch(),
-		currentUser: currentUser,
+		currentUser: user,
 	});
 
 	const startDateTime = watch('start_date_time'); // 시작 일시 값 감시
@@ -82,19 +84,17 @@ const ScheduleModal = ({ type, mode, onSubmit, onClose }: TScheduleModalProps) =
 
 	const onSubmitForm = handleSubmit(async (data) => {
 		console.log('폼 제출 시작', data);
-		const userId = auth.currentUser?.uid;
-		const userName = auth.currentUser;
-		console.log(userName);
+
 		try {
-			if (!userId) {
+			if (!user) {
 				throw new Error('사용자 인증 필요');
 			}
 
 			const scheduleData: TSchedule = {
 				schedule_id: uuidv4(),
-				user_id: userId,
-				user_name: '',
-				user_alias: '',
+				user_id: user.id,
+				user_name: user.userName ?? '',
+				user_alias: user.userAlias ?? '',
 				category: data.category,
 				start_date_time: data.start_date_time,
 				time: data.time,

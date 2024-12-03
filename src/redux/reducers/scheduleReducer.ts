@@ -20,7 +20,10 @@ const initialState: TScheduleState = {
 	isScheduleModalOpen: false,
 };
 
-function scheduleReducer(state: TScheduleState = initialState, action: any): TScheduleState {
+export default function scheduleReducer(
+	state: TScheduleState = initialState,
+	action: any,
+): TScheduleState {
 	switch (action.type) {
 		case SET_LOADING:
 			return { ...state, isLoading: action.payload };
@@ -67,5 +70,3 @@ function scheduleReducer(state: TScheduleState = initialState, action: any): TSc
 			return state;
 	}
 }
-
-export default scheduleReducer;
