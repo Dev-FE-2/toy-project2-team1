@@ -105,29 +105,19 @@ export const addScheduleToFirestore = (
 			// Supabase에 데이터 추가
 			const { error: supabaseError } = await supabase.from('schedules').insert(
 				schedules.map((schedule) => ({
-					user_id: userId,
-					schedule_id: schedule.schedule_id,
-					user_name: schedule.user_name,
-					user_alias: schedule.user_alias,
-					category: schedule.category,
-					start_date_time: (schedule.start_date_time instanceof Timestamp
-						? schedule.start_date_time.toDate()
-						: schedule.start_date_time
-					).toISOString(),
-					time: schedule.time,
-					end_date_time: (schedule.end_date_time instanceof Timestamp
-						? schedule.end_date_time.toDate()
-						: schedule.end_date_time
-					).toISOString(),
-					schedule_shift_type: schedule.schedule_shift_type,
-					repeat: schedule.repeat || null,
-					repeat_end_date: schedule.repeat_end_date
-						? (schedule.repeat_end_date instanceof Timestamp
-								? schedule.repeat_end_date.toDate()
-								: schedule.repeat_end_date
-							).toISOString()
-						: null,
-					description: schedule.description || null,
+					...schedule,
+					start_date_time:
+						schedule.start_date_time instanceof Date
+							? schedule.start_date_time.toISOString()
+							: schedule.start_date_time,
+					end_date_time:
+						schedule.end_date_time instanceof Date
+							? schedule.end_date_time.toISOString()
+							: schedule.end_date_time,
+					repeat_end_date:
+						schedule.repeat_end_date instanceof Date
+							? schedule.repeat_end_date.toISOString()
+							: schedule.repeat_end_date,
 					created_at: new Date().toISOString(),
 				})),
 			);
@@ -240,6 +230,78 @@ export const removeScheduleToFirestore = (
 			return {
 				success: false,
 				message: '일정 삭제 중 오류가 발생했습니다.',
+			};
+		} finally {
+			dispatch(setisLoading(false));
+		}
+	};
+};
+
+// Supabase에서 스케줄 조회
+export const getSchedulesFromSupabase = (
+	userId: string,
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
+	return async (dispatch) => {
+		try {
+			const { data, error } = await supabase.from('schedules').select('*').eq('user_id', userId);
+
+			if (error) throw error;
+
+			// timestamp 문자열을 Date 객체로 변환
+			const convertedData = data.map((schedule) => ({
+				...schedule,
+				start_date_time: new Date(schedule.start_date_time),
+				end_date_time: new Date(schedule.end_date_time),
+				repeat_end_date: schedule.repeat_end_date ? new Date(schedule.repeat_end_date) : null,
+				created_at: new Date(schedule.created_at),
+			}));
+
+			console.log('Supabase 스케줄 조회 결과:', convertedData);
+			dispatch(getSchedules(convertedData));
+
+			return {
+				success: true,
+				message: 'Supabase 스케줄을 성공적으로 조회했습니다.',
+			};
+		} catch (error) {
+			console.error('Supabase 스케줄 조회 실패:', error);
+			return {
+				success: false,
+				message: 'Supabase 스케줄 조회 중 오류가 발생했습니다.',
+			};
+		}
+	};
+};
+
+// Supabase에 스케줄 삭제
+export const removeScheduleFromSupabase = (
+	userId: string,
+	scheduleIds: string[],
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
+	return async (dispatch) => {
+		try {
+			dispatch(setisLoading(true));
+			// Supabase 삭제
+			const { error } = await supabase
+				.from('schedules')
+				.delete()
+				.eq('user_id', userId)
+				.in('schedule_id', scheduleIds);
+
+			if (error) throw error;
+
+			console.log('Supabase 스케줄 삭제 성공:', scheduleIds); // 콘솔 확인용
+			dispatch(removeSchedules(scheduleIds));
+
+			return {
+				success: true,
+				message: '스케줄을 성공적으로 삭제했습니다.',
+			};
+		} catch (error) {
+			console.error('Supabase 스케줄 삭제 실패:', error);
+			return {
+				success: false,
+				message: '스케줄 삭제 중 오류가 발생했습니다.',
 			};
 		} finally {
 			dispatch(setisLoading(false));

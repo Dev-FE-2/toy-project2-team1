@@ -13,6 +13,7 @@ import { SCHEDULE_CATEGORY_LABELS, TSchedule } from '@/types/schedule';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { Timestamp } from 'firebase/firestore';
 import { auth } from '@/firebaseConfig';
+import { removeScheduleFromSupabase } from '@/redux/actions/scheduleActions';
 
 interface UserScheduleCardProps {
 	schedule: TSchedule;
@@ -124,13 +125,20 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 	const handleDeleteScheduleClick = async (schedule: TSchedule, deleteAll: boolean) => {
 		try {
 			if (deleteAll) {
-				// 모든 반복 스케줄 삭제
 				const filteredS = filteredRepeatSchedules(schedule, schedules);
 				const scheduleIdsToDelete = filteredS.map((s) => s.schedule_id);
-				console.log('scheduleIdsToDelete:', scheduleIdsToDelete);
-				const deleteResult = await dispatch(removeScheduleToFirestore(userId, scheduleIdsToDelete));
-				if (!deleteResult.success) {
-					console.error('전체 삭제 실패:', deleteResult.message);
+
+				// Firebase 삭제
+				const firebaseResult = await dispatch(
+					removeScheduleToFirestore(userId, scheduleIdsToDelete),
+				);
+				// Supabase 삭제 추가
+				const supabaseResult = await dispatch(
+					removeScheduleFromSupabase(userId!, scheduleIdsToDelete),
+				);
+
+				if (!firebaseResult.success || !supabaseResult.success) {
+					console.error('삭제 실패');
 					return;
 				}
 				console.log('모든 반복 스케줄이 성공적으로 삭제됨');
@@ -147,7 +155,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 				console.log('단일 스케줄이 성공적으로 삭제됨');
 			}
 		} catch (error) {
-			console.error('Firestore에서 스케줄 삭제 실패:', error);
+			console.error('스케줄 삭제 실패:', error);
 		}
 	};
 
