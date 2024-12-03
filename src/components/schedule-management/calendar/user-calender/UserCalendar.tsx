@@ -94,6 +94,7 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 				);
 			})
 			.slice(0, 2);
+
 		return daySchedules.length > 0 ? (
 			<>
 				{daySchedules.map((s: TSchedule) => (
@@ -122,4 +123,3 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 		</S.CalenderContainer>
 	);
 };
-
