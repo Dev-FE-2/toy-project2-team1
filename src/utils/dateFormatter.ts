@@ -1,5 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
-
 // KST 기준으로 포맷된 문자열로 변환
 export const formatToKoreanTime = (date: Date) => {
 	const koreaTime = new Date(date.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
@@ -22,9 +20,14 @@ export function convertUTCToKST(date: Date): Date {
 	return new Date(date.getTime() - kstOffset);
 }
 
-// Timestamp(Firestore의) → Date
-export function toDate(input: Timestamp | Date): Date {
-	return input instanceof Timestamp ? input.toDate() : input;
+// Timestamp(Firestore의), string(redux persist) → Date
+export function toDate(input: string | Date | { seconds: number; nanoseconds: number }): Date {
+	if (input instanceof Date) return input;
+	if (typeof input === 'string') return new Date(input);
+	if (input && typeof input.seconds === 'number' && typeof input.nanoseconds === 'number') {
+		return new Date(input.seconds * 1000 + Math.floor(input.nanoseconds / 1e6));
+	}
+	throw new Error('Invalid datetime input입니다');
 }
 
 // 날짜 포맷 변경(숫자만) - 캘린더에 일만 표시하기 위해

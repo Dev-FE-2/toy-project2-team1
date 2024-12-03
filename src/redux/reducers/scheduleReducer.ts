@@ -63,7 +63,7 @@ export default function scheduleReducer(
 			};
 		}
 		case SELECT_DATE:
-			return { ...state, selectedDate: action.payload, isLoading: false };
+			return { ...state, selectedDate: new Date(action.payload), isLoading: false };
 		case FILTERED_SCHEDULES:
 			return { ...state, filteredSchedules: action.payload, isLoading: false };
 		default:

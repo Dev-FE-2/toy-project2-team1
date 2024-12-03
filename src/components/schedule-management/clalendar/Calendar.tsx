@@ -8,7 +8,6 @@ import { TSchedule, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { toDate } from '@/utils/dateFormatter';
 import { db } from '@/firebaseConfig';
 import { onSnapshot, doc } from 'firebase/firestore';
-import { auth } from '@/firebaseConfig';
 interface CalendarComponentProps {
 	isManagementPage?: boolean;
 }
@@ -16,9 +15,9 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
+	const user = useAppSelector((state) => state.user.user);
 
-	const userId = auth.currentUser?.uid;
-	// console.log('userId:', userId);
+	const userId = user?.id;
 
 	useEffect(() => {
 		console.log('isManagementPage:', isManagementPage);
@@ -27,13 +26,13 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	// Firestore에서 스케줄 가져오기 - 무한 렌더링 막기 위해 Firestore의 실시간 리스너 사용
 	useEffect(() => {
 		if (!userId) {
-			// userId가 없으면 빈 배열로 초기화
 			dispatch(getSchedules([]));
 			return;
 		}
 
 		const userDocRef = doc(db, 'schedules', userId);
 
+		// 기본 리스너
 		const unsubscribe = onSnapshot(userDocRef, (doc) => {
 			if (doc.exists()) {
 				const schedules = doc.data().schedules || [];
@@ -66,12 +65,18 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 	// 일정 있는 날짜에 바 표시
 	const tileContent = ({ date }: { date: Date }) => {
 		const daySchedules = schedules
-			.filter((schedule) => toDate(schedule.start_date_time).toDateString() === date.toDateString())
-			.sort(
-				(a, b) =>
-					toDate(a.start_date_time).getTime() - toDate(b.start_date_time).getTime() ||
-					toDate(a.created_at).getTime() - toDate(b.created_at).getTime(),
-			)
+			.filter((schedule) => {
+				const scheduleDate = toDate(schedule.start_date_time);
+				return scheduleDate.toDateString() === date.toDateString();
+			})
+			.sort((a, b) => {
+				const aDate = toDate(a.start_date_time);
+				const bDate = toDate(b.start_date_time);
+				return (
+					aDate.getTime() - bDate.getTime() ||
+					toDate(a.created_at).getTime() - toDate(b.created_at).getTime()
+				);
+			})
 			.slice(0, 2);
 		return daySchedules.length > 0 ? (
 			<>
