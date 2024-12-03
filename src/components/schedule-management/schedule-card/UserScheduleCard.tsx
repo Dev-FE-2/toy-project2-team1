@@ -14,6 +14,7 @@ import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import { Timestamp } from 'firebase/firestore';
 import { auth } from '@/firebaseConfig';
 import { removeScheduleFromSupabase } from '@/redux/actions/scheduleActions';
+import { addScheduleToSupabase, editScheduleToSupabase } from '@/redux/actions/scheduleActions';
 
 interface UserScheduleCardProps {
 	schedule: TSchedule;
@@ -59,34 +60,49 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 				const schedulesToDelete = filteredRepeatSchedules(schedule, schedules);
 				const scheduleIdsToDelete = schedulesToDelete.map((s) => s.schedule_id);
 
-				const deleteResult = await dispatch(removeScheduleToFirestore(userId, scheduleIdsToDelete));
-				if (!deleteResult.success) {
-					console.error('전체 수정 전 삭제 실패:', deleteResult.message);
+				// Firebase 삭제
+				const firebaseDeleteResult = await dispatch(
+					removeScheduleToFirestore(userId, scheduleIdsToDelete),
+				);
+				// Supabase 삭제
+				const supabaseDeleteResult = await dispatch(
+					removeScheduleFromSupabase(userId!, scheduleIdsToDelete),
+				);
+
+				if (!firebaseDeleteResult.success || !supabaseDeleteResult.success) {
+					console.error('전체 수정 전 삭제 실패');
 					return;
 				}
-				// 수정된 내용을 기반으로 새 스케줄 배열 생성
+
 				const updatedSchedules = generateRepeatingSchedules({
 					...schedule,
 					...updatedFields,
 				});
-				// 새 스케줄 배열 Firestore에 추가
-				const addResult = await dispatch(addScheduleToFirestore(userId, updatedSchedules));
-				if (addResult.success) {
-					console.log('전체 스케줄이 성공적으로 수정됨');
-				} else {
-					console.error('전체 수정 중 추가 실패:', addResult.message);
+
+				// Firebase와 Supabase에 추가
+				const firebaseAddResult = await dispatch(addScheduleToFirestore(userId, updatedSchedules));
+				const supabaseAddResult = await dispatch(addScheduleToSupabase(userId!, updatedSchedules));
+
+				if (!firebaseAddResult.success || !supabaseAddResult.success) {
+					console.error('전체 수정 중 추가 실패');
+					return;
 				}
+				console.log('전체 스케줄이 성공적으로 수정됨');
 			} catch (error) {
-				console.error('firestore에 모든 스케줄 수정 실패', error);
+				console.error('스케줄 수정 실패', error);
 			}
 		} else {
 			try {
-				// 기존 스케줄 삭제
-				const deleteResult = await dispatch(
+				// Firebase와 Supabase 삭제
+				const firebaseDeleteResult = await dispatch(
 					removeScheduleToFirestore(userId, [schedule.schedule_id]),
 				);
-				if (!deleteResult.success) {
-					console.error('단일 수정 전 삭제 실패:', deleteResult.message);
+				const supabaseDeleteResult = await dispatch(
+					removeScheduleFromSupabase(userId!, [schedule.schedule_id]),
+				);
+
+				if (!firebaseDeleteResult.success || !supabaseDeleteResult.success) {
+					console.error('단일 수정 전 삭제 실패');
 					return;
 				}
 				// 단일 스케줄 수정시에도 repeat, repeat_end_date (반복 설정) 있으면 반복 배열 추가
@@ -97,27 +113,42 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardP
 						...schedule,
 						...updatedFields,
 					});
-					const addResult = await dispatch(addScheduleToFirestore(userId, updatedSchedules));
-					if (addResult.success) {
-						console.log('단일 스케줄 수정이 반복 스케줄로 성공적으로 수정됨');
-					} else {
-						console.error('단일 스케줄 수정이 반복 스케줄로 수정 실패:', addResult.message);
+
+					// Firebase와 Supabase에 추가
+					const firebaseAddResult = await dispatch(
+						addScheduleToFirestore(userId, updatedSchedules),
+					);
+					const supabaseAddResult = await dispatch(
+						addScheduleToSupabase(userId!, updatedSchedules),
+					);
+
+					if (!firebaseAddResult.success || !supabaseAddResult.success) {
+						console.error('단일 스케줄 수정이 반복 스케줄로 수정 실패');
+						return;
 					}
+					console.log('단일 스케줄 수정이 반복 스케줄로 성공적으로 수정됨');
 				} else {
-					// 반복 설정 없으면 단일 스케줄 수정
 					const updatedSchedule = {
 						...schedule,
 						...updatedFields,
 					};
-					const editResult = await dispatch(editScheduleToFirestore(userId, [updatedSchedule]));
-					if (editResult.success) {
-						console.log('단일 스케줄이 단일 스케줄로 성공적으로 수정됨');
-					} else {
-						console.error('단일 스케줄 수정이 단일 스케줄로 수정 실패:', editResult.message);
+
+					// Firebase와 Supabase 수정
+					const firebaseEditResult = await dispatch(
+						editScheduleToFirestore(userId, [updatedSchedule]),
+					);
+					const supabaseEditResult = await dispatch(
+						editScheduleToSupabase(userId!, [updatedSchedule]),
+					);
+
+					if (!firebaseEditResult.success || !supabaseEditResult.success) {
+						console.error('단일 스케줄 수정 실패');
+						return;
 					}
+					console.log('단일 스케줄이 성공적으로 수정됨');
 				}
 			} catch (error) {
-				console.error('firestore에 스케줄 하나 수정 실패', error);
+				console.error('스케줄 수정 실패', error);
 			}
 		}
 	};

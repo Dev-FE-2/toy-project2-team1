@@ -237,6 +237,54 @@ export const removeScheduleToFirestore = (
 	};
 };
 
+export const addScheduleToSupabase = (
+	userId: string,
+	schedules: TSchedule[],
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
+	return async (dispatch) => {
+		try {
+			dispatch(setisLoading(true));
+
+			const { error: supabaseError } = await supabase.from('schedules').insert(
+				schedules.map((schedule) => ({
+					...schedule,
+					user_id: userId,
+					start_date_time:
+						schedule.start_date_time instanceof Date
+							? schedule.start_date_time.toISOString()
+							: schedule.start_date_time,
+					end_date_time:
+						schedule.end_date_time instanceof Date
+							? schedule.end_date_time.toISOString()
+							: schedule.end_date_time,
+					repeat_end_date:
+						schedule.repeat_end_date instanceof Date
+							? schedule.repeat_end_date.toISOString()
+							: schedule.repeat_end_date,
+					created_at: new Date().toISOString(),
+				})),
+			);
+
+			if (supabaseError) throw supabaseError;
+
+			dispatch(addSchedules(schedules));
+
+			return {
+				success: true,
+				message: 'Supabase에 스케줄을 성공적으로 추가했습니다.',
+			};
+		} catch (error) {
+			console.error('Supabase 스케줄 추가 실패:', error);
+			return {
+				success: false,
+				message: 'Supabase 스케줄 추가 중 오류가 발생했습니다.',
+			};
+		} finally {
+			dispatch(setisLoading(false));
+		}
+	};
+};
+
 // Supabase에서 스케줄 조회
 export const getSchedulesFromSupabase = (
 	userId: string,
@@ -302,6 +350,54 @@ export const removeScheduleFromSupabase = (
 			return {
 				success: false,
 				message: '스케줄 삭제 중 오류가 발생했습니다.',
+			};
+		} finally {
+			dispatch(setisLoading(false));
+		}
+	};
+};
+
+// Supabase 스케줄 수정
+export const editScheduleToSupabase = (
+	userId: string,
+	updatedSchedules: TSchedule[],
+): AppThunk<Promise<TScheduleApiResponse<void>>> => {
+	return async (dispatch) => {
+		try {
+			dispatch(setisLoading(true));
+
+			const { error } = await supabase.from('schedules').upsert(
+				updatedSchedules.map((schedule) => ({
+					...schedule,
+					start_date_time:
+						schedule.start_date_time instanceof Date
+							? schedule.start_date_time.toISOString()
+							: schedule.start_date_time,
+					end_date_time:
+						schedule.end_date_time instanceof Date
+							? schedule.end_date_time.toISOString()
+							: schedule.end_date_time,
+					repeat_end_date:
+						schedule.repeat_end_date instanceof Date
+							? schedule.repeat_end_date.toISOString()
+							: schedule.repeat_end_date,
+				})),
+				{ onConflict: 'schedule_id' },
+			);
+
+			if (error) throw error;
+
+			dispatch(editSchedules(updatedSchedules));
+
+			return {
+				success: true,
+				message: 'Supabase 스케줄을 성공적으로 수정했습니다.',
+			};
+		} catch (error) {
+			console.error('Supabase 스케줄 수정 실패:', error);
+			return {
+				success: false,
+				message: 'Supabase 스케줄 수정 중 오류가 발생했습니다.',
 			};
 		} finally {
 			dispatch(setisLoading(false));
