@@ -106,3 +106,4 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 		</S.CalenderContainer>
 	);
 };
+
