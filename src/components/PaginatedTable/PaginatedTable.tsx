@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import Table from '../table/table';
 import Pagination from '../pagination/pagination';
-import { ConfirmModal, Modal } from '@/components/modal/Modal';
+import { Modal } from '@/components/modal/Modal';
 import SalarySelect from '@/components/salaryselect/salarySelect';
 import ModalPortal from '@/components/modal/ModalPortal';
-import { Button } from '@/components';
-import { getDocs, collection } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { createClient } from '@supabase/supabase-js';
+import EditModal from './EditModal/editModal';
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 interface RowItem {
 	급여월: string;
@@ -16,19 +20,14 @@ interface RowItem {
 	id: string;
 }
 
-type Message = {
-	confirm: string;
-	leftBtn: string;
-	rightBtn: string;
-};
-
-// type BtnContent = {
-// 	btnText: string;
-// 	btnColor: string;
-// 	onClickBtn: () => void;
-// };
-
-const headerItems: string[] = ['급여월', '급여지급일', '지급총액', '실지급액', '급여명세'];
+const headerItems: string[] = [
+	'급여월',
+	'급여지급일',
+	'지급총액',
+	'실지급액',
+	'급여명세',
+	'정정신청',
+];
 
 const itemsPerPage = 5;
 
@@ -39,22 +38,36 @@ export default function PaginatedTable() {
 	const openModal = () => setIsModalOpen(true);
 	const closeModal = () => setIsModalOpen(false);
 
-	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-
-	const openConfirmModal = () => setIsConfirmModalOpen(true);
-	const closeConfirmModal = () => setIsConfirmModalOpen(false);
-
-	const message: Message = {
-		confirm: '급여 정정을 승인하시겠습니까?',
-		leftBtn: '네',
-		rightBtn: '아니오',
-	};
-
 	//데이터 상태
 	const [rowItems, setRowItems] = useState<RowItem[]>([]);
 	const [selectedYear, setSelectedYear] = useState<string>('2024');
 	const [selectedMonth, setSelectedMonth] = useState<string>('01');
 	const [filteredItems, setFilteredItems] = useState<RowItem[]>([]);
+
+	useEffect(() => {
+		const fetchAttendanceData = async () => {
+			const { data, error } = await supabase
+				.from('attendance')
+				.select('base_salary, total_salary, payment_day, payment_month,id,user_name')
+				.order('total_work_hours', { ascending: false });
+
+			if (error) {
+				console.error('Error fetching data:', error);
+			} else {
+				const reorderedData: RowItem[] = data.map((item) => ({
+					급여월: item.payment_month,
+					급여지급일: item.payment_day,
+					지급총액: item.base_salary,
+					실지급액: item.total_salary,
+					이름: item.user_name,
+					id: item.id,
+				}));
+				setRowItems(reorderedData);
+			}
+		};
+
+		fetchAttendanceData();
+	}, []);
 
 	//페이지네이션 변수들
 	const [currentPage, setCurrentPage] = useState(1);
@@ -68,23 +81,6 @@ export default function PaginatedTable() {
 	const paginatedData: RowItem[] = filteredItems.slice(startIndex, endIndex);
 
 	const totalPages = Math.ceil(rowItems.length / itemsPerPage);
-
-	useEffect(() => {
-		const fetchData = async () => {
-			try {
-				const querySnapshot = await getDocs(collection(db, 'attendance')); // 'attendance' 컬렉션 가져오기
-				const fetchedData = querySnapshot.docs.map((doc) => ({
-					id: doc.id, // 문서 ID 추가
-					...doc.data(), // 문서 데이터 추가
-				}));
-				setRowItems(fetchedData as RowItem[]); // 상태에 데이터 설정
-			} catch (error) {
-				console.error('Firestore 데이터를 가져오는 중 오류 발생:', error);
-			}
-		};
-
-		fetchData();
-	}, []);
 
 	//select로 데이터 필터해서 테이블에 데이터 띄울 훅
 	useEffect(() => {
@@ -115,26 +111,16 @@ export default function PaginatedTable() {
 					btnColor: 'blue',
 					onClickBtn: openModal,
 				}}
+				btnContent1={{
+					btnText: '정정신청',
+					btnColor: 'blue',
+					onClickBtn: openModal,
+				}}
 			>
 				{isModalOpen && (
 					<ModalPortal>
 						<Modal onClose={closeModal}>
-							{/* 모달 내용 */}
-							모달 내용
-							<Button color="blue" shape="line" onClick={openConfirmModal}>
-								처리하기
-							</Button>
-							{isConfirmModalOpen && (
-								<ModalPortal>
-									<ConfirmModal
-										onClose={closeConfirmModal}
-										message={message}
-										color={'blue'}
-										onClickLeftBtn={test1}
-										onClickRightBtn={test1}
-									/>
-								</ModalPortal>
-							)}
+							<EditModal data={paginatedData[0]} />
 						</Modal>
 					</ModalPortal>
 				)}
@@ -147,7 +133,3 @@ export default function PaginatedTable() {
 		</>
 	);
 }
-
-const test1 = () => {
-	console.log('test');
-};
