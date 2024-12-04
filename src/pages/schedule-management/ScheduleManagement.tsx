@@ -1,5 +1,5 @@
 import * as S from './ScheduleManagement.styles';
-import { CalendarComponent, ScheduleList, Loading } from '@/components';
+import { ScheduleList, Loading, CalendarComponent } from '@/components';
 import { useAppSelector } from '@/hooks/useRedux';
 // import { setisLoading } from '@/redux/actions/scheduleActions';
 

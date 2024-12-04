@@ -4,10 +4,14 @@ import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import { selectDate, filterSchedules } from '@/redux/actions/scheduleActions';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
-import { TSchedule, CalendarComponentProps } from '@/types/schedule';
+import { TSchedule } from '@/types/schedule';
 import { toDate } from '@/utils/dateFormatter';
 import { db } from '@/firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
+
+interface CalendarComponentProps {
+	isManagementPage?: boolean;
+}
 
 export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentProps) => {
 	const dispatch = useAppDispatch();
@@ -51,10 +55,7 @@ export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentPr
 	// 날짜 선택시 그 날짜, 그 날짜의 스케줄 필터링해서 전역 상태에 저장
 	const handleDateClick = (date: Date) => {
 		dispatch(selectDate(date));
-
 		const filteredS = filterSchedulesByDateAndSort(schedules, date);
-
-		console.log('filteredS:', filteredS); // 디버깅용
 
 		dispatch(filterSchedules(filteredS));
 	};
@@ -66,7 +67,8 @@ export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentPr
 				(a, b) =>
 					toDate(a.start_date_time).getTime() - toDate(b.start_date_time).getTime() ||
 					toDate(a.created_at).getTime() - toDate(b.created_at).getTime(),
-			);
+			)
+			.slice(0, 2);
 
 		return daySchedules.length > 0 ? (
 			<>

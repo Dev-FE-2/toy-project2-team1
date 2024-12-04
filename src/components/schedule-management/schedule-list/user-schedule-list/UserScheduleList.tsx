@@ -1,6 +1,6 @@
 import * as S from './UserScheduleList.styles';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { UserScheduleCard } from '../../schedule-card/UserScheduleCard';
+import { UserScheduleCard } from '../../schedule-card/user-schedule-card/UserScheduleCard';
 import { formatToKoreanDate, formatTime } from '@/utils/dateFormatter';
 import ScheduleModal from '../../schedule-modal/ScheduleModal';
 import { setIsModalOpen, addScheduleToSupabase } from '@/redux/actions/scheduleActions';
