@@ -2,37 +2,9 @@ import * as S from './Modal.styles';
 import { FaRegQuestionCircle } from 'react-icons/fa';
 import { IoCloseOutline } from 'react-icons/io5';
 import { Button } from '../button/Button';
+import { COLORS, TModalProps, TConfirmModalProps } from '@/types/modal';
 
-// 색상 데이터 상수
-const COLORS: Record<string, { dark: string; normal: string }> = {
-	red: { dark: 'coral-dark', normal: 'coral' },
-	blue: { dark: 'blue', normal: 'skyblue' },
-	green: { dark: 'green-dark', normal: 'green' },
-};
-
-// 유니언 타입으로 컬러 키를 정의
-type ColorType = keyof typeof COLORS;
-
-type Message = {
-	confirm: string;
-	leftBtn: string;
-	rightBtn: string;
-};
-
-interface ModalProps {
-	onClose: () => void;
-	children?: React.ReactNode;
-}
-
-interface ConfirmModalProps {
-	onClose: () => void;
-	message: Message;
-	color?: ColorType;
-	onClickLeftBtn: () => void;
-	onClickRightBtn: () => void;
-}
-
-export function Modal({ onClose, children }: ModalProps) {
+export function Modal({ onClose, children }: TModalProps) {
 	const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		if (event.target === event.currentTarget) {
 			onClose();
@@ -75,7 +47,7 @@ export function Modal({ onClose, children }: ModalProps) {
     <ConfirmModal
       onClose={closeConfirmModal}
       message={message}
-      color={'green-light'}
+      color={'green'}
       onClickLeftBtn={test}
       onClickRightBtn={test}
     />
@@ -88,7 +60,7 @@ export function ConfirmModal({
 	color = 'gray',
 	onClickLeftBtn,
 	onClickRightBtn,
-}: ConfirmModalProps) {
+}: TConfirmModalProps) {
 	const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
 		if (event.target === event.currentTarget) {
 			onClose();
@@ -102,7 +74,7 @@ export function ConfirmModal({
 					<IoCloseOutline />
 				</button>
 				<FaRegQuestionCircle
-					style={{ color: `var(--color-${COLORS[color].dark})` }}
+					style={{ color: `var(--color-${COLORS[color]?.dark})` }}
 					className="queistionIcon"
 				/>
 				<p>{message.confirm}</p>
@@ -114,7 +86,7 @@ export function ConfirmModal({
 				>
 					{message.leftBtn}
 				</Button>
-				<Button color={COLORS[color].normal} shape="line" onClick={onClickRightBtn}>
+				<Button color={COLORS[color]?.normal} shape="line" onClick={onClickRightBtn}>
 					{message.rightBtn}
 				</Button>
 			</S.ConfirmModalContent>
