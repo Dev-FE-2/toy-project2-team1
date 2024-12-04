@@ -32,7 +32,7 @@ export interface TCalendarState {
 	selectedDate: Date;
 	filteredSchedules: TSchedule[];
 	isLoading: boolean;
-	isModalOpen: boolean;
+	isScheduleModalOpen: boolean;
 }
 
 export type TScheduleState = TSchedules & TCalendarState;
@@ -55,7 +55,7 @@ import {
 	SELECT_DATE,
 	FILTERED_SCHEDULES,
 	SET_LOADING,
-	SET_MODAL_OPEN,
+	SET_SCHEDULE_MODAL_OPEN,
 } from '@/redux/actionTypes';
 
 export interface TGetSchedulesAction {
@@ -93,8 +93,8 @@ export interface TSetLoadingAction {
 	payload: boolean;
 }
 
-export interface TsetIsModalOpen {
-	type: typeof SET_MODAL_OPEN;
+export interface TsetIsScheduleModalOpen {
+	type: typeof SET_SCHEDULE_MODAL_OPEN;
 	payload: boolean;
 }
 
@@ -106,7 +106,7 @@ export type TScheduleActionTypes =
 	| TSelectDateAction
 	| TFilteredSchedulesAction
 	| TSetLoadingAction
-	| TsetIsModalOpen;
+	| TsetIsScheduleModalOpen;
 
 export interface TScheduleApiResponse<T> {
 	success: boolean;

@@ -8,11 +8,12 @@ import {
 	SELECT_DATE,
 	FILTERED_SCHEDULES,
 	SET_LOADING,
-	SET_MODAL_OPEN,
+	SET_SCHEDULE_MODAL_OPEN,
 	ADMIN_GET_SCHEDULES,
 } from '../actionTypes';
 import { supabase } from '../../../supabaseConfig';
 
+// suspanse로 바꿔야함
 export const setisLoading = (isLoading: boolean) => ({
 	type: SET_LOADING,
 	payload: isLoading,
@@ -24,8 +25,8 @@ export const getAdminSchedules = (schedules: TSchedule[]) => ({
 });
 
 //스케줄 추가, 수정 모달 상태
-export const setIsModalOpen = (isScheduleModalOpen: boolean) => ({
-	type: SET_MODAL_OPEN,
+export const setIsScheduleModalOpen = (isScheduleModalOpen: boolean) => ({
+	type: SET_SCHEDULE_MODAL_OPEN,
 	payload: isScheduleModalOpen,
 });
 

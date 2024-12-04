@@ -3,8 +3,9 @@ import { thunk, ThunkAction, ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
 import { createTransform, persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import scheduleReducer from './reducers/scheduleReducer';
 import userReducer from './reducers/userReducer';
+import modalReducer from './reducers/modalReducer';
+import scheduleReducer from './reducers/scheduleReducer';
 import { TSchedule } from '@/types/schedule';
 
 const dateTransform = createTransform(
@@ -25,13 +26,14 @@ const dateTransform = createTransform(
 const persistConfig = {
 	key: 'root',
 	storage,
-	whitelist: ['user', 'schedule'],
+	whitelist: ['user', 'modal', 'schedule'],
 	transforms: [dateTransform],
 };
 
 const rootReducer = combineReducers({
-	schedule: scheduleReducer,
 	user: userReducer,
+	modal: modalReducer,
+	schedule: scheduleReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;
