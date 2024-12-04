@@ -2,95 +2,64 @@ import * as S from '../Calendar.styles';
 import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import {
-	setisLoading,
-	getSchedules,
+	filterSchedules,
+	getSchedulesFromSupabase,
 	selectDate,
-	filteredSchedules,
 } from '@/redux/actions/scheduleActions';
-import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
 import { TSchedule, CalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
-import { toDate } from '@/utils/dateFormatter';
-import { db } from '@/firebaseConfig';
-import { onSnapshot, doc } from 'firebase/firestore';
+import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 
 export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentProps) => {
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
 	const user = useAppSelector((state) => state.user.user);
-
 	const userId = user?.id;
 
 	useEffect(() => {
 		console.log('isManagementPage:', isManagementPage);
 	}, [isManagementPage]);
 
-	// Firestore에서 스케줄 가져오기 - 무한 렌더링 막기 위해 Firestore의 실시간 리스너 사용
+	// supabase에서 스케줄 가져오기
 	useEffect(() => {
-		if (!userId) {
-			dispatch(setisLoading(false));
-			dispatch(getSchedules([]));
-			return;
-		}
+		if (!userId) return;
 
-		dispatch(setisLoading(true));
-		const userDocRef = doc(db, 'schedules', userId);
-
-		// 기본 리스너
-		const unsubscribe = onSnapshot(
-			userDocRef,
-			(doc) => {
-				if (doc.exists()) {
-					const schedules = doc.data().schedules || [];
-					dispatch(getSchedules(schedules));
-				}
-				dispatch(setisLoading(false));
-			},
-			(error) => {
-				console.error('스케줄 가져오는 중 오류 발생:', error);
-				dispatch(setisLoading(false));
-			},
-		);
-
-		return () => {
-			unsubscribe();
-			dispatch(setisLoading(false));
+		const init = async () => {
+			await dispatch(getSchedulesFromSupabase(userId));
 		};
+
+		init();
 	}, [userId]);
 
-	// 오늘 날짜(초기) 필터링
+	// 오늘 날짜 초기 필터링
 	useEffect(() => {
 		if (schedules.length > 0 && selectedDate) {
-			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate as Date);
-			dispatch(filteredSchedules(todaySchedules));
+			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate);
+			dispatch(filterSchedules(todaySchedules));
 		}
 	}, [selectedDate, schedules]);
 
-	// 날짜 선택시 그 날짜, 그 날짜의 스케줄 필터링해서 전역 상태에 저장
+	// 클릭한 날짜 필터링
 	const handleDateClick = (date: Date) => {
 		dispatch(selectDate(date));
-
 		const filteredS = filterSchedulesByDateAndSort(schedules, date);
-
-		// console.log('filteredS:', filteredS); // 디버깅용
-
-		dispatch(filteredSchedules(filteredS));
+		dispatch(filterSchedules(filteredS));
 	};
 
 	// 일정 있는 날짜에 바 표시
 	const tileContent = ({ date }: { date: Date }) => {
 		const daySchedules = schedules
 			.filter((schedule) => {
-				const scheduleDate = toDate(schedule.start_date_time);
+				const scheduleDate = new Date(schedule.start_date_time);
 				return scheduleDate.toDateString() === date.toDateString();
 			})
 			.sort((a, b) => {
-				const aDate = toDate(a.start_date_time);
-				const bDate = toDate(b.start_date_time);
+				const aDate = new Date(a.start_date_time);
+				const bDate = new Date(b.start_date_time);
 				return (
 					aDate.getTime() - bDate.getTime() ||
-					toDate(a.created_at).getTime() - toDate(b.created_at).getTime()
+					new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
 				);
 			})
 			.slice(0, 2);
@@ -112,7 +81,7 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 			<S.StyledCalendar
 				locale="ko-KR"
 				onClickDay={handleDateClick}
-				value={selectedDate as Date}
+				value={selectedDate}
 				view="month"
 				formatDay={formatCalendarDay}
 				calendarType="gregory" /* 일요일부터 시작 */

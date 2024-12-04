@@ -1,7 +1,7 @@
 import * as S from '../Calendar.styles';
 import { useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
-import { selectDate, filteredSchedules } from '@/redux/actions/scheduleActions';
+import { selectDate, filterSchedules } from '@/redux/actions/scheduleActions';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
 import { TSchedule, CalendarComponentProps } from '@/types/schedule';
@@ -45,7 +45,7 @@ export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentPr
 	useEffect(() => {
 		if (schedules.length > 0 && selectedDate) {
 			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate as Date);
-			dispatch(filteredSchedules(todaySchedules));
+			dispatch(filterSchedules(todaySchedules));
 		}
 	}, [dispatch, selectedDate, schedules]);
 	// 날짜 선택시 그 날짜, 그 날짜의 스케줄 필터링해서 전역 상태에 저장
@@ -56,7 +56,7 @@ export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentPr
 
 		console.log('filteredS:', filteredS); // 디버깅용
 
-		dispatch(filteredSchedules(filteredS));
+		dispatch(filterSchedules(filteredS));
 	};
 
 	const tileContent = ({ date }: { date: Date }) => {

@@ -1,9 +1,7 @@
-import { Timestamp } from 'firebase/firestore';
 import { z } from 'zod';
 export type TScheduleCategory = 'ticket' | 'snack' | 'floor';
 export type TScheduleShiftType = 'open' | 'middle' | 'close';
 export type TScheduleRepeatCycle = 'everyDay' | 'everyWeek' | 'everyMonth';
-export type TDate = Date | Timestamp; // firestore에서는 Timestamp로 저장됨
 
 export interface TSchedule {
 	schedule_id: string;
@@ -11,14 +9,14 @@ export interface TSchedule {
 	user_name: string;
 	user_alias: string;
 	category: TScheduleCategory;
-	start_date_time: TDate;
+	start_date_time: Date;
 	time: string;
-	end_date_time: TDate; // 계산된 종료 시간
+	end_date_time: Date; // 계산된 종료 시간
 	schedule_shift_type: TScheduleShiftType; // 계산된 오픈, 미들, 마감
-	repeat?: TScheduleRepeatCycle;
-	repeat_end_date?: TDate;
-	created_at: TDate;
-	description?: string;
+	repeat?: TScheduleRepeatCycle | null;
+	repeat_end_date?: Date | null;
+	created_at: Date;
+	description?: string | null;
 }
 
 export interface TSchedules {
@@ -26,16 +24,21 @@ export interface TSchedules {
 }
 
 export interface TCalendarState {
-	selectedDate: Date | Timestamp;
+	selectedDate: Date;
 	filteredSchedules: TSchedule[];
 	isLoading: boolean;
-	isScheduleModalOpen: boolean;
+	isModalOpen: boolean;
 }
 
 export type TScheduleState = TSchedules & TCalendarState;
 
 export interface CalendarComponentProps {
 	isManagementPage?: boolean;
+}
+
+export interface UserScheduleCardProps {
+	schedule: TSchedule;
+	shouldShowTime: boolean;
 }
 
 // action types
@@ -47,7 +50,7 @@ import {
 	SELECT_DATE,
 	FILTERED_SCHEDULES,
 	SET_LOADING,
-	SET_SCHEDULE_MODAL_OPEN,
+	SET_MODAL_OPEN,
 } from '@/redux/actionTypes';
 
 export interface TGetSchedulesAction {
@@ -85,8 +88,8 @@ export interface TSetLoadingAction {
 	payload: boolean;
 }
 
-export interface TsetIsScheduleModalOpen {
-	type: typeof SET_SCHEDULE_MODAL_OPEN;
+export interface TsetIsModalOpen {
+	type: typeof SET_MODAL_OPEN;
 	payload: boolean;
 }
 
@@ -98,7 +101,7 @@ export type TScheduleActionTypes =
 	| TSelectDateAction
 	| TFilteredSchedulesAction
 	| TSetLoadingAction
-	| TsetIsScheduleModalOpen;
+	| TsetIsModalOpen;
 
 export interface TScheduleApiResponse<T> {
 	success: boolean;

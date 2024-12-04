@@ -6,7 +6,6 @@ import storage from 'redux-persist/lib/storage';
 import scheduleReducer from './reducers/scheduleReducer';
 import userReducer from './reducers/userReducer';
 import { TSchedule } from '@/types/schedule';
-import { toDate } from '@/utils/dateFormatter';
 
 const dateTransform = createTransform(
 	null, // 저장 시 자동으로 문자열로 변환됨
@@ -15,9 +14,9 @@ const dateTransform = createTransform(
 		selectedDate: new Date((state as { selectedDate: string }).selectedDate),
 		schedules: (state as { schedules?: TSchedule[] })?.schedules?.map((schedule) => ({
 			...schedule,
-			start_date_time: toDate(schedule.start_date_time),
-			created_at: toDate(schedule.created_at),
-			repeat_end_date: schedule.repeat_end_date ? toDate(schedule.repeat_end_date) : undefined,
+			start_date_time: new Date(schedule.start_date_time),
+			created_at: new Date(schedule.created_at),
+			repeat_end_date: schedule.repeat_end_date ? new Date(schedule.repeat_end_date) : undefined,
 		})),
 	}),
 	{ whitelist: ['schedule'] },
