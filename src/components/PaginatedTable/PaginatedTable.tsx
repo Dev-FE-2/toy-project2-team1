@@ -117,17 +117,6 @@ export default function PaginatedTable() {
 					setSelectedMonth(value1);
 				}}
 			/>
-			<SalarySelect
-				value={selectedYear}
-				value1={selectedMonth}
-				onChange={(value) => {
-					setSelectedYear(value);
-					setSelectedMonth('');
-				}}
-				onChange1={(value1) => {
-					setSelectedMonth(value1);
-				}}
-			/>
 			<Table
 				data={paginatedData}
 				headerItems={headerItems}
