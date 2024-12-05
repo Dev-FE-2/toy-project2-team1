@@ -47,7 +47,7 @@ export function SalaryManagement() {
 	const headerItems: string[] = ['신청인', '급여월', '급여지급일', '지급예정금액', '상태'];
 	const [attendanceRequestData, setAttendanceRequestData] = useState<ManageRowItem[]>([]);
 	const [selectedYear, setSelectedYear] = useState<string>('2024');
-	const [selectedMonth, setSelectedMonth] = useState<string>('02');
+	const [selectedMonth, setSelectedMonth] = useState<string>('01');
 
 	//페이지네이션 변수들
 	const [currentPage, setCurrentPage] = useState(1);
@@ -84,7 +84,6 @@ export function SalaryManagement() {
 			} else {
 				totalCount = count || 0;
 			}
-			console.log(totalCount);
 			setTotalPage(Math.ceil(totalCount / pageSize));
 		};
 
@@ -106,11 +105,10 @@ export function SalaryManagement() {
 				)
 				.eq('attendance.payment_month', `${selectedYear}-${selectedMonth}`)
 				.order('created_at', { ascending: false })
-				.range(startIndex, endIndex);
+				.range(startIndex, endIndex - 1);
 			if (error) {
 				console.error('Error fetching data:', error);
 			} else {
-				console.log(data);
 				const reorderedData: ManageRowItem[] = data.map((item) => ({
 					신청인: item?.attendance?.user_name,
 					급여월: item.attendance?.payment_month,
@@ -123,11 +121,7 @@ export function SalaryManagement() {
 		};
 		getAttendanceRuestCount();
 		fetchAttendanceRequestData();
-	}, [selectedYear, selectedMonth]);
-
-	useEffect(() => {
-		console.log('attendanceRequestData has been updated:', attendanceRequestData);
-	}, [attendanceRequestData]);
+	}, [selectedYear, selectedMonth, currentPage]);
 
 	const message: Message = {
 		confirm: '급여 정정을 승인하시겠습니까?',
