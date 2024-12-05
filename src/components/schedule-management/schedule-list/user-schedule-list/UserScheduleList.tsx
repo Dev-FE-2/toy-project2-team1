@@ -1,34 +1,18 @@
 import * as S from './UserScheduleList.styles';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { UserScheduleCard } from '../../schedule-card/UserScheduleCard';
-import { formatToKoreanDate, toDate } from '@/utils/dateFormatter';
+import { UserScheduleCard } from '../../schedule-card/user-schedule-card/UserScheduleCard';
+import { formatToKoreanDate, formatTime } from '@/utils/dateFormatter';
 import ScheduleModal from '../../schedule-modal/ScheduleModal';
-import { addScheduleToFirestore, setIsScheduleModalOpen } from '@/redux/actions/scheduleActions';
-import { TSchedule } from '@/types/schedule';
+import { setIsScheduleAddModalOpen } from '@/redux/actions/ModalActions';
 import { ScheduleAddButton } from '../../schedule-add-button/ScheduleAddButton';
-import { auth } from '@/firebaseConfig';
 
 export const UserScheduleList = () => {
 	const dispatch = useAppDispatch();
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
 	const filteredSchedules = useAppSelector((state) => state.schedule.filteredSchedules);
-	const isScheduleModalOpen = useAppSelector((state) => state.schedule.isScheduleModalOpen);
+	const isScheduleAddModalOpen = useAppSelector((state) => state.modal.isScheduleAddModalOpen);
 
-	const handleScheduleAddButtonClick = async () => {
-		dispatch(setIsScheduleModalOpen(true));
-	};
-
-	const handleSubmit = async (schedules: TSchedule[]) => {
-		const userId = auth.currentUser?.uid;
-		if (!userId) return;
-
-		const addResult = await dispatch(addScheduleToFirestore(userId, schedules));
-		if (addResult.success) {
-			dispatch(setIsScheduleModalOpen(false));
-		} else {
-			console.error('firestore에 스케줄 추가 실패:', addResult.message);
-		}
-	};
+	// console.log('filteredSchedules in userList',filteredSchedules)
 
 	// 이전 스케줄의 end_date_time과 현재 스케줄의 start_date_time 비교해 ui 설정
 	const getTimeDisplay = (index: number) => {
@@ -38,14 +22,14 @@ export const UserScheduleList = () => {
 			return false;
 		}
 
-		const currentStartTime = String(toDate(filteredSchedules[index].start_date_time)).slice(16, 21);
+		const currentStartTime = formatTime(new Date(filteredSchedules[index].start_date_time));
+
 		const prevSchedule = index > 0 ? filteredSchedules[index - 1] : null;
 		const prevEndTime = prevSchedule?.end_date_time
-			? String(toDate(prevSchedule.end_date_time)).slice(16, 21)
+			? formatTime(new Date(prevSchedule.end_date_time))
 			: null;
 
 		const shouldShowTime = !prevEndTime || prevEndTime !== currentStartTime;
-
 		return shouldShowTime; // 시간 2개 표시(-) 여부
 	};
 
@@ -55,7 +39,7 @@ export const UserScheduleList = () => {
 				<h3>
 					{selectedDate ? (
 						<>
-							<S.DateText>{formatToKoreanDate(selectedDate as Date)}</S.DateText> 의 업무
+							<S.DateText>{formatToKoreanDate(selectedDate)}</S.DateText> 의 업무
 						</>
 					) : (
 						'Loading...'
@@ -74,19 +58,10 @@ export const UserScheduleList = () => {
 				)}
 				<ScheduleAddButton
 					className="schedule-add-button"
-					onClick={() => {
-						handleScheduleAddButtonClick();
-					}}
+					onClick={() => dispatch(setIsScheduleAddModalOpen(true))}
 				/>
 			</S.ScheduleListContainer>
-			{isScheduleModalOpen && (
-				<ScheduleModal
-					type="scheduleUser"
-					mode="add"
-					onSubmit={handleSubmit}
-					onClose={() => dispatch(setIsScheduleModalOpen(false))}
-				/>
-			)}
+			{isScheduleAddModalOpen && <ScheduleModal type="scheduleUser" mode="add" />}
 		</>
 	);
 };

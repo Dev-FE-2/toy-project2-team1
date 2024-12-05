@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Table from '../table/table';
 import Pagination from '../pagination/pagination';
 import { Modal } from '@/components/modal/Modal';
@@ -33,6 +34,7 @@ const headerItems: string[] = [
 const itemsPerPage = 5;
 
 export default function PaginatedTable() {
+	//모달창 변수들
 	//모달창 변수들
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [modalType, setModalType] = useState<'edit' | 'detail' | null>(null);
@@ -92,6 +94,7 @@ export default function PaginatedTable() {
 	const startIndex = (currentPage - 1) * itemsPerPage;
 	const endIndex = startIndex + itemsPerPage;
 	const paginatedData: RowItem[] = filteredItems.slice(startIndex, endIndex);
+	const paginatedData: RowItem[] = filteredItems.slice(startIndex, endIndex);
 
 	const totalPages = Math.ceil(rowItems.length / itemsPerPage);
 
@@ -105,6 +108,17 @@ export default function PaginatedTable() {
 
 	return (
 		<>
+			<SalarySelect
+				value={selectedYear}
+				value1={selectedMonth}
+				onChange={(value) => {
+					setSelectedYear(value);
+					setSelectedMonth('');
+				}}
+				onChange1={(value1) => {
+					setSelectedMonth(value1);
+				}}
+			/>
 			<SalarySelect
 				value={selectedYear}
 				value1={selectedMonth}
