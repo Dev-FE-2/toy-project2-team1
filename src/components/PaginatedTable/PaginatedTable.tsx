@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useState, useEffect } from 'react';
 import Table from '../table/table';
 import Pagination from '../pagination/pagination';
 import { Modal } from '@/components/modal/Modal';
@@ -93,7 +92,6 @@ export default function PaginatedTable() {
 
 	const startIndex = (currentPage - 1) * itemsPerPage;
 	const endIndex = startIndex + itemsPerPage;
-	const paginatedData: RowItem[] = filteredItems.slice(startIndex, endIndex);
 	const paginatedData: RowItem[] = filteredItems.slice(startIndex, endIndex);
 
 	const totalPages = Math.ceil(rowItems.length / itemsPerPage);
