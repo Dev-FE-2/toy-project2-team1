@@ -19,7 +19,7 @@ export interface RowItem {
 type BtnContent = {
 	btnText: string;
 	btnColor: string;
-	onClickBtn: () => void;
+	onClickBtn: (row?: RowItem) => void;
 };
 
 export default function Table({
@@ -47,7 +47,7 @@ export default function Table({
 								<InnerLists key={idx1}>{row[header as keyof RowItem] ?? ''}</InnerLists>
 							))}
 							<InnerLists>
-								<Button color={btnContent.btnColor} onClick={btnContent.onClickBtn}>
+								<Button color={btnContent.btnColor} onClick={() => btnContent.onClickBtn(row)}>
 									{btnContent.btnText}
 								</Button>
 								{children}
