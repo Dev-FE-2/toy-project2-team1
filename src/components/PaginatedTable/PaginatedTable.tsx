@@ -6,6 +6,7 @@ import SalarySelect from '@/components/salaryselect/salarySelect';
 import ModalPortal from '@/components/modal/ModalPortal';
 import { createClient } from '@supabase/supabase-js';
 import EditModal from './EditModal/editModal';
+import DetailModal from './DetailModal/detailModal';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -34,9 +35,17 @@ const itemsPerPage = 5;
 export default function PaginatedTable() {
 	//모달창 변수들
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [modalType, setModalType] = useState<'edit' | 'detail' | null>(null);
 
-	const openModal = () => setIsModalOpen(true);
-	const closeModal = () => setIsModalOpen(false);
+	const openModal = (type: 'edit' | 'detail') => {
+		console.log('Opening modal:', type); // 디버깅용
+		setIsModalOpen(true);
+		setModalType(type);
+	};
+	const closeModal = () => {
+		setIsModalOpen(false);
+		setModalType(null);
+	};
 
 	//데이터 상태
 	const [rowItems, setRowItems] = useState<RowItem[]>([]);
@@ -48,7 +57,9 @@ export default function PaginatedTable() {
 		const fetchAttendanceData = async () => {
 			const { data, error } = await supabase
 				.from('attendance')
-				.select('base_salary, total_salary, payment_day, payment_month,id,user_name')
+				.select(
+					'base_salary, total_salary, payment_day, payment_month,id,user_name,tax_deduction,insurance_deduction',
+				)
 				.order('total_work_hours', { ascending: false });
 
 			if (error) {
@@ -60,6 +71,8 @@ export default function PaginatedTable() {
 					지급총액: item.base_salary,
 					실지급액: item.total_salary,
 					이름: item.user_name,
+					보험공제: item.tax_deduction,
+					세금공제: item.insurance_deduction,
 					id: item.id,
 				}));
 				setRowItems(reorderedData);
@@ -109,18 +122,19 @@ export default function PaginatedTable() {
 				btnContent={{
 					btnText: '확인하기',
 					btnColor: 'blue',
-					onClickBtn: openModal,
+					onClickBtn: () => openModal('detail'),
 				}}
 				btnContent1={{
 					btnText: '정정신청',
 					btnColor: 'blue',
-					onClickBtn: openModal,
+					onClickBtn: () => openModal('edit'),
 				}}
 			>
 				{isModalOpen && (
 					<ModalPortal>
 						<Modal onClose={closeModal}>
-							<EditModal data={paginatedData[0]} />
+							{modalType === 'detail' && <DetailModal data={paginatedData[0]} />}
+							{modalType === 'edit' && <EditModal data={paginatedData[0]} />}
 						</Modal>
 					</ModalPortal>
 				)}

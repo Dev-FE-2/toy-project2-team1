@@ -54,7 +54,7 @@ export default function Table({
 							</InnerLists>
 							{headerItems.length > 5 && (
 								<InnerLists>
-									<Button color={btnContent.btnColor} onClick={btnContent.onClickBtn}>
+									<Button color={btnContent.btnColor} onClick={btnContent1.onClickBtn}>
 										{btnContent1.btnText}
 									</Button>
 									{children}
