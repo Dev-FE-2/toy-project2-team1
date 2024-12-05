@@ -8,7 +8,7 @@ export type TScheduleRepeatCycle = 'everyDay' | 'everyWeek' | 'everyMonth';
 // export type TDate = Date | Timestamp;
 //
 
-export type TDate = Date | string;
+export type TDate = Date | string; // supabase에 ISOstring으로 저장됨
 
 export interface TSchedule {
 	schedule_id: string;
