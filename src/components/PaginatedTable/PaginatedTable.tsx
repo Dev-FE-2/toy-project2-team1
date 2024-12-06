@@ -18,6 +18,7 @@ interface RowItem {
 	급여지급일: string;
 	지급총액: string;
 	실지급액: string;
+	이름: string;
 	id: string;
 }
 
