@@ -50,15 +50,20 @@ export default function useScheduleManage(userId: string | null, schedules: TSch
 
 				if (!addResult.success) throw new Error('전체 수정 중 추가 실패');
 			} else {
-				const deleteResult = await dispatch(
-					removeScheduleFromSupabase(userId, [schedule.schedule_id]),
-				);
-
-				if (!deleteResult.success) throw new Error('단일 수정 전 삭제 실패');
-
-				// 단일 스케줄 수정시에도 repeat, repeat_end_date (반복 설정) 있으면 반복 배열 추가
+				// 단일 스케줄 수정
+				// repeat, repeat_end_date (반복 설정) 있으면 반복 배열 추가
 				const hasRepeat = schedule.repeat && schedule.repeat_end_date;
 				if (hasRepeat) {
+					// 반복 설정 있으면 일단 전체 스케줄 삭제
+					const schedulesToDelete = filteredRepeatSchedules(schedule, schedules);
+					const scheduleIdsToDelete = schedulesToDelete.map((s) => s.schedule_id);
+
+					const deleteResult = await dispatch(
+						removeScheduleFromSupabase(userId, scheduleIdsToDelete),
+					);
+
+					if (!deleteResult.success) throw new Error('단일 수정 전 삭제 실패');
+
 					// 반복 배열 생성, 추가
 					const updatedSchedules = generateRepeatingSchedules({
 						...schedule,
