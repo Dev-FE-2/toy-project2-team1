@@ -77,15 +77,15 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 			: null;
 
 	// 디버깅용
-	console.log({
-		errors: errors,
-		noneStartDateTimeError: noneStartDateTimeError,
-		noneEndDateError: noneEndDateError,
-		repeatEndDateError: repeatEndDateError,
-		isSubmitting: isSubmitting,
-		data: watch(),
-		currentUser: user,
-	});
+	// console.log({
+	// 	errors: errors,
+	// 	noneStartDateTimeError: noneStartDateTimeError,
+	// 	noneEndDateError: noneEndDateError,
+	// 	repeatEndDateError: repeatEndDateError,
+	// 	isSubmitting: isSubmitting,
+	// 	data: watch(),
+	// 	currentUser: user,
+	// });
 
 	// 날짜 선택시 분을 00으로 초기화
 	const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -150,8 +150,9 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 				await handleAddSchedule(newSchedules);
 				dispatch(setIsScheduleAddModalOpen(false)); // 일정 추가 모달 닫기
 			} else {
-				// edit 모드이고 반복 일정인 경우
+				// edit 모드
 				if (selectedSchedule) {
+					// 반복 일정인 경우
 					const repeatedSchedules = filteredRepeatSchedules(selectedSchedule, schedules);
 					const isRecurring = repeatedSchedules.length > 1;
 
@@ -160,10 +161,11 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 						dispatch(setIsConfirmModalOpen(true));
 						return; // 모달 응답 기다림
 					}
+
+					// 반복이 아닌 일정은 바로 수정
+					await handleEditSchedule(selectedSchedule, scheduleData, false);
+					dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
 				}
-				// 반복이 아닌 일정은 바로 수정
-				await handleEditSchedule(scheduleData, false);
-				dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
 			}
 		} catch (error) {
 			console.error('폼 제출 실패:', error);
@@ -174,9 +176,11 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 	const handleConfirmEdit = async (editAll: boolean) => {
 		try {
 			if (!pendingScheduleData) return;
-			await handleEditSchedule(pendingScheduleData, editAll);
-			dispatch(setIsConfirmModalOpen(false));
-			dispatch(setIsScheduleEditModalOpen(false));
+			if (selectedSchedule) {
+				await handleEditSchedule(selectedSchedule, pendingScheduleData, editAll);
+				dispatch(setIsConfirmModalOpen(false));
+				dispatch(setIsScheduleEditModalOpen(false));
+			}
 		} catch (error) {
 			console.error('스케줄 수정 실패:', error);
 		}
