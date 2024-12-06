@@ -24,6 +24,7 @@ export const setSelectedSchedule = (schedule: TSchedule | null) => ({
 	payload: schedule,
 });
 
+// 안쓰고 있음
 export const getAdminSchedules = (schedules: TSchedule[]) => ({
 	type: ADMIN_GET_SCHEDULES,
 	payload: schedules,
@@ -59,6 +60,7 @@ export const filterSchedules = (schedules: TSchedule[]) => ({
 	payload: schedules,
 });
 
+// Supabase에 스케줄 추가
 export const addScheduleToSupabase = (
 	userId: string,
 	schedules: TSchedule[],
@@ -103,16 +105,20 @@ export const addScheduleToSupabase = (
 
 // Supabase에서 스케줄 조회
 export const getSchedulesFromSupabase = (
-	userId: string,
+	userId?: string,
 ): AppThunk<Promise<TScheduleApiResponse<void>>> => {
 	return async (dispatch): Promise<TScheduleApiResponse<void>> => {
 		try {
-			const { data, error } = await supabase.from('schedules').select('*').eq('user_id', userId);
+			let query = supabase.from('schedules').select('*');
+			if (userId) {
+				query = query.eq('user_id', userId);
+			}
+
+			const { data, error } = await query;
 
 			if (error) throw error;
 
-			// timestamp 문자열을 Date 객체로 변환
-			const convertedData = data.map((schedule) => ({
+			const convertedSchedules = data.map((schedule) => ({
 				...schedule,
 				start_date_time: new Date(schedule.start_date_time),
 				end_date_time: new Date(schedule.end_date_time),
@@ -120,7 +126,7 @@ export const getSchedulesFromSupabase = (
 				created_at: new Date(schedule.created_at),
 			}));
 
-			dispatch(getSchedules(convertedData));
+			dispatch(getSchedules(convertedSchedules));
 
 			return {
 				success: true,
@@ -212,7 +218,7 @@ export const editScheduleToSupabase = (
 	};
 };
 
-// Supabase에서 스케줄 조회
+// 삭제 가능
 export const getAdminSchedulesSuperbase = (): AppThunk<Promise<TScheduleApiResponse<void>>> => {
 	return async (dispatch) => {
 		try {

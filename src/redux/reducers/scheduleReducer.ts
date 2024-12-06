@@ -14,6 +14,13 @@ import {
 } from '../actionTypes';
 import { AnyAction } from 'redux';
 
+// 중복 제거 함수
+function dedupeSchedules(schedules: TSchedule[]): TSchedule[] {
+	return Array.from(
+		new Map(schedules.map((schedule) => [schedule.schedule_id, schedule])).values(),
+	);
+}
+
 const initialState: TScheduleState = {
 	schedules: [],
 	selectedDate: new Date(),
@@ -32,23 +39,30 @@ export default function scheduleReducer(
 		case SET_SELECTED_SCHEDULE:
 			return { ...state, selectedSchedule: action.payload };
 		case GET_SCHEDULES:
-			return { ...state, schedules: action.payload, isLoading: false };
+			return { ...state, schedules: dedupeSchedules(action.payload), isLoading: false };
 		case ADD_SCHEDULES:
-			return { ...state, schedules: [...state.schedules, ...action.payload], isLoading: false };
+			return {
+				...state,
+				schedules: dedupeSchedules([...state.schedules, ...action.payload]),
+				isLoading: false,
+			};
+		// 사용하지 않고 있음
 		case ADMIN_GET_SCHEDULES: {
-			const uniqueSchedules = [...state.schedules, ...action.payload].filter(
-				(schedule, index, self) =>
-					index === self.findIndex((s) => s.schedule_id === schedule.schedule_id),
-			);
-			return { ...state, schedules: uniqueSchedules, isLoading: false };
+			return {
+				...state,
+				schedules: dedupeSchedules([...state.schedules, ...action.payload]),
+				isLoading: false,
+			};
 		}
 		case EDIT_SCHEDULES: {
-			const updatedSchedules = state.schedules.map((s) => {
-				const updated = action.payload.find(
-					(edit: TSchedule) => edit.schedule_id === s.schedule_id,
-				);
-				return updated ? updated : s;
-			});
+			const scheduleMap = new Map(
+				state.schedules.map((schedule) => [schedule.schedule_id, schedule]),
+			);
+			action.payload.forEach((schedule: TSchedule) =>
+				scheduleMap.set(schedule.schedule_id, schedule),
+			);
+			const updatedSchedules = Array.from(scheduleMap.values());
+
 			return {
 				...state,
 				schedules: updatedSchedules,
