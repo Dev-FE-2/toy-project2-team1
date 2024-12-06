@@ -10,7 +10,6 @@ import {
 	FILTERED_SCHEDULES,
 	SET_LOADING,
 	SET_SELECTED_SCHEDULE,
-	ADMIN_GET_SCHEDULES,
 } from '../actionTypes';
 import { AnyAction } from 'redux';
 
@@ -46,14 +45,6 @@ export default function scheduleReducer(
 				schedules: dedupeSchedules([...state.schedules, ...action.payload]),
 				isLoading: false,
 			};
-		// 사용하지 않고 있음
-		case ADMIN_GET_SCHEDULES: {
-			return {
-				...state,
-				schedules: dedupeSchedules([...state.schedules, ...action.payload]),
-				isLoading: false,
-			};
-		}
 		case EDIT_SCHEDULES: {
 			const scheduleMap = new Map(
 				state.schedules.map((schedule) => [schedule.schedule_id, schedule]),

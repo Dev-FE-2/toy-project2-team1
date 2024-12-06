@@ -5,7 +5,7 @@ import {
 	setIsConfirmModalOpen,
 	setIsScheduleAddModalOpen,
 	setIsScheduleEditModalOpen,
-} from '@/redux/actions/ModalActions';
+} from '@/redux/actions/modalActions';
 import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
 import {
 	TSchedule,
