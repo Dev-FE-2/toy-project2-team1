@@ -20,14 +20,17 @@ export const formatToKoreanTime = (date: Date) => {
  * 화면에는 KST로 표시
  * 날짜 비교도 KST 기준으로 수행
  */
-// UTC -> KST 변환 (날짜)
+
+// UTC -> KST 변환 (yyyy-MM-ddTHH:mm 형식)
+export const formatDateTime = (utcDate: Date) => {
+	const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
+	return kstDate.toISOString().slice(0, 16);
+};
+
+// UTC -> KST 변환 (yyyy-MM-dd 형식)
 export const formatDate = (utcDate: Date) => {
-	return new Intl.DateTimeFormat('ko-KR', {
-		timeZone: 'Asia/Seoul',
-		year: 'numeric',
-		month: 'numeric',
-		day: 'numeric',
-	}).format(utcDate);
+	const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
+	return kstDate.toISOString().slice(0, 10);
 };
 
 // UTC -> KST 변환 (시간)
