@@ -7,10 +7,10 @@ import {
 	Register,
 	Profile,
 	SalaryManagement,
+	SalaryDetails,
 	CorrectionRequest,
 	ScheduleManagement,
 	NotFound,
-	SalaryDetails,
 } from '../pages';
 
 export const router = createBrowserRouter([
