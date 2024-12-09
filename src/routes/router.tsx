@@ -5,6 +5,7 @@ import {
 	Home,
 	Login,
 	Register,
+	Profile,
 	SalaryDetails,
 	CorrectionRequest,
 	ScheduleManagement,
@@ -24,7 +25,7 @@ export const router = createBrowserRouter([
 				path: '/profile',
 				element: (
 					<ProtectedRoute>
-						<></>
+						<Profile />
 					</ProtectedRoute>
 				),
 			},
