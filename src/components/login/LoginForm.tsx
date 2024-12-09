@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { useState } from 'react';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import * as S from '@/components/login/Login.styles';
 import { auth } from '@/firebaseConfig';
 import { LoginFormData, LoginFormErrors } from '@/types/login';
 // import { User } from '@/types/auth';
-import { getDoc, doc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { setUser, clearUser } from '@/redux/actions/userAction';
+import { clearUser } from '@/redux/actions/userAction';
 import { validateLoginForm, getAuthErrorMessage } from '@/components/login/LoginValidation';
 import { Loading } from '@/pages';
+import { useLoginAuthObserver } from '@/hooks/useLoginAuthObserver';
 
 export function LoginForm() {
 	// const [user, setUser] = useState<TUser | null>(null);
@@ -25,36 +24,7 @@ export function LoginForm() {
 	const { user, isAuthInitialized } = useAppSelector((state) => state.user);
 
 	// 파이어베이스 auth 상태 변경 감지 -> 로그인 상태 확인
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-			// setUser(currentUser);
-			// setIsAuthInitialized(true);
-			if (currentUser) {
-				// Firestore에서 유저 정보 가져오기
-				const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-				const additionalData = userDoc.data();
-
-				const userData = {
-					id: currentUser.uid,
-					email: currentUser.email,
-					userName: additionalData?.user_name ?? '',
-					userAlias: additionalData?.user_alias ?? '',
-					age: additionalData?.age ?? 0,
-					role: additionalData?.role ?? '',
-					gender: additionalData?.gender ?? '',
-					position: additionalData?.position ?? '',
-					shiftType: additionalData?.shift_type ?? '',
-				};
-
-				dispatch(setUser(userData));
-			} else {
-				dispatch(clearUser());
-			}
-			// setIsAuthInitialized(true);
-		});
-
-		return () => unsubscribe();
-	}, []);
+	useLoginAuthObserver();
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;

@@ -11,6 +11,7 @@ export interface TUser {
 	gender: string;
 	position: string;
 	shiftType: string;
+	created_at: string;
 }
 export interface AuthState {
 	user: TUser | null;
@@ -83,3 +84,34 @@ export const COMMON_ERROR_MESSAGES = {
 		age: '올바른 나이를 입력해주세요',
 	},
 } as const;
+
+interface FirebaseUser {
+	uid: string;
+	email: string | null;
+}
+
+interface UserData {
+	user_name?: string;
+	user_alias?: string;
+	age?: number;
+	role?: string;
+	gender?: string;
+	position?: string;
+	shift_type?: string;
+	created_at?: string;
+}
+
+export const formatUserData = (currentUser: FirebaseUser, additionalData?: UserData): TUser => {
+	return {
+		id: currentUser.uid,
+		email: currentUser.email,
+		userName: additionalData?.user_name ?? '',
+		userAlias: additionalData?.user_alias ?? '',
+		age: additionalData?.age ?? 0,
+		role: additionalData?.role ?? '',
+		gender: additionalData?.gender ?? '',
+		position: additionalData?.position ?? '',
+		shiftType: additionalData?.shift_type ?? '',
+		created_at: additionalData?.created_at ?? '',
+	};
+};

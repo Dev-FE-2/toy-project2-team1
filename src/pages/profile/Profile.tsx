@@ -15,6 +15,12 @@ import { db } from '@/firebaseConfig';
 import { setUser, clearUser } from '@/redux/actions/userAction';
 import { Navigate } from 'react-router-dom';
 
+// 날짜 변환 함수 추가
+const formatDate = (dateString: string) => {
+	const date = new Date(dateString);
+	return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+};
+
 export function Profile() {
 	const dispatch = useAppDispatch();
 	const { user, isAuthInitialized } = useAppSelector((state) => state.user);
@@ -45,6 +51,7 @@ export function Profile() {
 					gender: additionalData?.gender ?? '',
 					position: additionalData?.position ?? '',
 					shiftType: additionalData?.shift_type ?? '',
+					created_at: additionalData?.created_at ?? '',
 				};
 
 				dispatch(setUser(userData));
@@ -102,7 +109,7 @@ export function Profile() {
 				<S.FormField>
 					<S.Label>전화번호</S.Label>
 					<S.Value>
-						<S.Input value="010-1234-5678" disabled={!isEditing} />
+						<S.Input value="firestore에 필드 추가 예정" disabled={!isEditing} />
 					</S.Value>
 				</S.FormField>
 
@@ -143,7 +150,7 @@ export function Profile() {
 				<S.FormField>
 					<S.Label>입사일</S.Label>
 					<S.Value>
-						<S.Input value="2023년 1월 1일" disabled />
+						<S.Input value={formData.created_at ? formatDate(formData.created_at) : ''} disabled />
 					</S.Value>
 				</S.FormField>
 
