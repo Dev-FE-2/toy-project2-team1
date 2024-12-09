@@ -10,7 +10,6 @@ import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
 import {
 	TSchedule,
 	scheduleSchema,
-	scheduleAdminSchema,
 	TFormValues,
 	TScheduleRepeatCycle,
 	SCHEDULE_CATEGORY_OPTIONS,
@@ -21,6 +20,7 @@ import calculateScheduleShiftType from '@/utils/calculateScheduleShiftType';
 import calculateEndDateTime from '@/utils/calculateEndDateTime';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import filteredRepeatSchedules from '@/utils/filteredRepeatSchedules';
+import { formatDateTime, formatDate } from '@/utils/dateFormatter';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { v4 as uuidv4 } from 'uuid';
 import { useForm } from 'react-hook-form';
@@ -48,37 +48,58 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 
 	const { handleAddSchedule, handleEditSchedule } = useScheduleManage(userId ?? null, schedules);
 
-	const schema = type === 'scheduleAdmin' ? scheduleAdminSchema : scheduleSchema;
-
 	const {
 		register,
 		handleSubmit,
 		formState: { isSubmitting, errors, touchedFields },
 		setValue, // 시작 날짜 분 없애는 용
-		watch, // 디버깅용
+		watch,
+		trigger,
 	} = useForm<TFormValues>({
-		resolver: zodResolver(schema),
+		resolver: zodResolver(scheduleSchema),
 		mode: 'onChange',
+		defaultValues: {
+			category: '',
+			start_date_time: '',
+			time: '',
+			repeat: undefined,
+			repeat_end_date: undefined,
+			description: '',
+		},
 	});
 
-	// 디버깅용
-	console.log({
-		errors: errors,
-		isSubmitting: isSubmitting,
-		data: watch(),
-		currentUser: user,
-	});
+	// 컴포넌트가 마운트되면 즉시 validation 실행
+	useEffect(() => {
+		trigger(['category', 'time']);
+	}, [trigger]);
 
 	const startDateTime = watch('start_date_time'); // 시작 일시 값 감시
+	const repeatCycle = watch('repeat'); // 반복 주기 감시
 	const repeatEndDate = watch('repeat_end_date'); // 종료일 값 감시
 
 	// 실시간으로 에러 메시지 생성
 	const noneStartDateTimeError = !startDateTime ? '시작일시를 선택해주세요' : null;
-	const noneEndDateError = !repeatEndDate ? '종료일을 선택해주세요' : null;
+	const noneRepeatCycleError = isRepeatActive && !repeatCycle ? '반복주기를 선택해주세요' : null;
+	const noneEndDateError = isRepeatActive && !repeatEndDate ? '종료일을 선택해주세요' : null;
 	const repeatEndDateError =
-		repeatEndDate && startDateTime && new Date(repeatEndDate) < new Date(startDateTime)
+		isRepeatActive &&
+		repeatEndDate &&
+		startDateTime &&
+		new Date(repeatEndDate) < new Date(startDateTime)
 			? '반복 종료일은 시작일 이후여야 합니다'
 			: null;
+
+	// 디버깅용
+	console.log({
+		errors: errors,
+		noneStartDateTimeError: noneStartDateTimeError,
+		noneRepeatCycleError: noneRepeatCycleError,
+		noneEndDateError: noneEndDateError,
+		repeatEndDateError: repeatEndDateError,
+		isSubmitting: isSubmitting,
+		data: watch(),
+		currentUser: user,
+	});
 
 	// 날짜 선택시 분을 00으로 초기화
 	const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -96,20 +117,14 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 		if (mode === 'edit' && selectedSchedule) {
 			setValue('category', selectedSchedule.category);
 			// datetime-local input을 위한 날짜 포맷팅
-			const formattedStartDate = new Date(selectedSchedule.start_date_time)
-				.toISOString()
-				.slice(0, 16);
-			setValue('start_date_time', formattedStartDate);
+			setValue('start_date_time', formatDateTime(new Date(selectedSchedule.start_date_time)));
 			setValue('time', selectedSchedule.time);
 			setValue('description', selectedSchedule.description || '');
 			if (selectedSchedule.repeat && selectedSchedule.repeat_end_date) {
 				setIsRepeatActive(true);
 				// date input을 위한 날짜 포맷팅
-				const formattedEndDate = new Date(selectedSchedule.repeat_end_date)
-					.toISOString()
-					.slice(0, 10);
 				setValue('repeat', selectedSchedule.repeat);
-				setValue('repeat_end_date', formattedEndDate);
+				setValue('repeat_end_date', formatDate(new Date(selectedSchedule.repeat_end_date)));
 			}
 		}
 	}, [mode, selectedSchedule, setValue]);
@@ -149,8 +164,9 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 				await handleAddSchedule(newSchedules);
 				dispatch(setIsScheduleAddModalOpen(false)); // 일정 추가 모달 닫기
 			} else {
-				// edit 모드이고 반복 일정인 경우
+				// edit 모드
 				if (selectedSchedule) {
+					// 반복 일정인 경우
 					const repeatedSchedules = filteredRepeatSchedules(selectedSchedule, schedules);
 					const isRecurring = repeatedSchedules.length > 1;
 
@@ -159,10 +175,11 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 						dispatch(setIsConfirmModalOpen(true));
 						return; // 모달 응답 기다림
 					}
+
+					// 반복이 아닌 일정은 바로 수정
+					await handleEditSchedule(selectedSchedule, scheduleData, false);
+					dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
 				}
-				// 반복이 아닌 일정은 바로 수정
-				await handleEditSchedule(scheduleData, false);
-				dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
 			}
 		} catch (error) {
 			console.error('폼 제출 실패:', error);
@@ -173,9 +190,11 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 	const handleConfirmEdit = async (editAll: boolean) => {
 		try {
 			if (!pendingScheduleData) return;
-			await handleEditSchedule(pendingScheduleData, editAll);
-			dispatch(setIsConfirmModalOpen(false));
-			dispatch(setIsScheduleEditModalOpen(false));
+			if (selectedSchedule) {
+				await handleEditSchedule(selectedSchedule, pendingScheduleData, editAll);
+				dispatch(setIsConfirmModalOpen(false));
+				dispatch(setIsScheduleEditModalOpen(false));
+			}
 		} catch (error) {
 			console.error('스케줄 수정 실패:', error);
 		}
@@ -243,6 +262,7 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 							<S.InputWrapper>
 								<S.DateTimeInput
 									type="datetime-local"
+									id="start_date_time"
 									{...register('start_date_time', {
 										onChange: (e) => {
 											handleDateTimeChange(e);
@@ -258,12 +278,15 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 								<S.TimeWrapper>
 									<S.TimeInput
 										type="text"
+										id="time"
 										{...register('time')}
-										error={errors.time ? true : undefined}
+										error={touchedFields.time && errors.time ? true : undefined}
 									/>
 									<span>시간</span>
 								</S.TimeWrapper>
-								{errors.time && <S.ErrorMessage>{errors.time.message}</S.ErrorMessage>}
+								{touchedFields.time && errors.time && (
+									<S.ErrorMessage>{errors.time.message}</S.ErrorMessage>
+								)}
 							</S.InputWrapper>
 						</S.ModalScheduleDateInput>
 
@@ -285,7 +308,7 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 									<S.InputWrapper>
 										<S.StyledSelect
 											{...register('repeat')}
-											$error={errors.repeat ? true : undefined}
+											$error={touchedFields.repeat && noneRepeatCycleError ? true : undefined}
 										>
 											<option value="">반복 주기</option>
 											{Object.values(SCHEDULE_REPEAT_CYCLE_OPTIONS).map(({ value, label }) => (
@@ -294,14 +317,16 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 												</option>
 											))}
 										</S.StyledSelect>
-										{errors.repeat && <S.ErrorMessage>{errors.repeat.message}</S.ErrorMessage>}
+										{touchedFields.repeat && noneRepeatCycleError && (
+											<S.ErrorMessage>{noneRepeatCycleError}</S.ErrorMessage>
+										)}
 									</S.InputWrapper>
 									<S.InputWrapper>
 										<S.DateTimeInput
 											type="date"
 											{...register('repeat_end_date')}
 											error={
-												touchedFields.repeat_end_date && (noneEndDateError || repeatEndDateError)
+												(touchedFields.repeat_end_date && noneEndDateError) || repeatEndDateError
 													? true
 													: undefined
 											}
@@ -333,16 +358,20 @@ const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 									</S.WorkLi>
 								))}
 							</S.WorkUl>
-							{errors.category && <S.ErrorMessage>{errors.category.message}</S.ErrorMessage>}
+							{touchedFields.category && errors.category && (
+								<S.ErrorMessage>{errors.category.message}</S.ErrorMessage>
+							)}
 						</S.InputWrapper>
 
 						<S.InputWrapper>
 							<S.DescriptionInput
 								{...register('description')}
 								placeholder={'업무에 대한 설명을 작성해주세요.'}
-								error={errors.description ? true : undefined}
+								error={touchedFields.description && errors.description ? true : undefined}
 							/>
-							{errors.description && <S.ErrorMessage>{errors.description.message}</S.ErrorMessage>}
+							{touchedFields.description && errors.description && (
+								<S.ErrorMessage>{errors.description.message}</S.ErrorMessage>
+							)}
 						</S.InputWrapper>
 
 						<S.ButtonContainer>
