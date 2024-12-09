@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
+import { useAppSelector } from '@/hooks/useRedux';
 import * as S from './Profile.styles';
 import { TUser } from '@/types/auth';
 import {
@@ -8,12 +8,9 @@ import {
 	ROLE_OPTIONS,
 	GENDER_OPTIONS,
 } from '@/types/register';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/firebaseConfig';
-import { getDoc, doc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import { setUser, clearUser } from '@/redux/actions/userAction';
+
 import { Navigate } from 'react-router-dom';
+import { useLoginAuthObserver } from '@/hooks/useLoginAuthObserver';
 
 // 날짜 변환 함수 추가
 const formatDate = (dateString: string) => {
@@ -22,7 +19,6 @@ const formatDate = (dateString: string) => {
 };
 
 export function Profile() {
-	const dispatch = useAppDispatch();
 	const { user, isAuthInitialized } = useAppSelector((state) => state.user);
 	const [isEditing, setIsEditing] = useState(false);
 	const [formData, setFormData] = useState<TUser | null>(null);
@@ -33,35 +29,7 @@ export function Profile() {
 	const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
 	const [selectedShiftTypes, setSelectedShiftTypes] = useState<string[]>([]);
 
-	useEffect(() => {
-		// auth 상태 변경 감지
-		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-			if (currentUser) {
-				// Firestore에서 유저 정보 가져오기
-				const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-				const additionalData = userDoc.data();
-
-				const userData = {
-					id: currentUser.uid,
-					email: currentUser.email,
-					userName: additionalData?.user_name ?? '',
-					userAlias: additionalData?.user_alias ?? '',
-					age: additionalData?.age ?? 0,
-					role: additionalData?.role ?? '',
-					gender: additionalData?.gender ?? '',
-					position: additionalData?.position ?? '',
-					shiftType: additionalData?.shift_type ?? '',
-					created_at: additionalData?.created_at ?? '',
-				};
-
-				dispatch(setUser(userData));
-			} else {
-				dispatch(clearUser());
-			}
-		});
-
-		return () => unsubscribe();
-	}, [dispatch]);
+	useLoginAuthObserver();
 
 	useEffect(() => {
 		if (user) {
