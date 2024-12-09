@@ -26,6 +26,13 @@ export interface ManageRowItem extends RowItem {
 	신청id: string;
 }
 
+interface ModalConfig {
+	message: TMessage;
+	color: string;
+	onClickLeftBtn: () => void;
+	onClickRightBtn: () => void;
+}
+
 export function SalaryManagement() {
 	const getBtnContent = (row: RowItem | ManageRowItem) => {
 		if ('상태' in row) {
@@ -45,7 +52,7 @@ export function SalaryManagement() {
 				case '반려':
 					return {
 						btnText: '반려',
-						btnColor: 'red',
+						btnColor: 'coral-dark',
 						onClickBtn: (row) => openModal(row),
 					};
 				default:
@@ -98,31 +105,28 @@ export function SalaryManagement() {
 		requestSalary: 0,
 	});
 
-	useEffect(() => {
-		console.log(JSON.stringify(formData));
-	}, [formData]);
-
-	const updateAttendanceRuest = async () => {
-		console.log(selectedRow);
-		console.log('UPDATE :: ' + JSON.stringify(formData));
-
+	const updateAttendanceRuest = async (status) => {
 		if (!formData.requestId || !formData.selectOption) {
 			alert('필수 항목이 비어있습니다.');
 			return;
 		}
 
 		try {
-			// attendance의 total_salary 변경
-			const { error: attendanceError } = await supabase
-				.from('attendance')
-				.update({
-					total_salary: formData.requestSalary,
-				})
-				.eq('id', `${formData.attendanceId}`);
+			if (status === '승인') {
+				// attendance의 total_salary 변경
+				const { error: attendanceError } = await supabase
+					.from('attendance')
+					.update({
+						total_salary: formData.requestSalary,
+					})
+					.eq('id', `${formData.attendanceId}`);
 
-			if (attendanceError) {
-				console.error('Error updating Attendance data: ', attendanceError);
+				if (attendanceError) {
+					console.error('Error updating Attendance data: ', attendanceError);
+				}
 			}
+
+			// attendance_request의 상태 변경
 			const { error: requestError } = await supabase
 				.from('attendance_request')
 				.update({
@@ -139,6 +143,7 @@ export function SalaryManagement() {
 			console.error('Error occured: ', error);
 			alert('처리 반영에 오류가 발생했습니다');
 		}
+
 		alert('처리가 완료되었습니다.');
 		location.reload();
 	};
@@ -162,13 +167,6 @@ export function SalaryManagement() {
 		}
 	}, [formData]);
 
-	interface ModalConfig {
-		message: TMessage;
-		color: string;
-		onClickLeftBtn: () => void;
-		onClickRightBtn: () => void;
-	}
-
 	// selectOption에 맞는 Modal 설정을 반환하는 함수
 	const getModalConfig = (selectOption: string): ModalConfig => {
 		switch (selectOption) {
@@ -180,7 +178,7 @@ export function SalaryManagement() {
 						rightBtn: '아니오',
 					},
 					color: 'blue',
-					onClickLeftBtn: () => updateAttendanceRuest(),
+					onClickLeftBtn: () => updateAttendanceRuest('승인'),
 					onClickRightBtn: () => closeConfirmModal(),
 				};
 			case '반려':
@@ -191,7 +189,7 @@ export function SalaryManagement() {
 						rightBtn: '아니오',
 					},
 					color: 'red',
-					onClickLeftBtn: () => console.log('반려 왼쪽 버튼 클릭'),
+					onClickLeftBtn: () => updateAttendanceRuest('반려'),
 					onClickRightBtn: () => closeConfirmModal(),
 				};
 			default:
@@ -399,9 +397,16 @@ export function SalaryManagement() {
 									</S.Row>
 								</S.Form>
 							</S.ModalComponent>
-							<Button color="blue" shape="line" onClick={openConfirmModal}>
-								처리하기
-							</Button>
+							{selectedRow.상태 === '대기중' && (
+								<Button color="blue" shape="line" onClick={openConfirmModal}>
+									처리하기
+								</Button>
+							)}
+							{selectedRow.상태 !== '대기중' && (
+								<Button color="dark-gray" shape="fill" onClick={() => {}}>
+									처리완료
+								</Button>
+							)}
 							{isConfirmModalOpen && (
 								<ModalPortal>
 									<ConfirmModal
