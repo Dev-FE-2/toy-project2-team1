@@ -334,6 +334,10 @@ export function SalaryManagement() {
 		fetchAttendanceRequestData();
 	}, [selectedYear, selectedMonth, currentPage]);
 
+	useEffect(() => {
+		setCurrentPage(1);
+	}, [selectedYear, selectedMonth]);
+
 	return (
 		<S.SalaryManagementContainer>
 			<SalarySelect
