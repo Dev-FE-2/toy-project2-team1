@@ -22,7 +22,7 @@ export interface ManageRowItem extends RowItem {
 	상태: string;
 	정정신청금액: number;
 	사유: string;
-	처리사유: string;
+	처리사유: string | null;
 	신청id: string;
 }
 
@@ -32,6 +32,25 @@ interface ModalConfig {
 	onClickLeftBtn: () => void;
 	onClickRightBtn: () => void;
 }
+
+interface AttendanceData { 
+	user_name: string; 
+	payment_month: string; 
+	payment_day: string; 
+	total_salary: number; 
+	id: string; 
+	}; 
+	
+	interface RequestData { 
+	attendance: AttendanceData | AttendanceData[];
+	created_at: string; 
+	status: string; 
+	id: string; 
+	requested_amount: number; 
+	reason: string; 
+	status_reason: string | null; 
+	};
+	
 
 export function SalaryManagement() {
 	const getBtnContent = (row: RowItem | ManageRowItem) => {
@@ -258,7 +277,7 @@ export function SalaryManagement() {
 				`,
 					{ count: 'exact' },
 				)
-				.eq('attendance.payment_month', `${selectedYear}-${selectedMonth}`);
+				.like('attendance.payment_month', `${selectedYear}-${selectedMonth}%`);
 			if (countError) {
 				console.error('Error fetching total count:', countError);
 			} else {
@@ -287,24 +306,27 @@ export function SalaryManagement() {
 					)
 				`,
 				)
-				.eq('attendance.payment_month', `${selectedYear}-${selectedMonth}`)
+				.like('attendance.payment_month', `${selectedYear}-${selectedMonth}%`)
 				.order('created_at', { ascending: false })
 				.range(startIndex, endIndex - 1);
 			if (error) {
 				console.error('Error fetching data:', error);
 			} else {
-				const reorderedData: ManageRowItem[] = data.map((item) => ({
-					신청인: item?.attendance?.user_name,
-					급여월: item.attendance?.payment_month,
-					급여지급일: item.attendance?.payment_day,
-					지급예정금액: item.attendance?.total_salary,
-					id: item.attendance?.id,
-					상태: item.status,
-					사유: item.reason,
-					정정신청금액: item.requested_amount,
-					처리사유: item.status_reason,
-					신청id: item.id,
-				}));
+				console.log(data)
+				const reorderedData: ManageRowItem[] = data.map((item: RequestData) => {
+					const attendance = Array.isArray(item.attendance) ? item.attendance[0] : item.attendance
+					return {
+						신청인: attendance?.user_name,
+						급여월: attendance?.payment_month,
+						급여지급일: attendance?.payment_day,
+						지급예정금액: attendance?.total_salary,
+						id: attendance?.id,
+						상태: item.status,
+						사유: item.reason,
+						정정신청금액: item.requested_amount,
+						처리사유: item.status_reason,
+						신청id: item.id,
+					}});
 				setAttendanceRequestData(reorderedData);
 			}
 		};
@@ -388,7 +410,7 @@ export function SalaryManagement() {
 												value={
 													selectedRow.상태 === '대기중'
 														? formData.statusReason
-														: selectedRow.처리사유
+														: selectedRow.처리사유 || ''
 												}
 												disabled={selectedRow.상태 !== '대기중'}
 												onChange={handleStatusReasonChange}
