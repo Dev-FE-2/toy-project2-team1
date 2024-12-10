@@ -33,24 +33,23 @@ interface ModalConfig {
 	onClickRightBtn: () => void;
 }
 
-interface AttendanceData { 
-	user_name: string; 
-	payment_month: string; 
-	payment_day: string; 
-	total_salary: number; 
-	id: string; 
-	}; 
-	
-	interface RequestData { 
+interface AttendanceData {
+	user_name: string;
+	payment_month: string;
+	payment_day: string;
+	total_salary: number;
+	id: string;
+}
+
+interface RequestData {
 	attendance: AttendanceData | AttendanceData[];
-	created_at: string; 
-	status: string; 
-	id: string; 
-	requested_amount: number; 
-	reason: string; 
-	status_reason: string | null; 
-	};
-	
+	created_at: string;
+	status: string;
+	id: string;
+	requested_amount: number;
+	reason: string;
+	status_reason: string | null;
+}
 
 export function SalaryManagement() {
 	const getBtnContent = (row: RowItem | ManageRowItem) => {
@@ -312,9 +311,9 @@ export function SalaryManagement() {
 			if (error) {
 				console.error('Error fetching data:', error);
 			} else {
-				console.log(data)
+				console.log(data);
 				const reorderedData: ManageRowItem[] = data.map((item: RequestData) => {
-					const attendance = Array.isArray(item.attendance) ? item.attendance[0] : item.attendance
+					const attendance = Array.isArray(item.attendance) ? item.attendance[0] : item.attendance;
 					return {
 						신청인: attendance?.user_name,
 						급여월: attendance?.payment_month,
@@ -326,7 +325,8 @@ export function SalaryManagement() {
 						정정신청금액: item.requested_amount,
 						처리사유: item.status_reason,
 						신청id: item.id,
-					}});
+					};
+				});
 				setAttendanceRequestData(reorderedData);
 			}
 		};
