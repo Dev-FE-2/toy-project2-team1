@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
+
+import useSupabaseData from './EditModal/hook/useSupabaseData';
 import Table, { RowItem } from '../table/Table';
 import Pagination from '../pagination/pagination';
 import { Modal } from '@/components/modal/Modal';
 import SalarySelect from '@/components/salaryselect/SalarySelect';
 import ModalPortal from '@/components/modal/ModalPortal';
-import { createClient } from '@supabase/supabase-js';
 import EditModal from './EditModal/editModal';
 import DetailModal from './DetailModal/detailModal';
-
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const headerItems: string[] = [
 	'급여월',
@@ -30,7 +26,6 @@ export default function PaginatedTable() {
 	const [modalType, setModalType] = useState<'edit' | 'detail' | null>(null);
 
 	const openModal = (type: 'edit' | 'detail') => {
-		console.log('Opening modal:', type); // 디버깅용
 		setIsModalOpen(true);
 		setModalType(type);
 	};
@@ -40,37 +35,12 @@ export default function PaginatedTable() {
 	};
 
 	//데이터 상태
-	const [rowItems, setRowItems] = useState<RowItem[]>([]);
 	const [selectedYear, setSelectedYear] = useState<string>('2024');
 	const [selectedMonth, setSelectedMonth] = useState<string>('01');
 	const [filteredItems, setFilteredItems] = useState<RowItem[]>([]);
 
-	useEffect(() => {
-		const fetchAttendanceData = async () => {
-			const { data, error } = await supabase
-				.from('attendance')
-				.select('*')
-				.order('total_work_hours', { ascending: false });
-
-			if (error) {
-				console.error('Error fetching data:', error);
-			} else {
-				const reorderedData: RowItem[] = data.map((item) => ({
-					급여월: item.payment_month,
-					급여지급일: item.payment_day,
-					지급총액: item.base_salary,
-					실지급액: item.total_salary,
-					이름: item.user_name,
-					보험공제: item.tax_deduction,
-					세금공제: item.insurance_deduction,
-					id: item.id,
-				}));
-				setRowItems(reorderedData);
-			}
-		};
-
-		fetchAttendanceData();
-	}, []);
+	//supabase 조회 커스텀훅
+	const { rowItems: rowItems } = useSupabaseData();
 
 	//페이지네이션 변수들
 	const [currentPage, setCurrentPage] = useState(1);
@@ -128,7 +98,7 @@ export default function PaginatedTable() {
 					<ModalPortal>
 						<Modal onClose={closeModal}>
 							{modalType === 'detail' && <DetailModal data={paginatedData[0]} />}
-							{modalType === 'edit' && <EditModal data={paginatedData[0]} />}
+							{modalType === 'edit' && <EditModal data={paginatedData[0] as RowItem} />}
 						</Modal>
 					</ModalPortal>
 				)}

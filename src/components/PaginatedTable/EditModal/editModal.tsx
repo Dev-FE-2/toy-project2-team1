@@ -5,16 +5,17 @@ import { createClient } from '@supabase/supabase-js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-interface EditModalProps {
-	data: {
-		id: string;
-		이름: string;
-		급여월: string;
-		급여지급일: string;
-		실지급액: string;
-	};
-}
-export default function EditModal({ data }: EditModalProps) {
+
+// interface EditModalProps {
+// 	data: {
+// 		id: string;
+// 		이름: string;
+// 		급여월: string;
+// 		급여지급일: string;
+// 		실지급액: string;
+// 	};
+// }
+export default function EditModal({ data }) {
 	const [updatedAmount, setUpdatedAmount] = useState('');
 	const [reason, setReason] = useState('');
 	const [file, setFile] = useState<File | null>(null);
