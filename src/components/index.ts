@@ -7,3 +7,4 @@ export { Loading } from './loading/Loading';
 export { RegisterForm } from '@/components/register/RegisterForm';
 export { CalendarComponent } from './schedule-management/calendar/Calender';
 export { ScheduleList } from './schedule-management/schedule-list/ScheduleList';
+export { AdminCalendarComponent } from './schedule-management/calendar/admin-calender/AdminCalender';
