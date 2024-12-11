@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 
+import dayjs from 'dayjs';
 import useSupabaseData from './EditModal/hook/useSupabaseData';
 import Table, { RowItem } from '../table/Table';
 import Pagination from '../pagination/pagination';
@@ -38,9 +39,30 @@ export default function PaginatedTable() {
 	const [selectedYear, setSelectedYear] = useState<string>('2024');
 	const [selectedMonth, setSelectedMonth] = useState<string>('01');
 	const [filteredItems, setFilteredItems] = useState<RowItem[]>([]);
+	const [diffInDays, setDiffInDays] = useState<number | null>(null);
 
 	//supabase 조회 커스텀훅
 	const { rowItems: rowItems } = useSupabaseData();
+
+	//정정신청가능/불가능 판별
+	useEffect(() => {
+		if (rowItems.length > 0) {
+			const salaryDate = rowItems[Number(selectedMonth) - 1].급여지급일;
+			console.log('급여지급일:', salaryDate);
+
+			const supabaseDate = dayjs(salaryDate, 'YYYY-MM-DD');
+			if (supabaseDate.isValid()) {
+				const today = dayjs();
+				const difference = supabaseDate.diff(today, 'day');
+				setDiffInDays(difference);
+			} else {
+				console.error('유효하지 않은 날짜 형식:', salaryDate);
+			}
+		}
+	}, [rowItems, filteredItems]);
+
+	const btnText =
+		diffInDays !== null ? (diffInDays >= -14 ? '정정신청' : '정정신청불가') : '정정신청불가';
 
 	//페이지네이션 변수들
 	const [currentPage, setCurrentPage] = useState(1);
@@ -89,10 +111,11 @@ export default function PaginatedTable() {
 				headerItems={headerItems}
 				btnContent={getBtnContent}
 				btnEdit={{
-					btnText: '정정신청',
+					btnText: btnText,
 					btnColor: 'blue',
 					onClickBtn: () => openModal('edit'),
 				}}
+				condition={diffInDays}
 			>
 				{isModalOpen && (
 					<ModalPortal>
