@@ -65,8 +65,9 @@ export function LoginForm() {
 
 		try {
 			await signInWithEmailAndPassword(auth, formData.email, formData.password);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		} catch (error) {
-			const errorMessage = getAuthErrorMessage(error);
+			const errorMessage = getAuthErrorMessage();
 			setErrors({ password: errorMessage });
 		} finally {
 			setIsLoading(false);
