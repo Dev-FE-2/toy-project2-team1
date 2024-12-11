@@ -23,6 +23,7 @@ export function LoginForm() {
 
 	// 파이어베이스 auth 상태 변경 감지 -> 로그인 상태 확인
 	useLoginAuthObserver();
+	useLoginAuthObserver();
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -63,6 +64,7 @@ export function LoginForm() {
 
 		try {
 			await signInWithEmailAndPassword(auth, formData.email, formData.password);
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		} catch (error) {
 			const errorMessage = getAuthErrorMessage();
