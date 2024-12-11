@@ -3,13 +3,8 @@ import * as S from './Calendar.styles';
 import { TSchedule, CalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import useIsAdmin from '@/hooks/useIsAdmin';
-import {
-	filterSchedules,
-	getSchedulesFromSupabase,
-	selectDate,
-} from '@/redux/actions/scheduleActions';
+import { getSchedulesFromSupabase, selectDate } from '@/redux/actions/scheduleActions';
 import { formatCalendarDay } from '@/utils/dateFormatter';
-import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 
 export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) => {
 	const dispatch = useAppDispatch();
@@ -44,10 +39,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 
 	// 클릭한 날짜 필터링
 	const handleDateClick = (date: Date) => {
-		// console.log('Clicked Date:', date);
 		dispatch(selectDate(date));
-		const filteredS = filterSchedulesByDateAndSort(schedules, date);
-		dispatch(filterSchedules(filteredS));
 	};
 
 	// 일정 있는 날짜에 바 표시

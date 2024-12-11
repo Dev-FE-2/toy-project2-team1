@@ -19,7 +19,7 @@ import {
 	setIsScheduleEditModalOpen,
 } from '@/redux/actions/modalActions';
 import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
-import { getAdminEmplyeeSchedules } from '@/redux/actions/emplyeeActions';
+import { getAdminEmployeeSchedules } from '@/redux/actions/employeeActions';
 import { Toggle } from '../../toggle/Toggle';
 import { Button } from '../../button/Button';
 import { ModalPortal, ConfirmModal } from '@/components';
@@ -235,7 +235,7 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 	};
 
 	const handleEmplyoeeSearhClick = () => {
-		dispatch(getAdminEmplyeeSchedules(searchTerm));
+		dispatch(getAdminEmployeeSchedules(searchTerm));
 	};
 
 	const handleClickOutside = (event: MouseEvent) => {
@@ -255,9 +255,9 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 		if (debounce) {
 			if (debounce.length > 0) {
 				setSearchListOpen(false);
-				dispatch(getAdminEmplyeeSchedules(debounce));
+				dispatch(getAdminEmployeeSchedules(debounce));
 			} else {
-				dispatch(getAdminEmplyeeSchedules(''));
+				dispatch(getAdminEmployeeSchedules(''));
 			}
 		}
 	}, [debounce]);

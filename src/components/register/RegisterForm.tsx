@@ -5,9 +5,7 @@ import {
 	RegisterFormErrors,
 	RegisterFormProps,
 	ROLE_OPTIONS,
-	POSITION_OPTIONS,
 	GENDER_OPTIONS,
-	SHIFT_TYPE_OPTIONS,
 } from '@/types/register';
 import { validateForm } from './FormValidation';
 
@@ -19,10 +17,8 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 		role: '',
 		gender: '',
 		age: '',
-		position: '',
 		userName: '',
 		userAlias: '',
-		shiftType: '',
 	});
 	const [errors, setErrors] = useState<RegisterFormErrors>({});
 
@@ -101,44 +97,6 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 						</S.FormField>
 
 						<S.FormField>
-							<S.Label htmlFor="role">역할</S.Label>
-							<S.Select
-								id="position"
-								name="position"
-								value={formData.position}
-								onChange={handleInputChange}
-								$validation={errors.position ? 'invalid' : 'default'}
-							>
-								<option value="">선택하세요</option>
-								{Object.values(POSITION_OPTIONS).map((position) => (
-									<option key={position.value} value={position.value}>
-										{position.label}
-									</option>
-								))}
-							</S.Select>
-							{errors.position && <S.ErrorMessage>{errors.position}</S.ErrorMessage>}
-						</S.FormField>
-
-						<S.FormField>
-							<S.Label htmlFor="shiftType">시간 타입</S.Label>
-							<S.Select
-								id="shiftType"
-								name="shiftType"
-								value={formData.shiftType}
-								onChange={handleInputChange}
-								$validation={errors.gender ? 'invalid' : 'default'}
-							>
-								<option value="">선택하세요</option>
-								{Object.values(SHIFT_TYPE_OPTIONS).map((shiftType) => (
-									<option key={shiftType.label} value={shiftType.value}>
-										{shiftType.label}
-									</option>
-								))}
-							</S.Select>
-							{errors.gender && <S.ErrorMessage>{errors.gender}</S.ErrorMessage>}
-						</S.FormField>
-
-						<S.FormField>
 							<S.Label htmlFor="role">직책</S.Label>
 							<S.Select
 								id="role"
@@ -154,7 +112,7 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 									</option>
 								))}
 							</S.Select>
-							{errors.position && <S.ErrorMessage>{errors.position}</S.ErrorMessage>}
+							{errors.role && <S.ErrorMessage>{errors.role}</S.ErrorMessage>}
 						</S.FormField>
 
 						<S.FormField>

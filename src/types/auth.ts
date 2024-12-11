@@ -9,8 +9,6 @@ export interface TUser {
 	age: number;
 	role: string;
 	gender: string;
-	position: string;
-	shiftType: string;
 }
 export interface AuthState {
 	user: TUser | null;

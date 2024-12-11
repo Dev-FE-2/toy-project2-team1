@@ -3,13 +3,15 @@ import * as S from './Navbar.styles';
 import { Link } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { getDoc, doc } from 'firebase/firestore';
+import { persistor } from '@/redux/store'; //ㅇㅇㅇㅇㅇ
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { setUser, clearUser } from '@/redux/actions/userAction';
+import { setUser, clearUser } from '@/redux/actions/userActions';
 import { db, auth } from '@/firebaseConfig';
+import { clearSchedules } from '@/redux/actions/scheduleActions';
 
 export function Navbar() {
 	const dispatch = useAppDispatch();
-	const { user } = useAppSelector((state) => state.user);
+	const user = useAppSelector((state) => state.user.user);
 
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -25,8 +27,6 @@ export function Navbar() {
 					age: additionalData?.age ?? 0,
 					role: additionalData?.role ?? '',
 					gender: additionalData?.gender ?? '',
-					position: additionalData?.position ?? '',
-					shiftType: additionalData?.shift_type ?? '',
 				};
 
 				dispatch(setUser(userData));
@@ -36,12 +36,13 @@ export function Navbar() {
 		});
 
 		return () => unsubscribe();
-	}, [dispatch]);
+	}, []);
 
 	const handleLogout = async () => {
 		try {
+			await persistor.purge(); // Redux Persist 저장소 초기화
+			dispatch(clearSchedules()); // Redux 상태 초기화
 			await signOut(auth);
-			dispatch(clearUser());
 		} catch (error) {
 			console.error('로그아웃 에러:', error);
 		}

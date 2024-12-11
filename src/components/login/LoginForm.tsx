@@ -3,23 +3,20 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'firebas
 import * as S from '@/components/login/Login.styles';
 import { auth } from '@/firebaseConfig';
 import { LoginFormData, LoginFormErrors } from '@/types/login';
-// import { User } from '@/types/auth';
 import { getDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { setUser, clearUser } from '@/redux/actions/userAction';
+import { setUser, clearUser } from '@/redux/actions/userActions';
 import { validateLoginForm, getAuthErrorMessage } from '@/components/login/LoginValidation';
 import { Loading } from '@/components';
 
 export function LoginForm() {
-	// const [user, setUser] = useState<TUser | null>(null);
 	const [formData, setFormData] = useState<LoginFormData>({
 		email: '',
 		password: '',
 	});
 	const [errors, setErrors] = useState<LoginFormErrors>({});
 	const [isLoading, setIsLoading] = useState(false);
-	// const [isAuthInitialized, setIsAuthInitialized] = useState(false);
 
 	const dispatch = useAppDispatch();
 	const { user, isAuthInitialized } = useAppSelector((state) => state.user);
@@ -27,8 +24,6 @@ export function LoginForm() {
 	// 파이어베이스 auth 상태 변경 감지 -> 로그인 상태 확인
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-			// setUser(currentUser);
-			// setIsAuthInitialized(true);
 			if (currentUser) {
 				// Firestore에서 유저 정보 가져오기
 				const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
@@ -42,15 +37,12 @@ export function LoginForm() {
 					age: additionalData?.age ?? 0,
 					role: additionalData?.role ?? '',
 					gender: additionalData?.gender ?? '',
-					position: additionalData?.position ?? '',
-					shiftType: additionalData?.shift_type ?? '',
 				};
 
 				dispatch(setUser(userData));
 			} else {
 				dispatch(clearUser());
 			}
-			// setIsAuthInitialized(true);
 		});
 
 		return () => unsubscribe();
