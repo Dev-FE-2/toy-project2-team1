@@ -44,7 +44,7 @@ export const CalendarComponent = ({ isManagementPage }: CalendarComponentProps) 
 
 	// 클릭한 날짜 필터링
 	const handleDateClick = (date: Date) => {
-		console.log('Clicked Date:', date);
+		// console.log('Clicked Date:', date);
 		dispatch(selectDate(date));
 		const filteredS = filterSchedulesByDateAndSort(schedules, date);
 		dispatch(filterSchedules(filteredS));

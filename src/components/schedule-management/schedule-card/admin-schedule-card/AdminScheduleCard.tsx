@@ -1,12 +1,5 @@
 import * as S from './AdminScheduleCard.styles';
-import {
-	TDate,
-	TSchedule,
-	TScheduleCategory,
-	TScheduleRepeatCycle,
-	TScheduleShiftType,
-	SCHEDULE_CATEGORY_LABELS,
-} from '@/types/schedule';
+import { TSchedule, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { ScheduleModal } from '@/components';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
@@ -14,21 +7,7 @@ import { setIsScheduleEditModalOpen } from '@/redux/actions/modalActions';
 import { formatTime } from '@/utils/dateFormatter';
 
 interface AdminScheduleCardProps {
-	schedulesItem: {
-		schedule_id: string;
-		user_id?: string;
-		user_name: string;
-		user_alias: string;
-		category: TScheduleCategory;
-		start_date_time: TDate;
-		time: string;
-		end_date_time: TDate; // 계산된 종료 시간
-		schedule_shift_type: TScheduleShiftType; // 계산된 오픈, 미들, 마감
-		repeat?: TScheduleRepeatCycle;
-		repeat_end_date?: TDate;
-		created_at: TDate;
-		description?: string;
-	};
+	schedulesItem: TSchedule;
 }
 
 const AdminScheduleCard = ({ schedulesItem }: AdminScheduleCardProps) => {
