@@ -443,3 +443,4 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 		</ModalPortal>
 	);
 };
+

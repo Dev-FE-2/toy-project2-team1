@@ -32,6 +32,7 @@ export default function useScheduleManage(userId: string | null, schedules: TSch
 		if (!prevSchedule) throw new Error('이전 스케줄 정보 없음');
 
 		const isRepeatChanged = prevSchedule.repeat !== newSchedule.repeat;
+
 		const isRepeatEndDateChanged =
 			prevSchedule.repeat_end_date &&
 			newSchedule.repeat_end_date &&
@@ -70,6 +71,7 @@ export default function useScheduleManage(userId: string | null, schedules: TSch
 			} else {
 				// 단일 스케줄 수정
 				const editResult = await dispatch(editScheduleToSupabase([newSchedule]));
+
 				if (!editResult.success) throw new Error('단일 스케줄 수정 실패');
 			}
 		} catch (error) {
