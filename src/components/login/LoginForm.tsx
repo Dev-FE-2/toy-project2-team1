@@ -7,8 +7,8 @@ import { LoginFormData, LoginFormErrors } from '@/types/login';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { clearUser } from '@/redux/actions/userAction';
 import { validateLoginForm, getAuthErrorMessage } from '@/components/login/LoginValidation';
-import { Loading } from '@/pages';
 import { useLoginAuthObserver } from '@/hooks/useLoginAuthObserver';
+import { Loading } from '@/components';
 
 export function LoginForm() {
 	// const [user, setUser] = useState<TUser | null>(null);
