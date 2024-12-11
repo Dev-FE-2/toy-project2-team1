@@ -29,8 +29,11 @@ const CheckboxContiner = styled.div`
 	display: flex;
 	flex-direction: column;
 	font-size: 20px;
-	justify-content: center;
-	width: 400px;
+	padding: var(--space-large);
+	width: 300px;
+	border-radius: var(--medium-border-radius);
+	box-shadow: var(--box-shadow-large);
+	overflow-y: auto;
 `;
 
 const CheckboxUL = styled.ul`
@@ -38,4 +41,5 @@ const CheckboxUL = styled.ul`
 	flex-direction: column;
 	justify-content: space-between;
 	margin-top: 20px;
+	gap: 10px;
 `;

@@ -113,7 +113,6 @@ export const getSchedulesFromSupabase = (
 				query = query.eq('user_id', userId);
 			}
 			const { data, error } = await query;
-
 			if (error) throw error;
 
 			const convertedSchedules = data.map((schedule) => ({
