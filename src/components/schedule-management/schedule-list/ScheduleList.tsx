@@ -4,6 +4,7 @@ import { UserScheduleList } from './user-schedule-list/UserScheduleList';
 
 export const ScheduleList = () => {
 	const isAdmin = useIsAdmin();
+
 	if (isAdmin) {
 		return <AdminScheduleList />;
 	}
