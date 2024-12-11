@@ -75,7 +75,7 @@ export default function PaginatedTable() {
 	const endIndex = startIndex + itemsPerPage;
 	const paginatedData: RowItem[] = filteredItems.slice(startIndex, endIndex);
 
-	const totalPages = Math.ceil(rowItems.length / itemsPerPage);
+	const totalPages = Math.ceil(paginatedData.length / itemsPerPage);
 
 	//select로 데이터 필터해서 테이블에 데이터 띄울 훅
 	useEffect(() => {
