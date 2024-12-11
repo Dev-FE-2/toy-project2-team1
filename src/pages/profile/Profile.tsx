@@ -75,17 +75,7 @@ export function Profile() {
 				<S.FormField>
 					<S.Label>직책</S.Label>
 					<S.Value>
-						<select
-							value={formData.role}
-							disabled={!isEditing}
-							onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-						>
-							{Object.values(ROLE_OPTIONS).map((role) => (
-								<option key={role.value} value={role.value}>
-									{role.label}
-								</option>
-							))}
-						</select>
+						<S.Input value={formData.role ? ROLE_OPTIONS[formData.role].label : ''} disabled />
 					</S.Value>
 				</S.FormField>
 
