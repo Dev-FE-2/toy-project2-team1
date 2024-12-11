@@ -34,11 +34,11 @@ export interface TCalendarState {
 
 export type TScheduleState = TSchedules & TCalendarState;
 
-export interface CalendarComponentProps {
+export interface TCalendarComponentProps {
 	isManagementPage?: boolean;
 }
 
-export interface UserScheduleCardProps {
+export interface TUserScheduleCardProps {
 	schedule: TSchedule;
 	shouldShowTime: boolean;
 }

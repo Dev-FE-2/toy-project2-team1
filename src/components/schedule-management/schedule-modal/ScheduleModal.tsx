@@ -44,7 +44,7 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 	const isConfirmModalOpen = useAppSelector((state) => state.modal.isConfirmModalOpen);
 	const selectedSchedule = useAppSelector((state) => state.schedule.selectedSchedule);
 	const debounce = useDebounce(searchTerm, 800);
-	const emplyeeSchedules = useAppSelector((state) => state.emplyee.schedules);
+	const employeeSchedules = useAppSelector((state) => state.employee.schedules);
 	const searchUserId = useAppSelector((state) => state.adminSearchUserId);
 	const userId = user?.id;
 	const userName = user?.userName;
@@ -298,7 +298,7 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 										/>
 										<S.SearchList $searchListOpen={searchListOpen}>
 											{!searchListOpen &&
-												emplyeeSchedules.map((value) => (
+												employeeSchedules.map((value) => (
 													<SearchEmplyeeList
 														schedulesItem={value}
 														key={value.schedule_id}

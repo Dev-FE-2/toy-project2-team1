@@ -30,8 +30,9 @@ const CheckboxItem = ({ item, categoryKey }: CheckboxItemProps) => {
 		} else {
 			if (categoryKey === 'all') {
 				dispatch(getSchedulesFromSupabase(userId));
+			} else {
+				dispatch(getSchedulesFromSupabase(userId, id));
 			}
-			dispatch(getSchedulesFromSupabase(userId, id));
 		}
 	};
 
@@ -88,20 +89,11 @@ const RadioInput = styled.input.attrs({ type: 'radio' })`
 					: props.color === 'floor'
 						? 'var(--color-coral)'
 						: 'var(--color-caramel)'
-				: '#0d6efd'};
-
-		box-shadow: 0 0 0 1.6px
-			${(props) =>
-				props.color !== 'all'
-					? props.color === 'ticket'
-						? 'var(--color-blue)'
-						: props.color === 'floor'
-							? 'var(--color-coral)'
-							: 'var(--color-caramel)'
-					: '#0d6efd'};
+				: 'var(--color-light-gray)'};
 	}
 `;
 
 const RadioText = styled.span`
 	font-size: 20px;
+	font-size: var(--font-medium);
 `;

@@ -1,5 +1,5 @@
 import * as S from './UserScheduleCard.styles';
-import { UserScheduleCardProps, SCHEDULE_CATEGORY_LABELS, TSchedule } from '@/types/schedule';
+import { TUserScheduleCardProps, SCHEDULE_CATEGORY_LABELS, TSchedule } from '@/types/schedule';
 import { ConfirmModal, ModalPortal, ScheduleModal } from '@/components';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import useScheduleManage from '@/hooks/useScheduleManage';
@@ -11,7 +11,7 @@ import {
 import { isSameDay, formatTime } from '@/utils/dateFormatter';
 import filteredRepeatSchedules from '@/utils/filteredRepeatSchedules';
 
-export const UserScheduleCard = ({ schedule, shouldShowTime }: UserScheduleCardProps) => {
+export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCardProps) => {
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
