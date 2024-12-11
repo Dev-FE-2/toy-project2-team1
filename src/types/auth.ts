@@ -76,12 +76,14 @@ export const COMMON_ERROR_MESSAGES = {
 		shiftType: '시간 타입을 선택해주세요',
 		userName: '이름을 입력해주세요',
 		userAlias: '별명을 입력해주세요',
+		phoneNumber: '전화번호를 입력해주세요',
 	},
 	INVALID: {
 		email: '올바른 이메일 형식이 아닙니다',
 		password: `비밀번호는 ${AUTH_VALIDATION.PASSWORD.MIN_LENGTH}자 이상이어야 합니다`,
 		confirmPassword: '비밀번호가 일치하지 않습니다',
 		age: '올바른 나이를 입력해주세요',
+		phoneNumber: '올바른 전화번호 형식이 아닙니다 (01012345678)',
 	},
 } as const;
 

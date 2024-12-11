@@ -19,6 +19,7 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 		age: '',
 		userName: '',
 		userAlias: '',
+		phoneNumber: '',
 	});
 	const [errors, setErrors] = useState<RegisterFormErrors>({});
 
@@ -97,6 +98,46 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 						</S.FormField>
 
 						<S.FormField>
+							<S.Label htmlFor="userName">이름</S.Label>
+							<S.Input
+								id="userName"
+								name="userName"
+								type="string"
+								value={formData.userName}
+								onChange={handleInputChange}
+								$validation={errors.userName ? 'invalid' : 'default'}
+							/>
+							{errors.userName && <S.ErrorMessage>{errors.userName}</S.ErrorMessage>}
+						</S.FormField>
+
+						<S.FormField>
+							<S.Label htmlFor="userAlias">별명</S.Label>
+							<S.Input
+								id="userAlias"
+								name="userAlias"
+								type="string"
+								value={formData.userAlias}
+								onChange={handleInputChange}
+								$validation={errors.userAlias ? 'invalid' : 'default'}
+							/>
+							{errors.userAlias && <S.ErrorMessage>{errors.userAlias}</S.ErrorMessage>}
+						</S.FormField>
+
+						<S.FormField>
+							<S.Label htmlFor="phoneNumber">전화번호</S.Label>
+							<S.Input
+								id="phoneNumber"
+								name="phoneNumber"
+								type="tel"
+								placeholder="- 없이 입력해주세요"
+								value={formData.phoneNumber}
+								onChange={handleInputChange}
+								$validation={errors.phoneNumber ? 'invalid' : 'default'}
+							/>
+							{errors.phoneNumber && <S.ErrorMessage>{errors.phoneNumber}</S.ErrorMessage>}
+						</S.FormField>
+
+						<S.FormField>
 							<S.Label htmlFor="role">직책</S.Label>
 							<S.Select
 								id="role"
@@ -132,32 +173,6 @@ export function RegisterForm({ onSubmit, isSubmitting, submitError }: RegisterFo
 								))}
 							</S.Select>
 							{errors.gender && <S.ErrorMessage>{errors.gender}</S.ErrorMessage>}
-						</S.FormField>
-
-						<S.FormField>
-							<S.Label htmlFor="userName">이름</S.Label>
-							<S.Input
-								id="userName"
-								name="userName"
-								type="string"
-								value={formData.userName}
-								onChange={handleInputChange}
-								$validation={errors.userName ? 'invalid' : 'default'}
-							/>
-							{errors.userName && <S.ErrorMessage>{errors.userName}</S.ErrorMessage>}
-						</S.FormField>
-
-						<S.FormField>
-							<S.Label htmlFor="userAlias">별명</S.Label>
-							<S.Input
-								id="userAlias"
-								name="userAlias"
-								type="string"
-								value={formData.userAlias}
-								onChange={handleInputChange}
-								$validation={errors.userAlias ? 'invalid' : 'default'}
-							/>
-							{errors.userAlias && <S.ErrorMessage>{errors.userAlias}</S.ErrorMessage>}
 						</S.FormField>
 
 						<S.FormField>

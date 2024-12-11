@@ -6,6 +6,7 @@ export interface RegisterData extends AuthFormFields {
 	userAlias: string;
 	role: (typeof ROLE_OPTIONS)[keyof typeof ROLE_OPTIONS]['value'] | '';
 	gender: (typeof GENDER_OPTIONS)[keyof typeof GENDER_OPTIONS]['value'] | '';
+	phoneNumber: string;
 }
 
 export interface FormData extends RegisterData {
