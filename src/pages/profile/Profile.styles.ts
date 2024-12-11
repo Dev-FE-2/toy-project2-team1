@@ -114,14 +114,14 @@ export const ButtonGroup = styled.div`
 	margin-top: var(--space-medium);
 `;
 
-export const Button = styled.button<{ primary?: boolean }>`
+export const Button = styled.button<{ $primary?: boolean }>`
 	padding: var(--space-small) var(--space-medium);
 	border-radius: var(--xsmall-border-radius);
 	font-size: var(--font-medium);
 	cursor: pointer;
 
 	${(props) =>
-		props.primary
+		props.$primary
 			? `
     background: var(--color-blue);
     color: var(--color-white);
@@ -151,4 +151,11 @@ export const TitleContainer = styled.div`
 export const TitleGroup = styled.div`
 	display: flex;
 	flex-direction: column;
+`;
+
+export const ErrorMessage = styled.div`
+	color: var(--color-red);
+	font-size: var(--font-small);
+	margin-top: var(--space-xsmall);
+	padding-left: 120px;
 `;

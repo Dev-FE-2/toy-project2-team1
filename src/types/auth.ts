@@ -9,9 +9,8 @@ export interface TUser {
 	age: number;
 	role: string;
 	gender: string;
-	position: string;
-	shiftType: string;
 	created_at: string;
+	phoneNumber?: string;
 }
 export interface AuthState {
 	user: TUser | null;
@@ -98,9 +97,8 @@ interface UserData {
 	age?: number;
 	role?: string;
 	gender?: string;
-	position?: string;
-	shift_type?: string;
 	created_at?: string;
+	phone_number?: string;
 }
 
 export const formatUserData = (currentUser: FirebaseUser, additionalData?: UserData): TUser => {
@@ -112,8 +110,7 @@ export const formatUserData = (currentUser: FirebaseUser, additionalData?: UserD
 		age: additionalData?.age ?? 0,
 		role: additionalData?.role ?? '',
 		gender: additionalData?.gender ?? '',
-		position: additionalData?.position ?? '',
-		shiftType: additionalData?.shift_type ?? '',
 		created_at: additionalData?.created_at ?? '',
+		phoneNumber: additionalData?.phone_number,
 	};
 };
