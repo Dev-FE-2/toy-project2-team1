@@ -39,12 +39,14 @@ export default function scheduleReducer(
 			return { ...state, selectedSchedule: action.payload };
 		case GET_SCHEDULES:
 			return { ...state, schedules: dedupeSchedules(action.payload), isLoading: false };
+
 		case ADD_SCHEDULES:
 			return {
 				...state,
 				schedules: dedupeSchedules([...state.schedules, ...action.payload]),
 				isLoading: false,
 			};
+
 		case EDIT_SCHEDULES: {
 			const scheduleMap = new Map(
 				state.schedules.map((schedule) => [schedule.schedule_id, schedule]),

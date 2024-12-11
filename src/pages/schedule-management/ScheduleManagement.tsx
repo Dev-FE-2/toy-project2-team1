@@ -1,15 +1,12 @@
 import * as S from './ScheduleManagement.styles';
-import { ScheduleList, Loading } from '@/components';
-import { AdminCalendarComponent } from '@/components/schedule-management/calendar/admin-calender/AdminCalender';
+import { ScheduleList, Loading, CalendarComponent, AdminCalendarComponent } from '@/components';
+import CheckboxGroup from '@/components/checkbox/CheckboxGroup';
+import useIsAdmin from '@/hooks/useIsAdmin';
 import { useAppSelector } from '@/hooks/useRedux';
-// import { setisLoading } from '@/redux/actions/scheduleActions';
 
 export function ScheduleManagement() {
 	const isLoading = useAppSelector((state) => state.schedule.isLoading);
-
-	// const dispatch = useAppDispatch();
-	// dispatch(setisLoading(false));
-	// console.log(isLoading);
+	const isAdmin = useIsAdmin();
 
 	if (isLoading) {
 		return <Loading />;
@@ -17,7 +14,12 @@ export function ScheduleManagement() {
 
 	return (
 		<S.ScheduleManagementContainer>
-			<AdminCalendarComponent isManagementPage={true} />
+			<CheckboxGroup />
+			{isAdmin ? (
+				<AdminCalendarComponent isManagementPage={true} />
+			) : (
+				<CalendarComponent isManagementPage={true} />
+			)}
 			<ScheduleList />
 		</S.ScheduleManagementContainer>
 	);
