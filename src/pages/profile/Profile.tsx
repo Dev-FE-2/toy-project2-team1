@@ -2,12 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAppSelector } from '@/hooks/useRedux';
 import * as S from './Profile.styles';
 import { TUser } from '@/types/auth';
-import {
-	POSITION_OPTIONS,
-	SHIFT_TYPE_OPTIONS,
-	ROLE_OPTIONS,
-	GENDER_OPTIONS,
-} from '@/types/register';
+import { ROLE_OPTIONS, GENDER_OPTIONS } from '@/types/register';
 
 import { Navigate } from 'react-router-dom';
 import { useLoginAuthObserver } from '@/hooks/useLoginAuthObserver';
@@ -26,16 +21,12 @@ export function Profile() {
 	//    weekly: '0',
 	//    monthly: '0',
 	// });
-	const [selectedPositions, setSelectedPositions] = useState<string[]>([]);
-	const [selectedShiftTypes, setSelectedShiftTypes] = useState<string[]>([]);
 
 	useLoginAuthObserver();
 
 	useEffect(() => {
 		if (user) {
 			setFormData(user);
-			setSelectedPositions([user.position]);
-			setSelectedShiftTypes([user.shiftType]);
 		}
 	}, [user]);
 
@@ -119,56 +110,6 @@ export function Profile() {
 					<S.Label>입사일</S.Label>
 					<S.Value>
 						<S.Input value={formData.created_at ? formatDate(formData.created_at) : ''} disabled />
-					</S.Value>
-				</S.FormField>
-
-				<S.FormField>
-					<S.Label>근무 포지션</S.Label>
-					<S.Value>
-						<S.CheckboxGroup>
-							{Object.values(POSITION_OPTIONS).map((position) => (
-								<S.CheckboxLabel key={position.value}>
-									<input
-										type="checkbox"
-										checked={selectedPositions.includes(position.value)}
-										disabled={!isEditing}
-										onChange={(e) => {
-											if (e.target.checked) {
-												setSelectedPositions([...selectedPositions, position.value]);
-											} else {
-												setSelectedPositions(selectedPositions.filter((p) => p !== position.value));
-											}
-										}}
-									/>
-									{position.label}
-								</S.CheckboxLabel>
-							))}
-						</S.CheckboxGroup>
-					</S.Value>
-				</S.FormField>
-
-				<S.FormField>
-					<S.Label>근무 시간대</S.Label>
-					<S.Value>
-						<S.CheckboxGroup>
-							{Object.values(SHIFT_TYPE_OPTIONS).map((shift) => (
-								<S.CheckboxLabel key={shift.value}>
-									<input
-										type="checkbox"
-										checked={selectedShiftTypes.includes(shift.value)}
-										disabled={!isEditing}
-										onChange={(e) => {
-											if (e.target.checked) {
-												setSelectedShiftTypes([...selectedShiftTypes, shift.value]);
-											} else {
-												setSelectedShiftTypes(selectedShiftTypes.filter((s) => s !== shift.value));
-											}
-										}}
-									/>
-									{shift.label}
-								</S.CheckboxLabel>
-							))}
-						</S.CheckboxGroup>
 					</S.Value>
 				</S.FormField>
 
