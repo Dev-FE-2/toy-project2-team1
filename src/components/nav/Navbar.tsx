@@ -1,42 +1,16 @@
-import { useEffect } from 'react';
-import * as S from './Navbar.styles';
 import { Link } from 'react-router-dom';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { getDoc, doc } from 'firebase/firestore';
-import { persistor } from '@/redux/store'; //ㅇㅇㅇㅇㅇ
+import { signOut } from 'firebase/auth';
+import { auth } from '@/firebaseConfig';
+import * as S from './Navbar.styles';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
-import { setUser, clearUser } from '@/redux/actions/userActions';
-import { db, auth } from '@/firebaseConfig';
-import { clearSchedules } from '@/redux/actions/scheduleActions';
+import { clearUser } from '@/redux/actions/userAction';
+import { useLoginAuthObserver } from '@/hooks/useLoginAuthObserver';
 
 export function Navbar() {
 	const dispatch = useAppDispatch();
 	const user = useAppSelector((state) => state.user.user);
 
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-			if (currentUser) {
-				const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-				const additionalData = userDoc.data();
-
-				const userData = {
-					id: currentUser.uid,
-					email: currentUser.email,
-					userName: additionalData?.user_name ?? '',
-					userAlias: additionalData?.user_alias ?? '',
-					age: additionalData?.age ?? 0,
-					role: additionalData?.role ?? '',
-					gender: additionalData?.gender ?? '',
-				};
-
-				dispatch(setUser(userData));
-			} else {
-				dispatch(clearUser());
-			}
-		});
-
-		return () => unsubscribe();
-	}, []);
+	useLoginAuthObserver();
 
 	const handleLogout = async () => {
 		try {
