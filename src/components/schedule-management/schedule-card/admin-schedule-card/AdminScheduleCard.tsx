@@ -1,17 +1,17 @@
+import * as S from './AdminScheduleCard.styles';
 import {
 	TDate,
 	TSchedule,
 	TScheduleCategory,
 	TScheduleRepeatCycle,
 	TScheduleShiftType,
+	SCHEDULE_CATEGORY_LABELS,
 } from '@/types/schedule';
-import * as S from './AdminScheduleCard.styles';
-import { formatTime } from '@/utils/dateFormatter';
+import { ScheduleModal } from '@/components';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
-import { useDispatch } from 'react-redux';
 import { setIsScheduleEditModalOpen } from '@/redux/actions/modalActions';
-import { useAppSelector } from '@/hooks/useRedux';
-import ScheduleModal from '../../schedule-modal/ScheduleModal';
+import { formatTime } from '@/utils/dateFormatter';
 
 interface AdminScheduleCardProps {
 	schedulesItem: {
@@ -32,21 +32,8 @@ interface AdminScheduleCardProps {
 }
 
 const AdminScheduleCard = ({ schedulesItem }: AdminScheduleCardProps) => {
-	const dispatch = useDispatch();
+	const dispatch = useAppDispatch();
 	const isScheduleEditModalOpen = useAppSelector((state) => state.modal.isScheduleEditModalOpen);
-	const categoryConvert = (schedulesCategory) => {
-		switch (schedulesCategory) {
-			case 'floor':
-				return '플로어';
-				break;
-			case 'snack':
-				return '매점';
-				break;
-			case 'ticket':
-				return '매표';
-				break;
-		}
-	};
 
 	const handleEditSchulde = (schedule: TSchedule) => {
 		dispatch(setSelectedSchedule(schedule));
@@ -65,7 +52,7 @@ const AdminScheduleCard = ({ schedulesItem }: AdminScheduleCardProps) => {
 					</S.ScheduleCardHeaderIcon>
 				</S.ScheduleCardHeader>
 				<div>
-					<span>{categoryConvert(schedulesItem.category)}</span>
+					<span>{SCHEDULE_CATEGORY_LABELS[schedulesItem.category]}</span>
 				</div>
 				<S.ScheduleCardTime>
 					<span>{formatTime(new Date(schedulesItem.end_date_time))}</span>
@@ -75,7 +62,7 @@ const AdminScheduleCard = ({ schedulesItem }: AdminScheduleCardProps) => {
 				</div>
 			</S.ScheduleCardContainer>
 			{isScheduleEditModalOpen && (
-				<ScheduleModal type="scheduleUser" mode="edit" adminUserId={schedulesItem.user_id} />
+				<ScheduleModal type="scheduleAdmin" mode="edit" adminUserId={schedulesItem.user_id} />
 			)}
 		</>
 	);

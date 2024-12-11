@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import Table, { RowItem } from '../table/Table';
 import Pagination from '../pagination/pagination';
-import { Modal } from '@/components/modal/Modal';
+import { Modal, ModalPortal } from '@/components';
 import SalarySelect from '@/components/salaryselect/SalarySelect';
-import ModalPortal from '@/components/modal/ModalPortal';
 import { createClient } from '@supabase/supabase-js';
 import EditModal from './EditModal/editModal';
 import DetailModal from './DetailModal/detailModal';

@@ -1,5 +1,6 @@
-import * as S from '../Calendar.styles';
 import { useEffect } from 'react';
+import * as S from '../Calendar.styles';
+import { TSchedule, CalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import {
 	filterSchedules,
@@ -7,7 +8,6 @@ import {
 	selectDate,
 } from '@/redux/actions/scheduleActions';
 import { formatCalendarDay } from '@/utils/dateFormatter';
-import { TSchedule, CalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 
 export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentProps) => {
@@ -17,11 +17,11 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 	const user = useAppSelector((state) => state.user.user);
 	const userId = user?.id;
 	// const modalState = useAppSelector((state) => state.modal);
-
 	// useEffect(() => {
 	// 	console.log('전체 모달 상태:', modalState);
 	// }, [modalState]);
 
+	// 디버깅용
 	useEffect(() => {
 		console.log('isManagementPage:', isManagementPage);
 	}, [isManagementPage]);
@@ -36,14 +36,6 @@ export const UserCalendarComponent = ({ isManagementPage }: CalendarComponentPro
 
 		init();
 	}, [userId]);
-
-	// 오늘 날짜 초기 필터링
-	useEffect(() => {
-		if (schedules.length > 0 && selectedDate) {
-			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate);
-			dispatch(filterSchedules(todaySchedules));
-		}
-	}, [selectedDate, schedules]);
 
 	// 클릭한 날짜 필터링
 	const handleDateClick = (date: Date) => {

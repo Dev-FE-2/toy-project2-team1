@@ -1,12 +1,11 @@
-import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '@/firebaseConfig';
 import * as S from './Navbar.styles';
+import { Link } from 'react-router-dom';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { getDoc, doc } from 'firebase/firestore';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setUser, clearUser } from '@/redux/actions/userAction';
-import { getDoc, doc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db, auth } from '@/firebaseConfig';
 
 export function Navbar() {
 	const dispatch = useAppDispatch();

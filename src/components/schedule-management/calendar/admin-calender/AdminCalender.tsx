@@ -1,5 +1,6 @@
-import * as S from '../Calendar.styles';
 import { useEffect } from 'react';
+import * as S from '../Calendar.styles';
+import { TSchedule } from '@/types/schedule';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import {
 	selectDate,
@@ -8,7 +9,6 @@ import {
 } from '@/redux/actions/scheduleActions';
 import { filterSchedulesByDateAndSort } from '@/utils/filterSchedulesByDate';
 import { formatCalendarDay } from '@/utils/dateFormatter';
-import { TSchedule } from '@/types/schedule';
 
 interface CalendarComponentProps {
 	isManagementPage?: boolean;
@@ -19,6 +19,7 @@ export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentPr
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
 
+	// 디버깅용
 	useEffect(() => {
 		console.log('isManagementPage:', isManagementPage);
 	}, [isManagementPage]);
@@ -30,12 +31,7 @@ export const AdminCalendarComponent = ({ isManagementPage }: CalendarComponentPr
 	useEffect(() => {
 		getSchedules();
 	}, []);
-	useEffect(() => {
-		if (schedules.length > 0 && selectedDate) {
-			const todaySchedules = filterSchedulesByDateAndSort(schedules, selectedDate as Date);
-			dispatch(filterSchedules(todaySchedules));
-		}
-	}, [dispatch, selectedDate, schedules]);
+
 	// 날짜 선택시 그 날짜, 그 날짜의 스케줄 필터링해서 전역 상태에 저장
 	const handleDateClick = (date: Date) => {
 		dispatch(selectDate(date));

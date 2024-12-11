@@ -1,4 +1,3 @@
-// reducer.js
 import { ADMIN_GET_EMPLYEE } from '../actionTypes';
 import { TScheduleState } from '@/types/schedule';
 import { AnyAction } from 'redux';
