@@ -7,7 +7,7 @@ export type TDate = Date | string; // supabase에 ISOstring으로 저장됨
 
 export interface TSchedule {
 	schedule_id: string;
-	user_id?: string;
+	user_id: string;
 	user_name: string;
 	user_alias: string;
 	category: TScheduleCategory;
