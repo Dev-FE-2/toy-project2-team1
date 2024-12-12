@@ -3,7 +3,7 @@ import { TUserScheduleCardProps, SCHEDULE_CATEGORY_LABELS, TSchedule } from '@/t
 import { ConfirmModal, ModalPortal, ScheduleModal } from '@/components';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import useScheduleManage from '@/hooks/useScheduleManage';
-import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
+import { setSelectedSchedule, setfilterCategory } from '@/redux/actions/scheduleActions';
 import {
 	setIsScheduleEditModalOpen,
 	setIsScheduleDeleteModalOpen,
@@ -40,6 +40,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCard
 	const handleEditIconClick = (schedule: TSchedule) => {
 		dispatch(setSelectedSchedule(schedule));
 		dispatch(setIsScheduleEditModalOpen(true));
+		dispatch(setfilterCategory('')); // 카테고리 필터 해제
 	};
 
 	const handleDeleteIconClick = async (schedule: TSchedule) => {
@@ -53,6 +54,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCard
 		} else {
 			await handleDeleteSchedule(schedule, false); // 하나면 그냥 삭제
 		}
+		dispatch(setfilterCategory('')); // 카테고리 필터 해제
 	};
 
 	const handleConfirmDelete = async (deleteAll: boolean) => {

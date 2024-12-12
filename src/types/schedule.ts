@@ -30,6 +30,7 @@ export interface TCalendarState {
 	filteredSchedules: TSchedule[];
 	isLoading: boolean;
 	selectedSchedule: TSchedule | null;
+	filterCategoryKey: TScheduleCategory;
 }
 
 export type TScheduleState = TSchedules & TCalendarState;
@@ -62,11 +63,20 @@ export const SCHEDULE_CATEGORY_LABELS = {
 	floor: '플로어',
 } as const;
 
+// 카테코리 필터별 라벨
+export const SCHEDULE_FILTER_CATEGORY_LABEL = {
+	'': '전체',
+	ticket: '매표',
+	snack: '매점',
+	floor: '플로어',
+} as const;
+
 // 라디오 버튼 스타일링 관련 타입
 export interface RadioInputProps {
 	$categoryType: 'ticket' | 'snack' | 'floor';
 }
 export const categoryColors = {
+	'': 'var(--color-light-gray)',
 	ticket: 'var(--color-blue)',
 	snack: 'var(--color-caramel)',
 	floor: 'var(--color-coral)',

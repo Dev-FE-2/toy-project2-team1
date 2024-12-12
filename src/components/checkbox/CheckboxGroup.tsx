@@ -1,20 +1,14 @@
-import CheckboxItem from './CheckboxItem';
 import styled from 'styled-components';
+import CheckboxItem from './CheckboxItem';
+import { SCHEDULE_FILTER_CATEGORY_LABEL, TScheduleCategory } from '@/types/schedule';
 
 export const CheckboxGroup = () => {
-	const categoryMap = {
-		all: '전체',
-		ticket: '매표',
-		snack: '매점',
-		floor: '플로어',
-	} as const;
-
 	return (
 		<CheckboxContiner>
 			<h3>카테고리</h3>
 			<CheckboxUL>
-				{Object.entries(categoryMap).map(([key, value]) => (
-					<CheckboxItem item={value} categoryKey={key} key={key} />
+				{Object.entries(SCHEDULE_FILTER_CATEGORY_LABEL).map(([key, value]) => (
+					<CheckboxItem item={value} categoryKey={key as TScheduleCategory} key={key} />
 				))}
 			</CheckboxUL>
 		</CheckboxContiner>

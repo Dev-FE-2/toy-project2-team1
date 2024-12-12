@@ -18,7 +18,7 @@ import {
 	setIsScheduleAddModalOpen,
 	setIsScheduleEditModalOpen,
 } from '@/redux/actions/modalActions';
-import { setSelectedSchedule } from '@/redux/actions/scheduleActions';
+import { setSelectedSchedule, setfilterCategory } from '@/redux/actions/scheduleActions';
 import { getAdminEmployeeSchedules } from '@/redux/actions/employeeActions';
 import { Toggle } from '../../toggle/Toggle';
 import { Button } from '../../button/Button';
@@ -100,16 +100,16 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 			: null;
 
 	// 디버깅용
-	console.log({
-		errors: errors,
-		noneStartDateTimeError: noneStartDateTimeError,
-		noneRepeatCycleError: noneRepeatCycleError,
-		noneEndDateError: noneEndDateError,
-		repeatEndDateError: repeatEndDateError,
-		isSubmitting: isSubmitting,
-		data: watch(),
-		currentUser: user,
-	});
+	// console.log({
+	// 	errors: errors,
+	// 	noneStartDateTimeError: noneStartDateTimeError,
+	// 	noneRepeatCycleError: noneRepeatCycleError,
+	// 	noneEndDateError: noneEndDateError,
+	// 	repeatEndDateError: repeatEndDateError,
+	// 	isSubmitting: isSubmitting,
+	// 	data: watch(),
+	// 	currentUser: user,
+	// });
 
 	// 날짜 선택시 분을 00으로 초기화
 	const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,6 +195,7 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 					dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
 				}
 			}
+			dispatch(setfilterCategory('')); // 카테고리 필터 해제
 		} catch (error) {
 			console.error('폼 제출 실패:', error);
 		}
