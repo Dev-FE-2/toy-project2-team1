@@ -170,7 +170,7 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 				repeat: (data.repeat as TScheduleRepeatCycle) || undefined,
 				repeat_end_date: data.repeat_end_date ? new Date(data.repeat_end_date) : undefined,
 				created_at: new Date(),
-				description: data.description as string | undefined,
+				description: (data.description as string) || undefined,
 			};
 
 			if (mode === 'add') {
