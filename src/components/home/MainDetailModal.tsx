@@ -1,6 +1,5 @@
-import useSupabaseData from '../EditModal/hook/useSupabaseData';
-import DetailModal from './detailModal';
-import * as S from '@/components/home/MainLayout.styles';
+import useSupabaseData from '../PaginatedTable/EditModal/hook/useSupabaseData';
+import DetailModal from '../PaginatedTable/DetailModal/detailModal';
 import { useAppSelector } from '@/hooks/useRedux';
 
 export default function MainDetailModal() {
@@ -15,8 +14,6 @@ export default function MainDetailModal() {
 
 	return (
 		<>
-			<S.PayrollTitle>급여 명세서</S.PayrollTitle>
-
 			{filterMonth.length > 0 ? (
 				<DetailModal data={filterMonth[0]} />
 			) : (

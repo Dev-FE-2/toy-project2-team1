@@ -6,13 +6,14 @@ import { useMainViewportWidth } from '@/hooks/useMainViewportWidth';
 import { useAppSelector } from '@/hooks/useRedux';
 import { WorkingHours } from './WorkingHours';
 
-import MainDetailModal from '../PaginatedTable/DetailModal/MainDetailModal';
+import MainDetailModal from './MainDetailModal';
 
-//import { SalaryManage } from './SalaryManage';
+import { SalaryManage } from './SalaryManage';
 
 export function MainLayout() {
 	const year = useAppSelector((state) => state.schedule.year);
 	const month = useAppSelector((state) => state.schedule.month);
+	const user = useAppSelector((state) => state.user);
 	//const isLoading = useAppSelector((state) => state.schedule.isLoading);
 	console.log('전역 year', year);
 	console.log('전역 month', month);
@@ -49,9 +50,16 @@ export function MainLayout() {
 				<WorkingHours />
 
 				<S.PayrollContainer>
-					{/* <S.PayrollTitle>급여 명세서</S.PayrollTitle> */}
-					{/* <SalaryManage /> */}
-					<MainDetailModal />
+					<S.PayrollTitle>급여 명세서</S.PayrollTitle>
+					{user?.user?.role === 'admin' ? (
+						<>
+							<SalaryManage />
+						</>
+					) : user?.user?.role === 'user' ? (
+						<S.PayrollMargin>
+							<MainDetailModal />
+						</S.PayrollMargin>
+					) : null}
 				</S.PayrollContainer>
 			</S.RightSection>
 		</S.MainContainer>
