@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import * as S from './Calendar.styles';
 import { TSchedule, TCalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
@@ -61,12 +62,13 @@ export const CalendarComponent = ({ isManagementPage }: TCalendarComponentProps)
 				);
 			})
 			.slice(0, 3);
-
 		return daySchedules.length > 0 ? (
 			<>
 				{daySchedules.map((s: TSchedule) => (
 					<S.ScheduleBar key={s.schedule_id} $category={s.category}>
-						{SCHEDULE_CATEGORY_LABELS[s.category]}
+						{isAdmin
+							? SCHEDULE_CATEGORY_LABELS[s.category] && s.user_name
+							: SCHEDULE_CATEGORY_LABELS[s.category]}
 					</S.ScheduleBar>
 				))}
 			</>

@@ -37,7 +37,7 @@ export const router = createBrowserRouter([
 				),
 			},
 			{
-				path: '/salary-details',
+				path: '/salary-details', //사용자
 				element: (
 					<ProtectedRoute>
 						<SalaryDetails />
@@ -45,7 +45,7 @@ export const router = createBrowserRouter([
 				),
 			},
 			{
-				path: '/schedule-management',
+				path: '/schedule-management', //관리자
 				element: (
 					<ProtectedRoute>
 						<ScheduleManagement />
