@@ -102,8 +102,10 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCard
 					<S.TimeTextDown>{endTime}</S.TimeTextDown>
 				</S.TimeContainerDown>
 			</S.ScheduleCardContainer>
-			{isScheduleEditModalOpen && <ScheduleModal type="scheduleUser" mode="edit" />}
-			{isScheduleDeleteModalOpen && (
+			{isScheduleEditModalOpen && selectedSchedule && (
+				<ScheduleModal type="scheduleUser" mode="edit" />
+			)}
+			{isScheduleDeleteModalOpen && selectedSchedule && (
 				<ModalPortal>
 					<ConfirmModal
 						onClose={() => {

@@ -12,6 +12,11 @@ export const SearchWrapper = styled.ul`
 `;
 
 export const SearchItem = styled.li`
-	padding: 8px;
-	border-bottom: 1px solid #d9d9d9;
+	padding: var(--space-medium);
+	border-bottom: 1px solid var(--color-light-gray);
+	cursor: pointer;
+
+	&:hover {
+		color: var(--color-blue);
+	}
 `;
