@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-	const { user, isAuthInitialized } = useAppSelector((state) => state.user);
+	const { user } = useAppSelector((state) => state.user);
 
 	if (!isAuthInitialized) {
 		return <Loading />;

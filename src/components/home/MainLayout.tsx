@@ -4,6 +4,7 @@ import { CheckboxGroup, CalendarComponent } from '@/components';
 import { TOGGLE_BUTTON_TEXT } from '@/types/main';
 import { useMainViewportWidth } from '@/hooks/useMainViewportWidth';
 import { useAppSelector } from '@/hooks/useRedux';
+import { WorkingHours } from './WorkingHours';
 
 export function MainLayout() {
 	const year = useAppSelector((state) => state.schedule.year);
@@ -41,23 +42,11 @@ export function MainLayout() {
 			</S.MiddleSection>
 
 			<S.RightSection $isCollapsed={isLeftSectionExpanded}>
-				<S.WorkingHoursContainer>
-					<S.WorkingHoursWrapper>
-						<S.WorkingHoursInfo>
-							<S.InfoLabel>이번 주 근무 시간</S.InfoLabel>
-							<S.InfoValue>10시간 10분</S.InfoValue>
-						</S.WorkingHoursInfo>
-						<S.WorkingHoursInfo>
-							<S.InfoLabel>이번 달 근무 시간</S.InfoLabel>
-							<S.InfoValue>40시간 20분</S.InfoValue>
-						</S.WorkingHoursInfo>
-					</S.WorkingHoursWrapper>
-					<S.ChartContainer>
-						<S.WorkTimeChart $percentage={workPercentage}>
-							<S.ChartCenter>{workPercentage}%</S.ChartCenter>
-						</S.WorkTimeChart>
-					</S.ChartContainer>
-				</S.WorkingHoursContainer>
+				<WorkingHours
+					weeklyHours="10시간 10분"
+					monthlyHours="40시간 20분"
+					workPercentage={workPercentage}
+				/>
 
 				<S.PayrollContainer>
 					<S.PayrollTitle>급여 명세서</S.PayrollTitle>
