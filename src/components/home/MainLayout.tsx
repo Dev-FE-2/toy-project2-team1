@@ -9,12 +9,12 @@ import { WorkingHours } from './WorkingHours';
 export function MainLayout() {
 	const year = useAppSelector((state) => state.schedule.year);
 	const month = useAppSelector((state) => state.schedule.month);
+	//const isLoading = useAppSelector((state) => state.schedule.isLoading);
 	console.log('전역 year', year);
 	console.log('전역 month', month);
 
 	const [isLeftSectionExpanded, setIsLeftSectionExpanded] = useState(true);
 	const viewportWidth = useMainViewportWidth();
-	const workPercentage = 75;
 
 	useEffect(() => {
 		if (viewportWidth <= 1165) {
@@ -42,11 +42,7 @@ export function MainLayout() {
 			</S.MiddleSection>
 
 			<S.RightSection $isCollapsed={isLeftSectionExpanded}>
-				<WorkingHours
-					weeklyHours="10시간 10분"
-					monthlyHours="40시간 20분"
-					workPercentage={workPercentage}
-				/>
+				<WorkingHours />
 
 				<S.PayrollContainer>
 					<S.PayrollTitle>급여 명세서</S.PayrollTitle>
