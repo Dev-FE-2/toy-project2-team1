@@ -20,3 +20,11 @@ export const SearchItem = styled.li`
 		color: var(--color-blue);
 	}
 `;
+
+export const TextUserName = styled.span`
+	margin-right: var(--space-medium);
+`;
+
+export const TextUserAlias = styled.span`
+	color: var(--color-light-gray);
+`;

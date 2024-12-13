@@ -21,9 +21,8 @@ const SearchEmployeeList = ({
 		<S.SearchContainer>
 			<S.SearchWrapper>
 				<S.SearchItem onClick={() => handleItemClick(schedulesItem.user_id)}>
-					{schedulesItem.user_name}
-					{' '}
-					{schedulesItem.user_alias}
+					<S.TextUserName>{schedulesItem.user_name}</S.TextUserName>
+					<S.TextUserAlias>{schedulesItem.user_alias}</S.TextUserAlias>
 				</S.SearchItem>
 			</S.SearchWrapper>
 		</S.SearchContainer>
