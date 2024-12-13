@@ -151,11 +151,13 @@ export default function PaginatedTable() {
 				</p>
 			)}
 
-			<Pagination
-				currentPage={currentPage}
-				totalPages={totalPages}
-				onPageChange={handlePageChange}
-			/>
+			{filteredItems.length > 0 && (
+				<Pagination
+					currentPage={currentPage}
+					totalPages={totalPages}
+					onPageChange={handlePageChange}
+				/>
+			)}
 		</>
 	);
 }

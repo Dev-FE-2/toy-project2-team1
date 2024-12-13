@@ -4,6 +4,7 @@ import { CheckboxGroup, CalendarComponent } from '@/components';
 import { TOGGLE_BUTTON_TEXT } from '@/types/main';
 import { useMainViewportWidth } from '@/hooks/useMainViewportWidth';
 import { useAppSelector } from '@/hooks/useRedux';
+import MainDetailModal from '../PaginatedTable/DetailModal/MainDetailModal';
 
 export function MainLayout() {
 	const year = useAppSelector((state) => state.schedule.year);
@@ -60,7 +61,8 @@ export function MainLayout() {
 				</S.WorkingHoursContainer>
 
 				<S.PayrollContainer>
-					<S.PayrollTitle>급여 명세서</S.PayrollTitle>
+					{/* <S.PayrollTitle>급여 명세서</S.PayrollTitle> */}
+					<MainDetailModal />
 				</S.PayrollContainer>
 			</S.RightSection>
 		</S.MainContainer>
