@@ -3,9 +3,14 @@ import * as S from './MainLayout.styles';
 import { CheckboxGroup, CalendarComponent } from '@/components';
 import { TOGGLE_BUTTON_TEXT } from '@/types/main';
 import { useMainViewportWidth } from '@/hooks/useMainViewportWidth';
-import MainDetailModal from '../PaginatedTable/DetailModal/MainDetailModal';
+import { useAppSelector } from '@/hooks/useRedux';
 
 export function MainLayout() {
+	const year = useAppSelector((state) => state.schedule.year);
+	const month = useAppSelector((state) => state.schedule.month);
+	console.log('전역 year', year);
+	console.log('전역 month', month);
+
 	const [isLeftSectionExpanded, setIsLeftSectionExpanded] = useState(true);
 	const viewportWidth = useMainViewportWidth();
 	const workPercentage = 75;
@@ -55,7 +60,7 @@ export function MainLayout() {
 				</S.WorkingHoursContainer>
 
 				<S.PayrollContainer>
-					<MainDetailModal />
+					<S.PayrollTitle>급여 명세서</S.PayrollTitle>
 				</S.PayrollContainer>
 			</S.RightSection>
 		</S.MainContainer>

@@ -8,7 +8,6 @@ import {
 	Profile,
 	SalaryManagement,
 	SalaryDetails,
-	CorrectionRequest,
 	ScheduleManagement,
 	NotFound,
 } from '../pages';
@@ -42,14 +41,6 @@ export const router = createBrowserRouter([
 				element: (
 					<ProtectedRoute>
 						<SalaryDetails />
-					</ProtectedRoute>
-				),
-			},
-			{
-				path: '/correction-request',
-				element: (
-					<ProtectedRoute>
-						<CorrectionRequest />
 					</ProtectedRoute>
 				),
 			},

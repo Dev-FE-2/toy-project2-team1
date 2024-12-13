@@ -5,6 +5,7 @@ import useFiltereSchedulesByCategory from '@/hooks/useFiltereSchedulesByCategory
 import useIsAdmin from '@/hooks/useIsAdmin';
 import { selectDate, setYear, setMonth } from '@/redux/actions/scheduleActions';
 import { formatCalendarDay } from '@/utils/dateFormatter';
+import { useEffect } from 'react';
 
 export const CalendarComponent = ({ isManagementPage }: TCalendarComponentProps) => {
 	const dispatch = useAppDispatch();
@@ -19,6 +20,14 @@ export const CalendarComponent = ({ isManagementPage }: TCalendarComponentProps)
 	// }, [modalState]);
 
 	const isAdmin = useIsAdmin();
+
+	// 년, 월 초기 설정
+	useEffect(() => {
+		const year = selectedDate.getFullYear();
+		const month = selectedDate.getMonth() + 1;
+		dispatch(setYear(year));
+		dispatch(setMonth(month));
+	}, []);
 
 	// supabase에서 스케줄 가져오기
 	useFiltereSchedulesByCategory({ isAdmin, userId, filterCategoryKey });
