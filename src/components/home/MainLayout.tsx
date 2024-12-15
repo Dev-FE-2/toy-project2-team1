@@ -6,17 +6,20 @@ import { useMainViewportWidth } from '@/hooks/useMainViewportWidth';
 import { useAppSelector } from '@/hooks/useRedux';
 import { WorkingHours } from './WorkingHours';
 
-import MainDetailModal from './MainDetailModal';
+import MainDetailModal from '../PaginatedTable/DetailModal/MainDetailModal';
 
 import { SalaryManage } from './SalaryManage';
 
 export function MainLayout() {
-	const year = useAppSelector((state) => state.schedule.year);
-	const month = useAppSelector((state) => state.schedule.month);
 	const user = useAppSelector((state) => state.user);
-	//const isLoading = useAppSelector((state) => state.schedule.isLoading);
-	console.log('전역 year', year);
-	console.log('전역 month', month);
+	const isAuthInitialized = useAppSelector((state) => state.user.isAuthInitialized);
+
+	console.log('MainLayout user:', user, 'isAuthInitialized:', isAuthInitialized);
+
+	// user 정보가 초기화되지 않았다면 로딩 표시
+	if (!isAuthInitialized) {
+		return <div>Loading...</div>;
+	}
 
 	const [isLeftSectionExpanded, setIsLeftSectionExpanded] = useState(true);
 	const viewportWidth = useMainViewportWidth();
@@ -51,11 +54,11 @@ export function MainLayout() {
 
 				<S.PayrollContainer>
 					<S.PayrollTitle>급여 명세서</S.PayrollTitle>
-					{user?.user?.role === 'admin' ? (
+					{isAuthInitialized && user?.user?.role === 'admin' ? (
 						<>
 							<SalaryManage />
 						</>
-					) : user?.user?.role === 'user' ? (
+					) : isAuthInitialized && user?.user?.role === 'user' ? (
 						<S.PayrollMargin>
 							<MainDetailModal />
 						</S.PayrollMargin>
