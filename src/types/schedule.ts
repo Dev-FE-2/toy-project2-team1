@@ -46,6 +46,10 @@ export interface TUserScheduleCardProps {
 	shouldShowTime: boolean;
 }
 
+export interface TAdminScheduleCardProps {
+	schedule: TSchedule;
+}
+
 export interface TScheduleModalProps {
 	type: 'scheduleUser' | 'scheduleAdmin';
 	mode: 'add' | 'edit';
