@@ -42,29 +42,31 @@ const AdminScheduleCard = ({ schedule }: TAdminScheduleCardProps) => {
 	const startDate = new Date(schedule.start_date_time);
 	const isYesterdaySchedule = !isSameDay(compareDate, startDate);
 
+	const hasDescription = !!schedule.description;
+
 	return (
-		<S.ScheduleCardContainer $category={schedule.category} id={schedule.user_id}>
+		<S.ScheduleCardContainer $category={schedule.category}>
+			{isYesterdaySchedule && (
+				<S.YesterdayScheduleText>전 날과 이어지는 스케줄이에요</S.YesterdayScheduleText>
+			)}
 			<S.ScheduleCardHeader>
-				{isYesterdaySchedule && <span>전 날과 이어지는 스케줄이에요</span>}
-				<span>{schedule.user_name}</span>
-				<span>{schedule.user_alias}</span>
-				<S.ScheduleCardHeaderIcon>
+				<S.UserInfo>
+					<S.UserName>{schedule.user_name}</S.UserName>
+					<S.UserAlias>{schedule.user_alias}</S.UserAlias>
+				</S.UserInfo>
+				<S.ButtonContainer>
 					<S.EditIcon onClick={() => handleEditSchulde(schedule)} />
 					<S.DeleteIcon onClick={() => handleDeleteIconClick(schedule)} />
-				</S.ScheduleCardHeaderIcon>
+				</S.ButtonContainer>
 			</S.ScheduleCardHeader>
-			<div>
-				<span>{SCHEDULE_CATEGORY_LABELS[schedule.category]}</span>
-			</div>
-			<S.ScheduleCardTime>
-				<span>
+			<S.ScheduleCardMain>
+				<S.ScheduleCategory>{SCHEDULE_CATEGORY_LABELS[schedule.category]}</S.ScheduleCategory>
+				<S.ScheduleTime>
 					{formatTime(new Date(schedule.start_date_time))} -{' '}
 					{formatTime(new Date(schedule.end_date_time))}
-				</span>
-			</S.ScheduleCardTime>
-			<div>
-				<span>{schedule.description}</span>
-			</div>
+				</S.ScheduleTime>
+			</S.ScheduleCardMain>
+			{hasDescription && <S.ScheduleDescription>{schedule.description}</S.ScheduleDescription>}
 		</S.ScheduleCardContainer>
 	);
 };

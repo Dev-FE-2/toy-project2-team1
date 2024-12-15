@@ -118,7 +118,8 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 		new Date(repeatEndDate).setHours(0, 0, 0, 0) < new Date(startDateTime).setHours(0, 0, 0, 0)
 			? '반복 종료일은 시작일 이후여야 합니다'
 			: null;
-	const userIdError = isAdminAddMode && !userIdValue ? '직원을 입력해주세요' : null;
+	const userIdError =
+		(isAdminAddMode && !userIdValue) || !searchUserId ? '직원을 선택해주세요' : null;
 
 	// 디버깅용
 	console.log('current form', {
