@@ -34,7 +34,3 @@ build/
 
 # ESLint cache
 .eslintcache
-
-.env
-
-.cursorrules
