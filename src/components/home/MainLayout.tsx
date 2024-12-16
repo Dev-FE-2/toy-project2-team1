@@ -14,7 +14,7 @@ export function MainLayout() {
 	const user = useAppSelector((state) => state.user);
 	const isAuthInitialized = useAppSelector((state) => state.user.isAuthInitialized);
 
-	console.log('MainLayout user:', user, 'isAuthInitialized:', isAuthInitialized);
+	// console.log('MainLayout user:', user, 'isAuthInitialized:', isAuthInitialized);
 
 	// user 정보가 초기화되지 않았다면 로딩 표시
 	if (!isAuthInitialized) {
