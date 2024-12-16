@@ -1,4 +1,3 @@
-import React from 'react';
 import {
 	PayrollContainer,
 	PayrollHeader,
@@ -34,10 +33,6 @@ export default function DetailModal({ data }) {
 							<TableData>기본 급여</TableData>
 							<TableData>{data.지급총액} 원</TableData>
 						</tr>
-						{/* <tr>
-							<TableData>보너스</TableData>
-							<TableData>500,000 원</TableData>
-						</tr> */}
 						<tr>
 							<TableData>세금 공제</TableData>
 							<TableData>-{data.세금공제} 원</TableData>
@@ -45,6 +40,10 @@ export default function DetailModal({ data }) {
 						<tr>
 							<TableData>보험 공제</TableData>
 							<TableData>-{data.보험공제} 원</TableData>
+						</tr>
+						<tr>
+							<TableData>정정 반영 금액</TableData>
+							<TableData>{data.수정금액} 원</TableData>
 						</tr>
 					</tbody>
 				</PayrollTable>
@@ -57,7 +56,9 @@ export default function DetailModal({ data }) {
 				</SummaryItem>
 				<SummaryItem>
 					<SummaryLabel>실수령액</SummaryLabel>
-					<SummaryValue>{data.실지급액} 원</SummaryValue>
+					<SummaryValue>
+						{data.지급총액 - data.세금공제 - data.보험공제 + data.수정금액} 원
+					</SummaryValue>
 				</SummaryItem>
 			</PayrollSummary>
 		</PayrollContainer>
