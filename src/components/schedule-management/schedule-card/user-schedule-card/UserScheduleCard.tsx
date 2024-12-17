@@ -17,7 +17,7 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCard
 	const user = useAppSelector((state) => state.user.user);
 	const userId = user?.id;
 
-	const { handleDeleteSchedule } = useScheduleManage(userId ?? null, schedules);
+	const { handleDeleteSchedule } = useScheduleManage(userId ?? '', schedules);
 
 	// 넘어가는 날짜 원 처리용
 	const compareDate = new Date(selectedDate);
