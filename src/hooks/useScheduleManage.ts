@@ -163,8 +163,12 @@ export default function useScheduleManage(userId: string, schedules: TSchedule[]
 			await deleteSchedules(scheduleIds);
 
 			// 반복 스케줄 중 삭제가 일어나면 전 반복 스케줄의 반복 종료 날짜 조정 필요
-			const targetIndex = repeatSchedules.findIndex((s) => s.schedule_id === schedule.schedule_id);
-			await adjustPreviousSchedules(repeatSchedules, targetIndex, schedule.start_date_time);
+			if (!deleteAll && repeatSchedules.length > 1) {
+				const targetIndex = repeatSchedules.findIndex(
+					(s) => s.schedule_id === schedule.schedule_id,
+				);
+				await adjustPreviousSchedules(repeatSchedules, targetIndex, schedule.start_date_time);
+			}
 		} catch (error) {
 			console.error('스케줄 삭제 실패:', error);
 			throw error;
