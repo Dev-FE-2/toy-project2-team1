@@ -7,7 +7,7 @@ import {
 	setIsScheduleEditModalOpen,
 	setIsScheduleDeleteModalOpen,
 } from '@/redux/actions/modalActions';
-import { isSameDay, formatTime } from '@/utils/dateFormatter';
+import { isSameDate, formatTime } from '@/utils/dateFormatter';
 import filteredRepeatSchedules from '@/utils/filteredRepeatSchedules';
 
 export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCardProps) => {
@@ -24,8 +24,8 @@ export const UserScheduleCard = ({ schedule, shouldShowTime }: TUserScheduleCard
 	const startDate = new Date(schedule.start_date_time);
 	const endDate = new Date(schedule.end_date_time);
 
-	const showStartTime = isSameDay(compareDate, startDate);
-	const showEndTime = isSameDay(compareDate, endDate);
+	const showStartTime = isSameDate(compareDate, startDate);
+	const showEndTime = isSameDate(compareDate, endDate);
 
 	const startTime = formatTime(startDate);
 	const endTime = formatTime(endDate);
