@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as S from './Calendar.styles';
 import { TSchedule, TCalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
@@ -7,7 +7,9 @@ import useIsAdmin from '@/hooks/useIsAdmin';
 import { selectDate, setYear, setMonth } from '@/redux/actions/scheduleActions';
 import { formatCalendarDay } from '@/utils/dateFormatter';
 
-export const CalendarComponent = ({ isManagementPage }: TCalendarComponentProps) => {
+export const CalendarComponent = React.memo(function CalendarComponent({
+	isManagementPage,
+}: TCalendarComponentProps) {
 	const dispatch = useAppDispatch();
 	const schedules = useAppSelector((state) => state.schedule.schedules);
 	const selectedDate = useAppSelector((state) => state.schedule.selectedDate);
@@ -97,4 +99,4 @@ export const CalendarComponent = ({ isManagementPage }: TCalendarComponentProps)
 			/>
 		</S.CalenderWrapper>
 	);
-};
+});

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import * as S from './ScheduleModal.styles';
 import {
 	TSchedule,
@@ -32,7 +32,10 @@ import calculateEndDateTime from '@/utils/calculateEndDateTime';
 import generateRepeatingSchedules from '@/utils/generateRepeatingSchedules';
 import filteredRepeatSchedules from '@/utils/filteredRepeatSchedules';
 
-export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
+export const ScheduleModal = React.memo(function ScheduleModal({
+	type,
+	mode,
+}: TScheduleModalProps) {
 	const [isRepeatActive, setIsRepeatActive] = useState<boolean>(false); // 토글 상태
 	const [pendingScheduleData, setPendingScheduleData] = useState<TSchedule | null>(null); // 수정할 데이터
 	const [searchListOpen, setSearchListOpen] = useState<boolean>(false);
@@ -47,6 +50,7 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 
 	// 관리자에서 searchUserId로 사용자 이름, 별명 추출
 	const getUserDetailsById = (userId?: string) => {
+		//관리자일때 체크하기
 		if (!userId || !employeeSchedules?.length) return null;
 		return employeeSchedules.find((employee) => employee.user_id === userId);
 	};
@@ -65,14 +69,13 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 	const debouncedSearchTerm = useDebounce(searchTerm, 200);
 	const searchRef = useRef<HTMLDivElement | null>(null);
 
-	const getUserIdToSend = (): string => {
+	const getUserIdToSend = useCallback((): string => {
 		if (type === 'scheduleAdmin') {
 			return mode === 'add' ? searchUserId : (selectedSchedule?.user_id ?? '');
 		}
-
 		if (!userId) throw new Error('userId가 필요합니다');
 		return userId;
-	};
+	}, [searchUserId, selectedSchedule?.user_id, type, mode, userId]);
 
 	const { handleAddSchedule, handleEditSchedule } = useScheduleManage(getUserIdToSend(), schedules);
 
@@ -487,4 +490,4 @@ export const ScheduleModal = ({ type, mode }: TScheduleModalProps) => {
 			)}
 		</ModalPortal>
 	);
-};
+});
