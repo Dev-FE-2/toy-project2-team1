@@ -7,7 +7,8 @@ import Pagination from '@/components/pagination/pagination';
 import SalarySelect from '@/components/salaryselect/SalarySelect';
 import { createClient } from '@supabase/supabase-js';
 import { TMessage } from '@/types/modal';
-import { useAppSelector } from '@/hooks/useRedux';
+import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
+import { setMonth, setYear } from '@/redux/actions/scheduleActions';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -77,7 +78,7 @@ export function SalaryManagement() {
 					return {
 						btnText: '알 수 없음',
 						btnColor: 'gray',
-						onClickBtn: () => console.log(`상태 확인 필요`),
+						onClickBtn: () => {},
 					};
 			}
 		} else {
@@ -123,6 +124,21 @@ export function SalaryManagement() {
 		requestSalary: 0,
 	});
 
+	const getOvertimePay = async (attendanceId) => {
+		const { data, error } = await supabase
+			.from('attendance')
+			.select('overtime_pay')
+			.eq('id', attendanceId)
+			.single();
+
+		if (error) {
+			console.error('Error fetching overtime_pay:', error);
+			return null;
+		} else {
+			return data.overtime_pay;
+		}
+	};
+
 	const updateAttendanceRuest = async (status) => {
 		if (!formData.requestId || !formData.selectOption) {
 			alert('필수 항목이 비어있습니다.');
@@ -131,11 +147,19 @@ export function SalaryManagement() {
 
 		try {
 			if (status === '승인') {
+				const currentOvertimePay = await getOvertimePay(formData.attendanceId);
+				if (currentOvertimePay === null) {
+					alert('overtime_pay 값을 가져오는 데 실패했습니다.');
+					return;
+				}
+				// 새로운 overtime_pay 값 계산
+				const newOvertimePay = Number(currentOvertimePay) + Number(formData.requestSalary);
+
 				// attendance의 overtime_pay 변경
 				const { error: attendanceError } = await supabase
 					.from('attendance')
 					.update({
-						overtime_pay: formData.requestSalary,
+						overtime_pay: newOvertimePay,
 					})
 					.eq('id', `${formData.attendanceId}`);
 
@@ -345,8 +369,11 @@ export function SalaryManagement() {
 		fetchAttendanceRequestData();
 	}, [selectedYear, selectedMonth, currentPage]);
 
+	const dispatch = useAppDispatch();
 	useEffect(() => {
 		setCurrentPage(1);
+		dispatch(setYear(Number(selectedYear)));
+		dispatch(setMonth(Number(selectedMonth)));
 	}, [selectedYear, selectedMonth]);
 
 	return (
