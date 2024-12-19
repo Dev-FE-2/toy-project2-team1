@@ -35,6 +35,7 @@ export const CalendarComponent = React.memo(function CalendarComponent({
 		dispatch(selectDate(date));
 	}, []);
 
+
 	// 년, 월 바뀌면 전역 상태에 저장
 	const handleMonthChange = ({ activeStartDate }) => {
 		const year = activeStartDate.getFullYear();
