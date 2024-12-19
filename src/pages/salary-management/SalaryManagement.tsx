@@ -9,6 +9,7 @@ import { createClient } from '@supabase/supabase-js';
 import { TMessage } from '@/types/modal';
 import { useAppDispatch, useAppSelector } from '@/hooks/useRedux';
 import { setMonth, setYear } from '@/redux/actions/scheduleActions';
+import { salaryFormatter } from '@/utils/salaryFormatter';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -411,11 +412,11 @@ export function SalaryManagement() {
 									<S.Row>
 										<S.DataSet>
 											<S.Label>기존지급예정금액</S.Label>
-											<S.Data>{selectedRow.지급예정금액}</S.Data>
+											<S.Data>{salaryFormatter(selectedRow.지급예정금액.toString())} 원</S.Data>
 										</S.DataSet>
 										<S.DataSet>
 											<S.Label>정정신청반영금액</S.Label>
-											<S.Data>{selectedRow.정정신청금액}</S.Data>
+											<S.Data>{salaryFormatter(selectedRow.정정신청금액.toString())} 원</S.Data>
 										</S.DataSet>
 									</S.Row>
 									<S.Row>
