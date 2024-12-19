@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import * as S from './SearchEmployeeList.styles';
 import { TSchedule } from '@/types/schedule';
 
@@ -13,10 +13,13 @@ const SearchEmployeeList = React.memo(function SearchEmployeeList({
 	onSetSearchListOpen,
 	onSetSearchUserId,
 }: AdminScheduleCardProps) {
-	const handleItemClick = (userId: string) => {
-		onSetSearchUserId(userId);
-		onSetSearchListOpen(false);
-	};
+	const handleItemClick = useCallback(
+		(userId: string) => {
+			onSetSearchUserId(userId);
+			onSetSearchListOpen(false);
+		},
+		[onSetSearchUserId, onSetSearchListOpen],
+	);
 
 	return (
 		<S.SearchContainer>

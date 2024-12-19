@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import * as S from './Calendar.styles';
 import { TSchedule, TCalendarComponentProps, SCHEDULE_CATEGORY_LABELS } from '@/types/schedule';
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
@@ -31,9 +31,9 @@ export const CalendarComponent = React.memo(function CalendarComponent({
 	useFiltereSchedulesByCategory({ isAdmin, userId, filterCategoryKey });
 
 	// 클릭한 날짜 필터링
-	const handleDateClick = (date: Date) => {
+	const handleDateClick = useCallback((date: Date) => {
 		dispatch(selectDate(date));
-	};
+	}, []);
 
 	const today = new Date();
 
@@ -53,33 +53,36 @@ export const CalendarComponent = React.memo(function CalendarComponent({
 	};
 
 	// 일정 있는 날짜에 바 표시
-	const tileContent = ({ date }: { date: Date }) => {
-		const daySchedules = schedules
-			.filter((schedule) => {
-				const scheduleDate = new Date(schedule.start_date_time);
-				return scheduleDate.toDateString() === date.toDateString();
-			})
-			.sort((a, b) => {
-				const aDate = new Date(a.start_date_time);
-				const bDate = new Date(b.start_date_time);
-				return (
-					aDate.getTime() - bDate.getTime() ||
-					new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
-				);
-			})
-			.slice(0, 3);
-		return daySchedules.length > 0 ? (
-			<>
-				{daySchedules.map((s: TSchedule) => (
-					<S.ScheduleBar key={s.schedule_id} $category={s.category}>
-						{isAdmin
-							? SCHEDULE_CATEGORY_LABELS[s.category] && s.user_name
-							: SCHEDULE_CATEGORY_LABELS[s.category]}
-					</S.ScheduleBar>
-				))}
-			</>
-		) : null;
-	};
+	const tileContent = useCallback(
+		({ date }: { date: Date }) => {
+			const daySchedules = schedules
+				.filter((schedule) => {
+					const scheduleDate = new Date(schedule.start_date_time);
+					return scheduleDate.toDateString() === date.toDateString();
+				})
+				.sort((a, b) => {
+					const aDate = new Date(a.start_date_time);
+					const bDate = new Date(b.start_date_time);
+					return (
+						aDate.getTime() - bDate.getTime() ||
+						new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+					);
+				})
+				.slice(0, 3);
+			return daySchedules.length > 0 ? (
+				<>
+					{daySchedules.map((s: TSchedule) => (
+						<S.ScheduleBar key={s.schedule_id} $category={s.category}>
+							{isAdmin
+								? SCHEDULE_CATEGORY_LABELS[s.category] && s.user_name
+								: SCHEDULE_CATEGORY_LABELS[s.category]}
+						</S.ScheduleBar>
+					))}
+				</>
+			) : null;
+		},
+		[schedules, isAdmin, SCHEDULE_CATEGORY_LABELS],
+	);
 
 	return (
 		<S.CalenderWrapper $isManagementPage={isManagementPage ?? false}>

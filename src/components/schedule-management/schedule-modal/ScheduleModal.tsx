@@ -143,9 +143,9 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 	// });
 
 	// 날짜 선택시 분을 00으로 초기화
-	const handleDateTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleDateTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		e.target.value = fixMinute(e.target.value);
-	};
+	}, []);
 
 	// edit 모드일때 초기값 설정
 	useEffect(() => {
@@ -240,11 +240,11 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 	};
 
 	// 모달 바깥 클릭 처리
-	const handleOverlayClick = (event: React.MouseEvent<HTMLDivElement>) => {
+	const handleOverlayClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
 		if (event.target === event.currentTarget) {
 			handleClose();
 		}
-	};
+	}, []);
 
 	// 버튼 disabled 상태
 	const isButtonDisabled = Boolean(
@@ -256,9 +256,9 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 	);
 
 	// 직원 검색
-	const handleEmployeeSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+	const handleEmployeeSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
 		setSearchTerm(e.target.value);
-	};
+	}, []);
 
 	useEffect(() => {
 		if (debouncedSearchTerm.length > 0) {
@@ -270,11 +270,11 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 		}
 	}, [debouncedSearchTerm]);
 
-	const handleClickOutside = (event: MouseEvent) => {
+	const handleClickOutside = useCallback((event: MouseEvent) => {
 		if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
 			setSearchListOpen(false);
 		}
-	};
+	}, []);
 
 	// 디버깅용
 	// console.log('current Search', {
