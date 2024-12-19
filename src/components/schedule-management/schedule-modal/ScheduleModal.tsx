@@ -77,7 +77,12 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 		return userId;
 	}, [searchUserId, selectedSchedule?.user_id, type, mode, userId]);
 
-	const { handleAddSchedule, handleEditSchedule } = useScheduleManage(getUserIdToSend(), schedules);
+	const { handleAddSchedule, handleEditSchedule, readLoading } = useScheduleManage(
+		getUserIdToSend(),
+		schedules,
+	);
+
+	readLoading();
 
 	const {
 		register,
@@ -112,6 +117,11 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 
 	// 실시간으로 에러 메시지 생성
 	const noneStartDateTimeError = !startDateTime ? '시작일시를 선택해주세요' : null;
+	const prevStartDateTimeError =
+		type === 'scheduleUser' &&
+		new Date(startDateTime).setHours(0, 0, 0, 0) <= new Date().setHours(0, 0, 0, 0)
+			? '오늘 이후의 스케줄만 입력해주세요'
+			: null;
 	const noneRepeatCycleError = isRepeatActive && !repeatCycle ? '반복주기를 선택해주세요' : null;
 	const noneEndDateError = isRepeatActive && !repeatEndDate ? '종료일을 선택해주세요' : null;
 	const repeatEndDateError =
@@ -128,6 +138,9 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 	// console.log('current form', {
 	// 	errors: errors,
 	// 	noneStartDateTimeError: noneStartDateTimeError,
+	// 	today: new Date().setHours(0, 0, 0, 0),
+	// 	prevStartDateTime: new Date(startDateTime).setHours(0, 0, 0, 0),
+	// 	prevStartDateTimeError: prevStartDateTimeError,
 	// 	noneRepeatCycleError: noneRepeatCycleError,
 	// 	noneEndDateError: noneEndDateError,
 	// 	repeatEndDateError: repeatEndDateError,
@@ -161,8 +174,9 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 				setValue('repeat', selectedSchedule.repeat);
 				setValue('repeat_end_date', formatDate(new Date(selectedSchedule.repeat_end_date)));
 			}
+			trigger(['category', 'time']); // 유효성 검사 트리거
 		}
-	}, [mode, selectedSchedule, setValue]);
+	}, [mode, selectedSchedule, setValue, trigger]);
 
 	// 모달 닫을 때
 	const handleClose = () => {
@@ -175,67 +189,54 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 	};
 
 	const onSubmitForm = handleSubmit(async (data) => {
-		try {
-			if (isAdminAddMode) {
-				if (!searchUserId) throw new Error('searchUserId 없음');
-			}
-			if (!userId) throw new Error('userId 없음');
+		const scheduleData: TSchedule = {
+			schedule_id: mode === 'edit' ? (selectedSchedule?.schedule_id ?? uuidv4()) : uuidv4(), // 한 개 수정시 이전 schedule_id 필요
+			user_id: getUserIdToSend(),
+			user_name: userName as string,
+			user_alias: userAlias as string,
+			category: data.category,
+			start_date_time: new Date(data.start_date_time),
+			time: data.time,
+			end_date_time: new Date(calculateEndDateTime(data.start_date_time, data.time)),
+			schedule_shift_type: calculateScheduleShiftType(data.start_date_time),
+			repeat: (data.repeat as TScheduleRepeatCycle) || null,
+			repeat_end_date: data.repeat_end_date ? new Date(data.repeat_end_date) : undefined,
+			created_at: new Date(),
+			description: (data.description as string) || undefined,
+		};
 
-			const scheduleData: TSchedule = {
-				schedule_id: mode === 'edit' ? (selectedSchedule?.schedule_id ?? uuidv4()) : uuidv4(), // 한 개 수정시 이전 schedule_id 필요
-				user_id: getUserIdToSend(),
-				user_name: userName as string,
-				user_alias: userAlias as string,
-				category: data.category,
-				start_date_time: new Date(data.start_date_time),
-				time: data.time,
-				end_date_time: new Date(calculateEndDateTime(data.start_date_time, data.time)),
-				schedule_shift_type: calculateScheduleShiftType(data.start_date_time),
-				repeat: (data.repeat as TScheduleRepeatCycle) || null,
-				repeat_end_date: data.repeat_end_date ? new Date(data.repeat_end_date) : undefined,
-				created_at: new Date(),
-				description: (data.description as string) || undefined,
-			};
+		if (mode === 'add') {
+			const newSchedules = generateRepeatingSchedules(scheduleData);
+			await handleAddSchedule(newSchedules);
+			dispatch(setIsScheduleAddModalOpen(false)); // 일정 추가 모달 닫기
+		} else {
+			// edit 모드
+			if (selectedSchedule) {
+				// 반복 일정인 경우
+				const repeatedSchedules = filteredRepeatSchedules(selectedSchedule, schedules);
+				const isRecurring = repeatedSchedules.length > 1;
 
-			if (mode === 'add') {
-				const newSchedules = generateRepeatingSchedules(scheduleData);
-				await handleAddSchedule(newSchedules);
-				dispatch(setIsScheduleAddModalOpen(false)); // 일정 추가 모달 닫기
-			} else {
-				// edit 모드
-				if (selectedSchedule) {
-					// 반복 일정인 경우
-					const repeatedSchedules = filteredRepeatSchedules(selectedSchedule, schedules);
-					const isRecurring = repeatedSchedules.length > 1;
-
-					if (isRecurring) {
-						setPendingScheduleData(scheduleData);
-						dispatch(setIsConfirmModalOpen(true));
-						return; // 모달 응답 기다림
-					}
-
-					// 반복이 아닌 일정은 바로 수정
-					await handleEditSchedule(selectedSchedule, scheduleData, false);
-					dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
+				if (isRecurring) {
+					setPendingScheduleData(scheduleData);
+					dispatch(setIsConfirmModalOpen(true));
+					return; // 모달 응답 기다림
 				}
+
+				// 반복이 아닌 일정은 바로 수정
+				await handleEditSchedule(selectedSchedule, scheduleData, false);
+				dispatch(setIsScheduleEditModalOpen(false)); // 일정 수정 모달 닫기
 			}
-			dispatch(setfilterCategory('')); // 카테고리 필터 해제
-		} catch (error) {
-			console.error('폼 제출 실패:', error);
 		}
+		dispatch(setfilterCategory('')); // 카테고리 필터 해제
 	});
 
 	// confirm 모달 응답 처리
 	const handleConfirmEdit = async (editAll: boolean) => {
-		try {
-			if (!pendingScheduleData) return;
-			if (selectedSchedule) {
-				await handleEditSchedule(selectedSchedule, pendingScheduleData, editAll);
-				dispatch(setIsConfirmModalOpen(false));
-				dispatch(setIsScheduleEditModalOpen(false));
-			}
-		} catch (error) {
-			console.error('스케줄 수정 실패:', error);
+		if (!pendingScheduleData) return;
+		if (selectedSchedule) {
+			await handleEditSchedule(selectedSchedule, pendingScheduleData, editAll);
+			dispatch(setIsConfirmModalOpen(false));
+			dispatch(setIsScheduleEditModalOpen(false));
 		}
 	};
 
@@ -251,6 +252,7 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 		Object.keys(errors).length > 0 ||
 			isSubmitting ||
 			noneStartDateTimeError ||
+			prevStartDateTimeError ||
 			noneEndDateError ||
 			repeatEndDateError,
 	);
@@ -369,10 +371,18 @@ export const ScheduleModal = React.memo(function ScheduleModal({
 											handleDateTimeChange(e);
 										},
 									})}
-									error={touchedFields.start_date_time && noneStartDateTimeError ? true : undefined}
+									error={
+										(touchedFields.start_date_time && noneStartDateTimeError) ||
+										prevStartDateTimeError
+											? true
+											: undefined
+									}
 								/>
 								{touchedFields.start_date_time && noneStartDateTimeError && (
 									<S.ErrorMessage>{noneStartDateTimeError}</S.ErrorMessage>
+								)}
+								{prevStartDateTimeError && (
+									<S.ErrorMessage>{prevStartDateTimeError}</S.ErrorMessage>
 								)}
 							</S.InputWrapper>
 							<S.InputWrapper>
