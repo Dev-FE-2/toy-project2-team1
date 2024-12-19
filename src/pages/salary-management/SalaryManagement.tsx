@@ -123,6 +123,21 @@ export function SalaryManagement() {
 		requestSalary: 0,
 	});
 
+	const getOvertimePay = async (attendanceId) => {
+		const { data, error } = await supabase
+			.from('attendance')
+			.select('overtime_pay')
+			.eq('id', attendanceId)
+			.single();
+
+		if (error) {
+			console.error('Error fetching overtime_pay:', error);
+			return null;
+		} else {
+			return data.overtime_pay;
+		}
+	};
+
 	const updateAttendanceRuest = async (status) => {
 		if (!formData.requestId || !formData.selectOption) {
 			alert('필수 항목이 비어있습니다.');
@@ -131,11 +146,19 @@ export function SalaryManagement() {
 
 		try {
 			if (status === '승인') {
-				// attendance의 overtime_pay 변경
+				const currentOvertimePay = await getOvertimePay(formData.attendanceId);
+				if (currentOvertimePay === null) {
+					alert('overtime_pay 값을 가져오는 데 실패했습니다.');
+					return;
+				}
+
+				// 새로운 overtime_pay 값 계산
+				const newOvertimePay = Number(currentOvertimePay) + Number(formData.requestSalary);
+
 				const { error: attendanceError } = await supabase
 					.from('attendance')
 					.update({
-						overtime_pay: formData.requestSalary,
+						overtime_pay: newOvertimePay,
 					})
 					.eq('id', `${formData.attendanceId}`);
 

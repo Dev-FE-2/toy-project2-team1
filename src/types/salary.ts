@@ -11,4 +11,5 @@ export interface RowItem {
 
 export interface SalaryUserData extends RowItem {
 	급여해: string;
+	수정금액?: number;
 }
