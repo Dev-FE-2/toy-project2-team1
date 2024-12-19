@@ -305,13 +305,16 @@ export function ApplicationDetails() {
 						payment_month,
 						payment_day,
 						total_salary,
-						id
+						id,
+						user_id
 					)
 				`,
 				)
+				.eq('attendance.user_id', 'GhO07xWOnjZZmcZzdcy4D9Ezwvv1')
 				.like('attendance.payment_month', `${selectedYear}-${selectedMonth}%`)
 				.order('created_at', { ascending: false })
 				.range(startIndex, endIndex - 1);
+			//eq의 두번째 매개변수로는 아이디값으로 넣어야하는데, 백엔드가 없어 일단 하나로 지정해두었습니다
 			if (error) {
 				console.error('Error fetching data:', error);
 			} else {

@@ -48,7 +48,6 @@ export default function PaginatedTable() {
 	useEffect(() => {
 		if (filteredItems.length > 0) {
 			const salaryDate = filteredItems[0].급여지급일;
-			console.log('급여지급일:', salaryDate);
 
 			const supabaseDate = dayjs(salaryDate, 'YYYY-MM-DD');
 			if (supabaseDate.isValid()) {
